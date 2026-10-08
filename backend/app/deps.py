@@ -30,7 +30,9 @@ async def get_current_user(db: DB, credentials: Credentials) -> User:
     # last_login doubles as "last seen": the dashboard's online status reads it. The app calls the API
     # every 30 s while open, so refresh it at most once a minute instead of writing on every request.
     now = datetime.now(UTC)
-    if user.last_login is None or now - user.last_login > timedelta(minutes=1):
+    # Right after the app said it was closed, the first request marks the user online again
+    came_back = user.offline_at is not None and user.last_login is not None and user.offline_at >= user.last_login
+    if user.last_login is None or came_back or now - user.last_login > timedelta(minutes=1):
         user.last_login = now
         await db.commit()
     return user

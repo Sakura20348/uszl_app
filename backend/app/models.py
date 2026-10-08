@@ -85,6 +85,8 @@ class User(Base):
     # Can also manage other admins
     is_superuser: Mapped[bool] = _flag(False)
     last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # When the app said it was closed; offline until the next request after it
+    offline_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     date_joined: Mapped[datetime] = _now()
 
     notification_settings: Mapped["NotificationSettings | None"] = relationship(

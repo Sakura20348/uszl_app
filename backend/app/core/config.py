@@ -57,8 +57,8 @@ class Settings(BaseSettings):
     # Must match the channel the app creates (lib/services/push_service.dart)
     fcm_android_channel: str = "uzsl_default"
 
-    # A user counts as "online" if they used the app this recently
-    online_minutes: int = 5
+    # A user counts as "online" if they used the app this recently (the open app calls the API every 30 s)
+    online_minutes: int = 2
     # Lesson accuracy (%) needed to complete a lesson
     lesson_pass_accuracy: int = 50
     # XP needed for each level

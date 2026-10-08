@@ -40,7 +40,9 @@ class NotificationCenter with WidgetsBindingObserver {
       _timer ??= Timer.periodic(_interval, (_) => refresh());
       // Pushes that came while away were already shown (and rang) by the phone
       refresh(alert: false);
-    } else if (state == AppLifecycleState.paused) {
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      // Left the app: stop checking, and the dashboard shows the user offline right away
+      if (_timer != null) UzslApi.goOffline();
       _timer?.cancel();
       _timer = null;
     }

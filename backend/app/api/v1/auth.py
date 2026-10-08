@@ -9,7 +9,7 @@ from app.core.security import create_token, decode_token, generate_otp, hash_otp
 from app.sms import SmsError, send_login_code, sms_enabled
 from app.core.firebase_auth import FirebaseAuthError, verify_firebase_token
 from app.core.social import SocialAuthError, verify_id_token
-from app.deps import DB, CurrentUser
+from app.deps import DB, CurrentUser, OptionalUser
 from app.models import PhoneOtp, SocialAccount, User
 from app.progress import get_notification_settings, get_stats
 from app.schemas.auth import (
@@ -125,10 +125,19 @@ async def request_otp(body: OtpRequestIn, db: DB) -> OtpSentOut:
 
 
 @router.post("/otp/verify", response_model=TokenOut)
-async def verify_otp(body: OtpVerifyIn, db: DB) -> TokenOut:
-    """Logs in with an SMS code; creates the account if the number is new."""
+async def verify_otp(body: OtpVerifyIn, db: DB, current: OptionalUser) -> TokenOut:
+    """
+    Logs in with an SMS code; creates the account if the number is new.
+    Sent while logged in to an account without a phone (the app signs up with email first),
+    it adds the number to that account instead of making a second one.
+    """
     await _use_otp(db, body.phone, body.code, "login")
     user = await db.scalar(select(User).where(User.phone == body.phone))
+    if current is not None and current.phone is None:
+        if user is not None and user.id != current.id:
+            raise HTTPException(status.HTTP_409_CONFLICT, "This phone number already belongs to another account")
+        current.phone = body.phone
+        return await _login(db, current)
     is_new = user is None
     if user is None:
         user = User(phone=body.phone)

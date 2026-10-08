@@ -142,11 +142,36 @@ class ActivityDay(Schema):
     seconds_by_source: dict[str, int] = {}
 
 
+class PerformanceType(Schema):
+    # chooseText | chooseImage | matching | order
+    type: str
+    answers: int
+    correct: int
+
+
+class PerformanceMonth(Schema):
+    # First day of the month
+    month: date
+    answers: int
+    correct: int
+
+
+class PerformanceOut(Schema):
+    """The dashboard's Performance card: learners' exercise answers in the last months."""
+
+    answers: int
+    correct: int
+    by_type: list[PerformanceType]
+    months: list[PerformanceMonth]
+
+
 class PopularLesson(Schema):
     lesson_id: int
     lesson_title: str
     course_id: int
     course_title: str
+    # The textbook's picture
+    course_icon: MediaPath = None
     # Learners who completed it / started it
     completions: int
     learners: int

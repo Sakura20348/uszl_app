@@ -31,7 +31,7 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
 // =======================================================================
   Future<void> _initializeData() async {
     final local = StatisticsService.instance.getStatistics();
-    var stats = local;
+    var stats = _withLocalCalendar(local);
     if (await UzslApi.isLoggedIn()) {
       try {
         final results = await Future.wait([UzslApi.stats(), UzslApi.activity(_periods[_selectedTab])]);
@@ -67,10 +67,20 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
     );
   }
 
+  // Offline / logged out: this phone's own calendar for the chosen tab
+  UserStatistics _withLocalCalendar(UserStatistics s) {
+    final calendar = StatisticsService.instance.activityCalendar(_periods[_selectedTab]);
+    _weeks = calendar.weeks;
+    return s.copyWith(activityHeatmap: calendar.cells);
+  }
+
   Future<void> _selectTab(int index) async {
     setState(() => _selectedTab = index);
     final server = _server;
-    if (server == null) return;
+    if (server == null) {
+      setState(() => _stats = _withLocalCalendar(_stats));
+      return;
+    }
     try {
       final activity = await UzslApi.activity(_periods[index]);
       if (mounted && _selectedTab == index) setState(() => _stats = _fromServer(server, activity));
@@ -317,7 +327,7 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
   }
 
   Widget _weeklyLearningCard(AppLocalizations loc) {
-    final days = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+    final days = _barLabels(loc, 7); // in the app language
     final completedDays = _stats.weeklyStudyStatus;
     final studyDaysCount = completedDays.where((day) => day).length;
 
@@ -460,51 +470,48 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
   }
 
   Widget _activityCalendar(AppLocalizations loc) {
-    final activityLevels = _stats.activityHeatmap;
-    // At least 1, so an empty calendar (no learning yet) doesn't divide by zero
-    final maxLevel = activityLevels.isEmpty ? 1.0 : activityLevels.reduce((a, b) => a > b ? a : b).clamp(1.0, double.infinity);
+    // Minutes per time slot (rows) and weekday (columns, Monday first), from the server or this phone
+    final cells = _stats.activityHeatmap;
+    final double total = cells.fold(0.0, (sum, m) => sum + m);
+    final double maxMinutes = cells.isEmpty ? 0 : cells.reduce((a, b) => a > b ? a : b);
+    final double weeklyAverage = total / (_weeks < 1 ? 1 : _weeks);
+    final String minute = loc.translate('minute');
+    final int today = DateTime.now().weekday - 1;
+    const slotHours = StatisticsService.slotHours;
+    const double cellHeight = 30, gap = 4, timeColumn = 46;
 
-    // weekly average
-    final fromServer = _server != null;
-    double totalMinutes = fromServer
-        ? activityLevels.fold(0.0, (sum, item) => sum + item)
-        : activityLevels.fold(0.0, (sum, item) => sum + item) * _stats.dailyGoalMinutes;
-    double weeklyAverage = totalMinutes / (fromServer ? _weeks : 8);
+    // empty: light; the busiest slot: dark blue
+    Color cellColor(double minutes) => minutes <= 0
+        ? AppPalette.bg(Colors.white).withValues(alpha: 0.45)
+        : AppPalette.bg(Colors.blue[900]!).withValues(alpha: 0.2 + 0.8 * (minutes / maxMinutes).clamp(0.0, 1.0));
 
-    final now = DateTime.now();
-    int padCount = fromServer ? 0 : now.weekday % 7;
-    List<double> paddedLevels = List.filled(padCount, -1.0) + activityLevels;
-
-    const int totalCells = 56;
-    if (paddedLevels.length > totalCells) { paddedLevels = paddedLevels.sublist(paddedLevels.length - totalCells); }
-    // time labels down the left, one per grid row (8 rows)
-    const timeLabels = ['22:00', '19:00', '16:00', '13:00', '10:00', '07:00', '04:00', '00:00'];
-
-    const int columns = 7;
-    final int rows = (paddedLevels.length / columns).ceil();
+    Widget weekdayRow(List<Widget> Function(int day) build) => Row(children: [
+      const SizedBox(width: timeColumn),
+      for (var d = 0; d < 7; d++) ...[ if (d > 0) const SizedBox(width: gap), Expanded(child: Column(children: build(d))) ],
+    ]);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppPalette.border(Colors.white), width: 1),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withOpacity(0.9), blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withValues(alpha: 0.9), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(loc.translate('activity_calendar'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+              Expanded(child: Text(loc.translate('activity_calendar'), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600))),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
-                decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
                     Icon(Icons.access_time, size: 15, color: AppPalette.fg(Colors.blue[700]!)),
                     const SizedBox(width: 4),
                     Text(
-                      '${weeklyAverage.toInt()} ${loc.translate('minute')}/${loc.translate('week').toLowerCase()}',
+                      '${weeklyAverage.round()} $minute/${loc.translate('week').toLowerCase()}',
                       style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.blue[700]!), fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -514,50 +521,49 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
           ),
           const SizedBox(height: 16),
 
-          // ===== time labels (left) + heatmap grid (right) =====
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Column(
-                  children: List.generate(rows, (r) {
-                    return Container(
-                      height: 30, margin: const EdgeInsets.only(bottom: 4), alignment: Alignment.centerRight,
-                      child: Text(r < timeLabels.length ? timeLabels[r] : '', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.grey[900]!))),
-                    );
-                  }),
+          // ===== a row per time slot: its starting hour, then one square per weekday (tap: minutes) =====
+          for (var row = 0; row < slotHours.length; row++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: gap),
+              child: Row(children: [
+                SizedBox(
+                  width: timeColumn,
+                  child: Text('${slotHours[row].toString().padLeft(2, '0')}:00', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.grey[900]!))),
                 ),
-              ),
-
-              // the grid
-              Expanded(
-                child: GridView.builder(
-                  shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns, crossAxisSpacing: 4, mainAxisSpacing: 4, mainAxisExtent: 30),
-                  itemCount: paddedLevels.length,
-                  itemBuilder: (context, index) {
-                    final level = paddedLevels[index];
-                    if (level < 0) return const SizedBox();
-                    final normalized = (level / maxLevel).clamp(0.0, 1.0);
-                    return Container(decoration: BoxDecoration(color: AppPalette.bg(Colors.blue[900]!).withValues(alpha: 0.08 + normalized * 0.92), borderRadius: BorderRadius.circular(6)));
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // weekday labels — indented to line up under the grid (past the time column)
-          Padding(
-            padding: const EdgeInsets.only(left: 41, right: 6), // ~ time-label column width
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: _barLabels(loc, 7).map((d) => Text(d, style: TextStyle(fontSize: 14, color: AppPalette.fg(Colors.grey[800]!)))).toList(),
+                for (var d = 0; d < 7; d++) ...[
+                  if (d > 0) const SizedBox(width: gap),
+                  Expanded(
+                    child: Tooltip(
+                      triggerMode: TooltipTriggerMode.tap,
+                      message: '${_barLabels(loc, 7)[d]} ${slotHours[row].toString().padLeft(2, '0')}:00 · '
+                          '${(row * 7 + d < cells.length ? cells[row * 7 + d] : 0).round()} $minute',
+                      child: Container(
+                        height: cellHeight,
+                        decoration: BoxDecoration(
+                          color: cellColor(row * 7 + d < cells.length ? cells[row * 7 + d] : 0),
+                          borderRadius: BorderRadius.circular(6),
+                          // today's column is outlined
+                          border: d == today ? Border.all(color: AppPalette.fg(Colors.blue[700]!).withValues(alpha: 0.6), width: 1) : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ]),
             ),
-          ),
+          const SizedBox(height: 4),
+          // weekday names, each under its own column; today's in blue
+          weekdayRow((d) => [
+            Text(_barLabels(loc, 7)[d], style: TextStyle(
+              fontSize: 14,
+              fontWeight: d == today ? FontWeight.w700 : FontWeight.w400,
+              color: d == today ? AppPalette.fg(Colors.blue[700]!) : AppPalette.fg(Colors.grey[800]!),
+            )),
+          ]),
 
           const SizedBox(height: 12),
 
+          // scale: from no learning to the busiest slot
           Row(
             children: [
               Text('0', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!))),
@@ -565,11 +571,11 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
               Expanded(
                 child: Container(
                   height: 6,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), gradient: LinearGradient(colors: [AppPalette.bg(Colors.blue[50]!), AppPalette.bg(Colors.blue[900]!)])),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), gradient: LinearGradient(colors: [cellColor(0), cellColor(maxMinutes > 0 ? maxMinutes : 1)])),
                 ),
               ),
               const SizedBox(width: 10),
-              Text(fromServer ? '${maxLevel.toInt()} ${loc.translate('minute')}' : '1000', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!))),
+              Text('${maxMinutes.round()} $minute', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!))),
             ],
           ),
         ],

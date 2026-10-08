@@ -46,4 +46,12 @@ class UserStatistics {
       activityHeatmap: List.filled(56, 0.0),
     );
   }
+
+  /// The same numbers with another activity calendar (minutes per time slot and weekday)
+  UserStatistics copyWith({List<double>? activityHeatmap}) => UserStatistics(
+    completedLessons: completedLessons, lessonsIncrement: lessonsIncrement, accuracy: accuracy, accuracyIncrement: accuracyIncrement,
+    weeklyStreak: weeklyStreak, streakRecord: streakRecord, collectedPoints: collectedPoints, pointsIncrement: pointsIncrement,
+    dailyGoalMinutes: dailyGoalMinutes, currentDailyMinutes: currentDailyMinutes, weeklyStudyStatus: weeklyStudyStatus,
+    dailyMinutesHistory: dailyMinutesHistory, activityHeatmap: activityHeatmap ?? this.activityHeatmap,
+  );
 }

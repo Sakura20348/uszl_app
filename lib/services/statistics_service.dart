@@ -39,7 +39,6 @@ class StatisticsService {
 
   UserStatistics getStatistics() {
     syncPeriods();
-    _syncHeatmap(); // Ensure heatmap is shifted if days passed
     
     final completedLessons = _prefs.getStringList('lp_completed')?.length ?? 0;
     // ... rest of method
@@ -80,9 +79,8 @@ class StatisticsService {
     final historyList = _prefs.getStringList('stat_minutes_history') ?? List.filled(7, '0');
     final dailyMinutesHistory = historyList.map((e) => int.tryParse(e) ?? 0).toList();
     
-    // Activity heatmap
-    final heatmapList = _prefs.getStringList('stat_heatmap') ?? List.generate(56, (i) => (i % 7 == 0 ? 0.2 : 0.0).toString());
-    final activityHeatmap = heatmapList.map((e) => double.tryParse(e) ?? 0.0).toList();
+    // Activity calendar of this week, like the server's
+    final activityHeatmap = activityCalendar('week').cells;
 
     return UserStatistics(
       completedLessons: completedLessons,
@@ -134,42 +132,45 @@ class StatisticsService {
     history[weekday - 1] = historyVal.toString();
     await _prefs.setStringList('stat_minutes_history', history);
 
-    // Update heatmap intensity
-    await _updateHeatmap(minutes);
+    // When it was learned, for the activity calendar
+    await _logSession(minutes);
   }
 
-  void _syncHeatmap() {
-    final now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    final lastSyncStr = _prefs.getString('stat_heatmap_last_sync');
-    
-    if (lastSyncStr != null) {
-      final lastSync = DateTime.parse(lastSyncStr);
-      final daysDiff = now.difference(lastSync).inDays;
-      
-      if (daysDiff > 0) {
-        List<String> heatmap = _prefs.getStringList('stat_heatmap') ?? List.filled(56, '0.0');
-        // Shift left
-        List<String> newHeatmap = List.filled(56, '0.0');
-        for (int i = 0; i < 56 - daysDiff; i++) {
-          newHeatmap[i] = heatmap[i + daysDiff];
-        }
-        _prefs.setStringList('stat_heatmap', newHeatmap);
-      }
+  // ===== activity calendar: minutes by time of day and weekday, as on the server =====
+  /// Starting hours of the calendar's rows, top to bottom (same as the server's SLOT_HOURS)
+  static const List<int> slotHours = [22, 19, 16, 13, 10, 7, 4, 0];
+  static const _sessionsKey = 'stat_sessions';
+
+  // Each study session as "2026-10-08T14:05:00.000|5" (start, minutes); one year is kept
+  Future<void> _logSession(int minutes) async {
+    final now = DateTime.now();
+    final yearAgo = now.subtract(const Duration(days: 366));
+    final log = (_prefs.getStringList(_sessionsKey) ?? [])
+        .where((e) => DateTime.tryParse(e.split('|').first)?.isAfter(yearAgo) ?? false)
+        .toList()
+      ..add('${now.toIso8601String()}|$minutes');
+    await _prefs.setStringList(_sessionsKey, log);
+  }
+
+  /// Minutes per time slot (rows, [slotHours]) and weekday (columns, Monday first), row by row (8 x 7),
+  /// and how many weeks they cover: [period] 'week' = this week, 'month' = last 28 days, 'year' = last 52 weeks.
+  ({List<double> cells, int weeks}) activityCalendar(String period) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final (DateTime from, int weeks) = switch (period) {
+      'month' => (today.subtract(const Duration(days: 27)), 4),
+      'year' => (today.subtract(const Duration(days: 52 * 7 - 1)), 52),
+      _ => (today.subtract(Duration(days: today.weekday - 1)), 1),
+    };
+    final cells = List<double>.filled(slotHours.length * 7, 0);
+    for (final entry in _prefs.getStringList(_sessionsKey) ?? const <String>[]) {
+      final parts = entry.split('|');
+      final start = DateTime.tryParse(parts.first);
+      if (start == null || start.isBefore(from) || parts.length < 2) continue;
+      final row = slotHours.indexWhere((h) => start.hour >= h);
+      cells[row * 7 + start.weekday - 1] += double.tryParse(parts[1]) ?? 0;
     }
-    _prefs.setString('stat_heatmap_last_sync', now.toIso8601String());
-  }
-
-  Future<void> _updateHeatmap(int minutes) async {
-    _syncHeatmap();
-    List<String> heatmap = _prefs.getStringList('stat_heatmap') ?? List.filled(56, '0.0');
-    double currentIntensity = double.tryParse(heatmap[55]) ?? 0.0;
-    int goal = _prefs.getInt('stat_daily_goal') ?? 10;
-    
-    double addedIntensity = minutes / goal;
-    double newIntensity = (currentIntensity + addedIntensity).clamp(0.0, 1.0);
-    
-    heatmap[55] = newIntensity.toStringAsFixed(2);
-    await _prefs.setStringList('stat_heatmap', heatmap);
+    return (cells: cells, weeks: weeks);
   }
 
   Future<void> setDailyGoal(int minutes) async {

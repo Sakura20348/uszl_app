@@ -5,6 +5,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Response, 
 from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 
+from app.accounts import delete_account
 from app.api.v1.common import profile_out
 from app.deps import DB, CurrentUser
 from app.models import Achievement, Device, Notification, SocialAccount, User, UserAchievement
@@ -57,9 +58,8 @@ async def update_profile(body: ProfileUpdate, user: CurrentUser, db: DB) -> Prof
 
 
 @router.delete("/profile", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_account(user: CurrentUser, db: DB) -> Response:
-    await db.delete(user)
-    await db.commit()
+async def delete_account_(user: CurrentUser, db: DB) -> Response:
+    await delete_account(db, user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -112,6 +112,14 @@ async def my_stats(user: CurrentUser, db: DB) -> UserStatsOut:
 @router.get("/activity", response_model=ActivityStats)
 async def my_activity(user: CurrentUser, db: DB, period: Period = "week") -> ActivityStats:
     return await activity_stats(db, user, period)
+
+
+@router.post("/presence/offline", status_code=status.HTTP_204_NO_CONTENT)
+async def go_offline(user: CurrentUser, db: DB) -> Response:
+    """The app was closed or logged out: the dashboard shows the user offline right away."""
+    user.offline_at = datetime.now(UTC)
+    await db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/activity-sessions", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:signlang/services/account_service.dart';
+import 'package:signlang/services/saved_accounts.dart';
 import 'package:flutter/material.dart';
 import 'package:signlang/api/api_errors.dart';
 import 'package:signlang/api/uzsl_api.dart';
@@ -15,7 +16,9 @@ import 'package:signlang/services/theme_service.dart';
 /// Email + password sign-up / log-in, opened from "Register" on the phone login screen.
 class EmailAuth extends StatefulWidget {
   final bool startWithRegister;
-  const EmailAuth({super.key, this.startWithRegister = true});
+  /// From "Saved accounts": opens "Log in" with this email filled in, ready for the password
+  final String? initialEmail;
+  const EmailAuth({super.key, this.startWithRegister = true, this.initialEmail});
 
   @override
   State<EmailAuth> createState() => _EmailAuthState();
@@ -26,8 +29,10 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
   static final RegExp _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]{2,}$');
   static const Duration _switchDuration = Duration(milliseconds: 280);
 
-  late bool _isRegister = widget.startWithRegister;
-  final TextEditingController _emailController = TextEditingController();
+  late bool _isRegister = widget.initialEmail == null && widget.startWithRegister;
+  late final TextEditingController _emailController = TextEditingController(text: widget.initialEmail ?? '');
+  // a saved account only needs its password: the cursor starts there
+  final FocusNode _passwordFocus = FocusNode();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
   bool _hidePassword = true;
@@ -36,12 +41,19 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
   bool _loading = false;
 
   // "Confirm password" folds away / out; its content stays visible while it animates
-  late final AnimationController _confirmAnim = AnimationController(vsync: this, duration: _switchDuration, value: widget.startWithRegister ? 1 : 0);
+  late final AnimationController _confirmAnim = AnimationController(vsync: this, duration: _switchDuration, value: _isRegister ? 1 : 0);
   late final Animation<double> _confirmSize = CurvedAnimation(parent: _confirmAnim, curve: Curves.easeInOutCubic);
   late final Animation<double> _confirmFade = CurvedAnimation(parent: _confirmAnim, curve: const Interval(0.3, 1, curve: Curves.easeOut));
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialEmail != null) WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _passwordFocus.requestFocus(); });
+  }
+
+  @override
   void dispose() {
+    _passwordFocus.dispose();
     _confirmAnim.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -85,8 +97,13 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
         } on FirebaseAuthException catch (e) {
           if (e.code != 'email-already-in-use') rethrow;
           // Already registered (e.g. an earlier try stopped half way): log in with the same password.
-          // A wrong password still fails, with "wrong email or password".
-          credential = await auth.signInWithEmailAndPassword(email: email, password: password);
+          try {
+            credential = await auth.signInWithEmailAndPassword(email: email, password: password);
+          } on FirebaseAuthException catch (signIn) {
+            // Another password, or a Google account: say the email is taken, not "wrong password"
+            if (signIn.code == 'invalid-credential' || signIn.code == 'wrong-password') throw e;
+            rethrow;
+          }
         }
       } else {
         credential = await auth.signInWithEmailAndPassword(email: email, password: password);
@@ -101,7 +118,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
       // 2) This app's server: trade the Firebase ID token for its own login
       await UzslApi.firebaseLogin((await user.getIdToken())!);
       // The phone's progress becomes this account's (another person's is removed), then its progress is loaded
-      if (mounted) await AccountService.afterLogin(context);
+      if (mounted) await AccountService.afterLogin(context, method: LoginMethod.password);
       await EmailStorage.save(email);
       if (mounted) Navigator.push(context, MaterialPageRoute(builder: (_) => const PhoneLogin()));
       PushService.afterLogin();
@@ -219,7 +236,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
                             const SizedBox(height: 14),
                             _label(loc.translate('password')),
                             _field(
-                              controller: _passwordController, hint: loc.translate('password_hint'), icon: Icons.lock_outline_rounded,
+                              controller: _passwordController, focusNode: _passwordFocus, hint: loc.translate('password_hint'), icon: Icons.lock_outline_rounded,
                               obscure: _hidePassword, onToggleObscure: () => setState(() => _hidePassword = !_hidePassword),
                               autofill: [_isRegister ? AutofillHints.newPassword : AutofillHints.password],
                               error: _submitted ? _passwordError(loc) : null,
@@ -332,6 +349,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
   Widget _field({
     required TextEditingController controller, required String hint, required IconData icon,
     TextInputType? keyboardType, bool obscure = false, VoidCallback? onToggleObscure, List<String>? autofill, String? error, bool enabled = true,
+    FocusNode? focusNode,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,7 +362,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
             boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.2), blurRadius: 15)],
           ),
           child: TextField(
-            controller: controller, keyboardType: keyboardType, obscureText: obscure, autofillHints: autofill, enabled: enabled,
+            controller: controller, focusNode: focusNode, keyboardType: keyboardType, obscureText: obscure, autofillHints: autofill, enabled: enabled,
             autocorrect: false, enableSuggestions: !obscure, onChanged: (_) => setState(() {}),
             textAlignVertical: TextAlignVertical.center, // hint and text in the middle, level with the icons
             style: TextStyle(color: AppPalette.fg(Color(0xFF0F172A)), fontSize: 15, fontWeight: FontWeight.w600),

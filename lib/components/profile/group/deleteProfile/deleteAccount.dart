@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:signlang/components/log/login/savedAccounts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signlang/api/api_errors.dart';
+import 'package:signlang/api/uzsl_api.dart';
+import 'package:signlang/services/account_service.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../log/langguageChoose.dart';
 
 import 'package:signlang/services/theme_service.dart';
 class DeleteAccount extends StatefulWidget{
@@ -28,17 +31,31 @@ class _DeleteAccountState extends State<DeleteAccount> with SingleTickerProvider
   @override
   void dispose() { _animController.dispose(); super.dispose(); }
 
+  bool _busy = false;
+
   Future<void> _handleDeleteAccount() async {
+    if (_busy) return; // one tap is enough
+    setState(() => _busy = true);
+    try {
+      // Deleted on the server first; only then is this phone cleaned
+      await AccountService.deleteAccount();
+    } on ApiException catch (e) {
+      // not deleted (e.g. no internet): nothing was removed, the person can try again
+      if (!mounted) return;
+      setState(() => _busy = false);
+      showApiError(context, e, onRetry: _handleDeleteAccount);
+      return;
+    }
     final prefs = await SharedPreferences.getInstance();
-    
-    // Clear all local data (name, phone, links, image, etc.)
-    await prefs.clear();
-    
+    await prefs.setBool('isLoggedIn', false);
+    await prefs.setInt('tabIndex', 0);
+    // other saved accounts, or the language screen (the deleted one is no longer saved)
+    final start = await SavedAccountsScreen.startScreen();
+
     if (mounted) {
-      // Return to language selection / login screen
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => const LanguageChoose()),
+        MaterialPageRoute(builder: (_) => start),
         (route) => false,
       );
     }
@@ -80,20 +97,22 @@ class _DeleteAccountState extends State<DeleteAccount> with SingleTickerProvider
                   SizedBox(
                     width: double.infinity, height: 56,
                     child: ElevatedButton(
-                      onPressed: _handleDeleteAccount,
+                      onPressed: _busy ? null : _handleDeleteAccount,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppPalette.bg(Color(0xFFEF9A9A)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
+                        backgroundColor: AppPalette.bg(Color(0xFFEF9A9A)).withOpacity(0.2), disabledBackgroundColor: AppPalette.bg(Color(0xFFEF9A9A)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
                         shadowColor: AppPalette.shadow(Color(0xFFB71C1C)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFFB71C1C)).withOpacity(0.2)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))
                       ),
-                      child: Text(loc.translate('delete_account'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                      child: _busy
+                          ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Colors.red)))
+                          : Text(loc.translate('delete_account'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity, height: 56,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: _busy ? null : () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
                         shadowColor: AppPalette.shadow(Color(0xFF212121)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withOpacity(0.2)),

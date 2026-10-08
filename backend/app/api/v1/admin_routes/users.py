@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Response, UploadFile, status
 from sqlalchemy import delete, func, or_, select
 
+from app.accounts import delete_account
 from app.api.v1.common import commit, get_or_404
 from app.core.config import get_settings
 from app.deps import DB, Staff
@@ -15,8 +16,11 @@ from app.models import (
     Contribution,
     Course,
     DailyActivity,
+    Exercise,
+    ExerciseAnswer,
     ExerciseReport,
     Lesson,
+    LessonAttempt,
     Notification,
     NotificationSettings,
     Sign,
@@ -34,6 +38,9 @@ from app.schemas.admin import (
     BroadcastOut,
     BroadcastStats,
     BroadcastSummary,
+    PerformanceMonth,
+    PerformanceOut,
+    PerformanceType,
     PopularLesson,
     StatsOut,
 )
@@ -52,7 +59,9 @@ async def stats(db: DB) -> StatsOut:
     learners = select(User.id).where(User.is_staff.is_(False))
     online_since = datetime.now(UTC) - timedelta(minutes=get_settings().online_minutes)
     online = learners.where(
-        or_(User.last_login >= online_since, User.id.in_(select(ActivitySession.user_id).where(ActivitySession.ended_at >= online_since)))
+        or_(User.last_login >= online_since, User.id.in_(select(ActivitySession.user_id).where(ActivitySession.ended_at >= online_since))),
+        # Not if the app said it was closed after that
+        or_(User.offline_at.is_(None), User.offline_at < User.last_login),
     )
     return StatsOut(
         learners=await count(learners),
@@ -115,6 +124,52 @@ async def activity_by_day(db: DB, days: int = Query(default=30, ge=1, le=365)) -
     return out
 
 
+@router.get("/stats/performance", response_model=PerformanceOut, tags=["admin: users"])
+async def performance(db: DB, months: int = Query(default=6, ge=1, le=12)) -> PerformanceOut:
+    """Learners' exercise answers in the last months: how many were correct, per exercise type and per month."""
+    today = datetime.now(DASHBOARD_TZ).date()
+    month_starts = []
+    y, m = today.year, today.month
+    for _ in range(months):
+        month_starts.append(date(y, m, 1))
+        y, m = (y, m - 1) if m > 1 else (y - 1, 12)
+    month_starts.reverse()
+    since = datetime.combine(month_starts[0], datetime.min.time(), DASHBOARD_TZ)
+
+    learners = select(User.id).where(User.is_staff.is_(False))
+    answers = (
+        select(ExerciseAnswer)
+        .join(LessonAttempt, LessonAttempt.id == ExerciseAnswer.attempt_id)
+        .join(Exercise, Exercise.id == ExerciseAnswer.exercise_id)
+        .where(ExerciseAnswer.answered_at >= since, LessonAttempt.user_id.in_(learners))
+        .subquery()
+    )
+    correct = func.count().filter(answers.c.is_correct.is_(True))
+
+    by_type = (await db.execute(
+        select(Exercise.type, func.count(), correct)
+        .select_from(answers)
+        .join(Exercise, Exercise.id == answers.c.exercise_id)
+        .group_by(Exercise.type)
+    )).all()
+
+    month = func.date_trunc("month", func.timezone(DASHBOARD_TZ.key, answers.c.answered_at))
+    by_month = {
+        m.date(): (total, right)
+        for m, total, right in (await db.execute(select(month, func.count(), correct).select_from(answers).group_by(month))).all()
+    }
+
+    return PerformanceOut(
+        answers=sum(total for _, total, _ in by_type),
+        correct=sum(right for _, _, right in by_type),
+        by_type=[PerformanceType(type=t, answers=total, correct=right) for t, total, right in by_type],
+        months=[
+            PerformanceMonth(month=start, answers=by_month.get(start, (0, 0))[0], correct=by_month.get(start, (0, 0))[1])
+            for start in month_starts
+        ],
+    )
+
+
 @router.get("/stats/popular-lessons", response_model=list[PopularLesson], tags=["admin: users"])
 async def popular_lessons(db: DB, limit: int = Query(default=5, ge=1, le=20)) -> list[PopularLesson]:
     """Lessons learners completed most (then: started most)."""
@@ -123,22 +178,22 @@ async def popular_lessons(db: DB, limit: int = Query(default=5, ge=1, le=20)) ->
     completions = func.count().filter(done)
     rows = await db.execute(
         select(
-            Lesson.id, Lesson.title, Course.id, Course.title,
+            Lesson.id, Lesson.title, Course.id, Course.title, Course.icon,
             completions, func.count(), func.avg(UserLessonProgress.best_accuracy).filter(done),
         )
         .join(Lesson, Lesson.id == UserLessonProgress.lesson_id)
         .join(Course, Course.id == Lesson.course_id)
         .where(UserLessonProgress.user_id.in_(learners))
-        .group_by(Lesson.id, Lesson.title, Course.id, Course.title)
+        .group_by(Lesson.id, Lesson.title, Course.id, Course.title, Course.icon)
         .order_by(completions.desc(), func.count().desc(), Lesson.id)
         .limit(limit)
     )
     return [
         PopularLesson(
-            lesson_id=lid, lesson_title=lt, course_id=cid, course_title=ct, completions=c, learners=n,
+            lesson_id=lid, lesson_title=lt, course_id=cid, course_title=ct, course_icon=icon, completions=c, learners=n,
             average_accuracy=round(avg) if avg is not None else None,
         )
-        for lid, lt, cid, ct, c, n, avg in rows.all()
+        for lid, lt, cid, ct, icon, c, n, avg in rows.all()
     ]
 
 
@@ -181,7 +236,8 @@ async def _rows(db: DB, users: list[User]) -> list[AdminUserOut]:
                 total_lessons=total,
                 source=u.referral_source,  # type: ignore[arg-type]
                 reason=u.learning_goal,  # type: ignore[arg-type]
-                status="online" if last >= online_since else "offline",
+                # Not online if the app said it was closed after that
+                status="online" if last >= online_since and not (u.offline_at and u.offline_at >= last) else "offline",
                 notifications=notify.get(u.id, True),
                 joined_at=u.date_joined,
                 last_active_at=last,
@@ -249,8 +305,8 @@ async def delete_user(user_id: int, admin: Staff, db: DB) -> Response:
         raise HTTPException(status.HTTP_409_CONFLICT, "You can't delete yourself")
     if user.is_staff and not admin.is_superuser:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Only a superuser can delete admins")
-    await db.delete(user)
-    await commit(db)
+    # their Firebase login too, so the email can sign up again
+    await delete_account(db, user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

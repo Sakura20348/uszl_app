@@ -155,7 +155,8 @@ class UzslApi {
 
   /// Checks the code and logs in (creates the account if the number is new).
   static Future<void> verifyCode(String phone, String code) async {
-    final data = await _request('POST', '/auth/otp/verify', body: {'phone': phone, 'code': code});
+    // Sent with the login (if any): an email account gets this phone added instead of a second account
+    final data = await _request('POST', '/auth/otp/verify', body: {'phone': phone, 'code': code}, withLogin: true);
     await _saveTokens(data as Map<String, dynamic>);
   }
 
@@ -170,6 +171,32 @@ class UzslApi {
   /// Tells the server where to send push notifications for the logged-in user.
   static Future<void> registerDevice(String token, String platform) =>
       _request('POST', '/app/devices', body: {'token': token, 'platform': platform}, auth: true);
+
+  /// Time spent in a part of the app outside lessons: dictionary, translator, dataset, other.
+  static Future<void> reportSession(String source, DateTime startedAt, DateTime endedAt) async {
+    if (!await isLoggedIn()) return;
+    try {
+      await _request('POST', '/app/activity-sessions', auth: true, body: {
+        'source': source,
+        'startedAt': startedAt.toUtc().toIso8601String(),
+        'endedAt': endedAt.toUtc().toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint('Activity time not sent: $e');
+    }
+  }
+
+  /// The app was closed or logged out: the dashboard shows the user offline right away
+  /// (the next request after it shows them online again).
+  static Future<void> goOffline() async {
+    if (!await isLoggedIn()) return;
+    try {
+      await _request('POST', '/app/presence/offline', auth: true);
+    } catch (e) {
+      // Not important enough to bother anyone: the status turns offline by itself after 2 minutes
+      debugPrint('Offline status not sent: $e');
+    }
+  }
 
   /// Stops push notifications to this phone (on log out).
   static Future<void> removeDevice(String token) => _request('DELETE', '/app/devices/${Uri.encodeComponent(token)}', auth: true);
@@ -214,6 +241,9 @@ class UzslApi {
   }
 
   /// Onboarding answers, name and language (see OnboardingAnswers); only the given fields change.
+  /// Deletes the account and everything saved for it on the server; it can't be undone.
+  static Future<void> deleteAccount() => _request('DELETE', '/app/profile', auth: true);
+
   static Future<void> updateOnboarding(Map<String, dynamic> profile) => _request('PATCH', '/app/profile', body: profile, auth: true);
 
   /// Uploads a photo / video / audio file; returns the stored path for the API's file fields.

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:signlang/components/log/login/savedAccounts.dart';
 import 'package:signlang/services/account_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../log/langguageChoose.dart';
 
 import 'package:signlang/services/theme_service.dart';
 class LogOutDelete extends StatefulWidget{
@@ -32,15 +32,21 @@ class _LogOutDeleteState extends State<LogOutDelete> with SingleTickerProviderSt
 
 // ================================ Button ==================================
   // In your Profile screen
+  bool _busy = false;
+
   void _logout() async {
+    if (_busy) return; // one tap is enough
+    setState(() => _busy = true);
     // Waiting results are sent, pushes stop, and this person's data is removed from the phone
     await AccountService.logout();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false);
     await prefs.setInt('tabIndex', 0);
+    // the accounts used on this phone, like Instagram (the language screen when there are none)
+    final start = await SavedAccountsScreen.startScreen();
     if (!mounted) return;
 
-    Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (_) => const LanguageChoose()), (route) => false );
+    Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (_) => start), (route) => false );
   }
 
   @override
@@ -79,20 +85,22 @@ class _LogOutDeleteState extends State<LogOutDelete> with SingleTickerProviderSt
                   SizedBox(
                     width: double.infinity, height: 56,
                     child: ElevatedButton(
-                      onPressed: _logout,
+                      onPressed: _busy ? null : _logout,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppPalette.bg(Color(0xFFEF9A9A)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
+                        backgroundColor: AppPalette.bg(Color(0xFFEF9A9A)).withOpacity(0.2), disabledBackgroundColor: AppPalette.bg(Color(0xFFEF9A9A)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
                         shadowColor: AppPalette.shadow(Color(0xFFB71C1C)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFFB71C1C)).withOpacity(0.2)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))
                       ),
-                      child: Text(loc.translate('delete_account'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                      child: _busy
+                          ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Colors.red)))
+                          : Text(loc.translate('log_out'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity, height: 56,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: _busy ? null : () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
                         shadowColor: AppPalette.shadow(Color(0xFF212121)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withOpacity(0.2)),

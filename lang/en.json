@@ -524,7 +524,7 @@
   "update_profile_picture": "Update profile picture",
   "use_default_avatar": "A standard avatar will be used.",
   "your_achievements": "Your achievements",
-  "want_log_out": "Do you want to log out?", "want_log_out_sub": "After using your account, you will need to verify it via phone or account to log in again.",
+  "want_log_out": "Do you want to log out?", "saved_accounts": "Saved accounts", "saved_accounts_sub": "Tap an account to log in again.", "login_other_account": "Log in to another account", "create_new_account": "Create new account", "remove_saved_account": "Remove from this phone?", "remove_saved_account_sub": "The account isn't deleted. You can log in to it again any time.", "remove": "Remove", "via_google": "Google", "via_apple": "Apple", "want_log_out_sub": "After using your account, you will need to verify it via phone or account to log in again.",
   "weekly_streak": "Weekly streak",
   "weekly_study": "Weekly study",
 

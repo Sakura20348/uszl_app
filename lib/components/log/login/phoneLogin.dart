@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:signlang/services/push_service.dart';
 import 'package:signlang/services/firebase_setup.dart';
 import 'package:signlang/services/account_service.dart';
+import 'package:signlang/services/saved_accounts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -16,7 +17,11 @@ import '../../profile/nameProfile/nameStore.dart';
 
 import 'package:signlang/services/theme_service.dart';
 class PhoneLogin extends StatefulWidget{
-  const PhoneLogin({super.key});
+  /// From "Saved accounts": this number filled in ("+998 90 123 45 67")
+  final String? initialPhone;
+  /// From "Saved accounts": starts the Google or Apple login right away
+  final LoginMethod? autoSocial;
+  const PhoneLogin({super.key, this.initialPhone, this.autoSocial});
 
   @override
   State<PhoneLogin> createState() => _PhoneLoginState();
@@ -44,6 +49,9 @@ class _PhoneLoginState extends State<PhoneLogin> {
   Future<void> _initializeData() async {
     await _loadUserData();
     numberController.addListener(_onChanged);
+    if (widget.autoSocial == LoginMethod.google || widget.autoSocial == LoginMethod.apple) {
+      if (mounted) _socialLogin(apple: widget.autoSocial == LoginMethod.apple);
+    }
   }
 
   void _onChanged() {if (mounted) {setState(() {});}}
@@ -58,7 +66,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
   bool get isChanged { return numberController.text.trim() != _initialPhone.trim(); }
 
   Future<void> _loadUserData() async {
-    String? savedNumber = await NumberStorage.load();
+    String? savedNumber = widget.initialPhone ?? await NumberStorage.load();
 
     if (!mounted) return;
 
@@ -143,7 +151,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
       final user = credential.user!;
 
       await UzslApi.firebaseLogin((await user.getIdToken())!, fullName: user.displayName);
-      if (mounted) await AccountService.afterLogin(context);
+      if (mounted) await AccountService.afterLogin(context, method: apple ? LoginMethod.apple : LoginMethod.google);
       final email = user.email ?? '';
       apple ? await LinkStorage.saveApple(true, email) : await LinkStorage.saveGoogle(true, email);
       if (email.isNotEmpty) await EmailStorage.save(email);

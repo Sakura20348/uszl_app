@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:signlang/services/account_service.dart';
+import 'package:signlang/services/saved_accounts.dart';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:signlang/api/api_errors.dart';
@@ -38,13 +38,14 @@ class _CodeNumberState extends State<CodeNumber> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _showTestCode(widget.debugCode));
   }
 
-  // No SMS provider yet: debug builds show the code the server returned
+  // No SMS provider yet: the server sends the code back (only in its test mode, never with real SMS),
+  // so it's shown here in every build, debug or release
   void _showTestCode(String? code) {
-    if (!kDebugMode || code == null || !mounted) return;
+    if (code == null || !mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(AppLocalizations.of(context)!.translate('test_code').replaceAll('{code}', code)),
-        behavior: SnackBarBehavior.floating, duration: const Duration(seconds: 8),
+        behavior: SnackBarBehavior.floating, duration: const Duration(seconds: 30),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
@@ -103,7 +104,7 @@ class _CodeNumberState extends State<CodeNumber> {
     }
 
     // The phone's progress becomes this account's (another person's is removed), then its progress is loaded
-    if (mounted) await AccountService.afterLogin(context);
+    if (mounted) await AccountService.afterLogin(context, method: LoginMethod.phone);
 
     // Save the verified phone number
     await NumberStorage.save(widget.phoneNumber);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:signlang/components/log/login/savedAccounts.dart';
 import 'package:signlang/api/api_service.dart';
 import 'package:signlang/services/notification_center.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +16,6 @@ import 'package:signlang/screens/translation.dart';
 import 'components/uiTextBooks/nameTextbooks/nameTextbooks.dart';
 import 'components/web/connectivity/connectivityGate.dart';
 import 'l10n/app_localizations.dart';
-import 'components/log/langguageChoose.dart';
 
 import 'package:signlang/services/statistics_service.dart';
 import 'package:signlang/services/app_sheets.dart';
@@ -24,6 +24,7 @@ import 'package:signlang/services/push_service.dart';
 import 'package:signlang/services/firebase_setup.dart';
 import 'package:signlang/services/lesson_sync.dart';
 import 'package:signlang/services/onboarding_answers.dart';
+import 'package:signlang/services/session_tracker.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -195,7 +196,10 @@ class _SplashControllerState extends State<SplashController> {
     if (isLoggedIn) {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const MainWrapper(initialTab: 0)), (route) => false);
     } else {
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LanguageChoose()), (route) => false);
+      // saved accounts (like Instagram) when this phone has some, else the language screen
+      final start = await SavedAccountsScreen.startScreen();
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => start), (route) => false);
     }
   }
 
@@ -239,10 +243,12 @@ class _MainWrapperState extends State<MainWrapper> {
     StatisticsService.instance.syncDailyGoal();
     // A name/photo saved while the server couldn't be reached
     ApiService.syncPending();
+    // Time in the Dictionary / Translator tabs goes to the server
+    SessionTracker.tab(_currentIndex);
   }
 
   @override
-  void dispose() { PushService.mainScreenGone(); super.dispose(); }
+  void dispose() { SessionTracker.stop(); PushService.mainScreenGone(); super.dispose(); }
 
   Future<void> _setLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
@@ -260,12 +266,13 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 
   void _updateTabSelection(int index) async {
+    SessionTracker.tab(index);
     setState(() { _currentIndex = index; });
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('tabIndex', index);
   }
 
-  void _openDictionarySearch() { setState(() { _currentIndex = 1; _focusDictionarySearch = true; }); }
+  void _openDictionarySearch() { SessionTracker.tab(1); setState(() { _currentIndex = 1; _focusDictionarySearch = true; }); }
 
   @override
   Widget build(BuildContext context){

@@ -73,7 +73,7 @@ DASHBOARD_TZ = ZoneInfo("Asia/Tashkent")
 
 @router.get("/stats/activity", response_model=list[ActivityDay], tags=["admin: users"])
 async def activity_by_day(db: DB, days: int = Query(default=30, ge=1, le=365)) -> list[ActivityDay]:
-    """Learners active each day, minutes learned and lessons completed, oldest day first (empty days are 0)."""
+    """Learners active each day, minutes learned (also per part of the app) and lessons completed, oldest day first (empty days are 0)."""
     today = datetime.now(DASHBOARD_TZ).date()
     first = today - timedelta(days=days - 1)
     learners = select(User.id).where(User.is_staff.is_(False))
@@ -90,11 +90,28 @@ async def activity_by_day(db: DB, days: int = Query(default=30, ge=1, le=365)) -
         .group_by(DailyActivity.date)
     )
     by_day = {d: (active, minutes, lessons) for d, active, minutes, lessons in rows.all()}
+
+    # Time per part of the app, by the day the session started (Tashkent time)
+    local_day = func.date(func.timezone(DASHBOARD_TZ.key, ActivitySession.started_at))
+    source_rows = await db.execute(
+        select(local_day, ActivitySession.source, func.sum(ActivitySession.duration_seconds))
+        .where(
+            ActivitySession.started_at >= datetime.combine(first, datetime.min.time(), DASHBOARD_TZ),
+            ActivitySession.user_id.in_(learners),
+        )
+        .group_by(local_day, ActivitySession.source)
+    )
+    sources: dict[date, dict[str, int]] = {}
+    for d, source, seconds in source_rows.all():
+        sources.setdefault(d, {})[source] = int(seconds)
     out = []
     for i in range(days):
         day: date = first + timedelta(days=i)
         active, minutes, lessons = by_day.get(day, (0, 0, 0))
-        out.append(ActivityDay(date=day, active_learners=active, minutes=minutes, lessons_completed=lessons))
+        out.append(ActivityDay(
+            date=day, active_learners=active, minutes=minutes, lessons_completed=lessons,
+            seconds_by_source=sources.get(day, {}),
+        ))
     return out
 
 

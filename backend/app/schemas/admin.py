@@ -138,6 +138,8 @@ class ActivityDay(Schema):
     active_learners: int
     minutes: int
     lessons_completed: int
+    # Seconds spent in each part of the app: lesson, dictionary, translator, dataset, other
+    seconds_by_source: dict[str, int] = {}
 
 
 class PopularLesson(Schema):

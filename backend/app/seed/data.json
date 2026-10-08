@@ -1,0 +1,663 @@
+{
+ "courses": [
+  {
+   "title": "Alifbo",
+   "title_ru": "Алфавит",
+   "title_en": "Alphabet",
+   "slug": "alphabet",
+   "icon": "/textbooks/alphabet.webp",
+   "unit_label": "harf",
+   "order": 1,
+   "is_published": true,
+   "lessons": [
+    {
+     "title": "A – E",
+     "duration_minutes": 5,
+     "order": 0
+    },
+    {
+     "title": "F – I",
+     "duration_minutes": 5,
+     "order": 1
+    },
+    {
+     "title": "J – M",
+     "duration_minutes": 5,
+     "order": 2
+    },
+    {
+     "title": "N – Q",
+     "duration_minutes": 5,
+     "order": 3
+    },
+    {
+     "title": "R – U",
+     "duration_minutes": 5,
+     "order": 4
+    },
+    {
+     "title": "V – Z",
+     "duration_minutes": 5,
+     "order": 5
+    },
+    {
+     "title": "Oʻ – Ch",
+     "duration_minutes": 5,
+     "order": 6
+    }
+   ]
+  },
+  {
+   "title": "Raqamlar",
+   "title_ru": "Числа",
+   "title_en": "Numbers",
+   "slug": "numbers",
+   "icon": "/textbooks/numbers.webp",
+   "unit_label": "raqam",
+   "order": 2,
+   "is_published": true,
+   "lessons": [
+    {
+     "title": "0 – 9",
+     "duration_minutes": 5,
+     "order": 0
+    },
+    {
+     "title": "10 – 19",
+     "duration_minutes": 5,
+     "order": 1
+    },
+    {
+     "title": "20 – Raqam",
+     "duration_minutes": 5,
+     "order": 2
+    },
+    {
+     "title": "200 – Ming",
+     "duration_minutes": 5,
+     "order": 3
+    },
+    {
+     "title": "2000 – Uchinchi",
+     "duration_minutes": 5,
+     "order": 4
+    }
+   ]
+  },
+  {
+   "title": "Oila",
+   "title_ru": "Семья",
+   "title_en": "Family",
+   "slug": "family",
+   "icon": "/textbooks/family.webp",
+   "unit_label": "so'z",
+   "order": 3,
+   "is_published": true,
+   "lessons": [
+    {
+     "title": "Oila – Bolalar",
+     "duration_minutes": 5,
+     "order": 0
+    },
+    {
+     "title": "Farzand / Bola – Oʻgʻil bola",
+     "duration_minutes": 5,
+     "order": 1
+    },
+    {
+     "title": "Qiz bola – Amakivachcha / Togʻavachcha / Xolavachcha / Ammavachcha",
+     "duration_minutes": 5,
+     "order": 2
+    },
+    {
+     "title": "Jiyan (qiz) – Turmush oʻrtogʻi",
+     "duration_minutes": 5,
+     "order": 3
+    },
+    {
+     "title": "Ajralish – Bechora",
+     "duration_minutes": 5,
+     "order": 4
+    },
+    {
+     "title": "Hurmat qilish – Uzun boʻyli",
+     "duration_minutes": 5,
+     "order": 5
+    },
+    {
+     "title": "Kichik – Oʻlish",
+     "duration_minutes": 5,
+     "order": 6
+    }
+   ]
+  },
+  {
+   "title": "Ovqat",
+   "title_ru": "Еда",
+   "title_en": "Food",
+   "slug": "food",
+   "icon": "/textbooks/food.webp",
+   "unit_label": "imo-ishora",
+   "order": 4,
+   "is_published": true,
+   "lessons": [
+    {
+     "title": "Ovqat",
+     "duration_minutes": 5,
+     "order": 0
+    },
+    {
+     "title": "Manti – Choy",
+     "duration_minutes": 5,
+     "order": 1
+    },
+    {
+     "title": "Shirin choy – Yumshoq taom",
+     "duration_minutes": 5,
+     "order": 2
+    },
+    {
+     "title": "Mevalar – Anor",
+     "duration_minutes": 5,
+     "order": 3
+    },
+    {
+     "title": "Anjir – Sabzavotlar",
+     "duration_minutes": 5,
+     "order": 4
+    },
+    {
+     "title": "Piyoz – Karam",
+     "duration_minutes": 5,
+     "order": 5
+    },
+    {
+     "title": "Lavlagi – Non",
+     "duration_minutes": 5,
+     "order": 6
+    },
+    {
+     "title": "Tuz – Yogurt",
+     "duration_minutes": 5,
+     "order": 7
+    },
+    {
+     "title": "Kefir – Pancakes",
+     "duration_minutes": 5,
+     "order": 8
+    }
+   ]
+  },
+  {
+   "title": "His-tuygʻular",
+   "title_ru": "Чувства",
+   "title_en": "Feelings",
+   "slug": "feelings",
+   "icon": "/textbooks/feelings.webp",
+   "unit_label": "imo-ishora",
+   "order": 5,
+   "is_published": true,
+   "lessons": [
+    {
+     "title": "His-tuygʻular – Qoʻpol",
+     "duration_minutes": 5,
+     "order": 0
+    },
+    {
+     "title": "Xafa – Kibrli",
+     "duration_minutes": 5,
+     "order": 1
+    },
+    {
+     "title": "Yovuz – Yoqdi",
+     "duration_minutes": 5,
+     "order": 2
+    },
+    {
+     "title": "Nol (tennis) – Qoʻrqitmoq",
+     "duration_minutes": 5,
+     "order": 3
+    },
+    {
+     "title": "Qoʻrqmoq – Kulmoq",
+     "duration_minutes": 5,
+     "order": 4
+    },
+    {
+     "title": "Tirishqoq – Tabassum",
+     "duration_minutes": 5,
+     "order": 5
+    },
+    {
+     "title": "Charchagan – Hissiyotlar",
+     "duration_minutes": 5,
+     "order": 6
+    }
+   ]
+  },
+  {
+   "title": "Kundalik hayot",
+   "title_ru": "Повседневная жизнь",
+   "title_en": "Daily life",
+   "slug": "daily-life",
+   "icon": "/textbooks/daily-life.webp",
+   "unit_label": "imo-ishora",
+   "order": 6,
+   "is_published": true,
+   "lessons": []
+  },
+  {
+   "title": "Dori",
+   "title_ru": "Лекарство",
+   "title_en": "Medicine",
+   "slug": "medicine",
+   "icon": "/textbooks/medicine.webp",
+   "unit_label": "so'z",
+   "order": 7,
+   "is_published": false,
+   "lessons": []
+  },
+  {
+   "title": "Transport",
+   "title_ru": "Транспорт",
+   "title_en": "Transportation",
+   "slug": "transportation",
+   "icon": "/textbooks/transportation.webp",
+   "unit_label": "so'z",
+   "order": 8,
+   "is_published": false,
+   "lessons": []
+  },
+  {
+   "title": "Jamoat xizmatlari",
+   "title_ru": "Общественные услуги",
+   "title_en": "Public services",
+   "slug": "public-services",
+   "icon": "/textbooks/public-services.webp",
+   "unit_label": "so'z",
+   "order": 9,
+   "is_published": false,
+   "lessons": []
+  },
+  {
+   "title": "Sport",
+   "title_ru": "Спорт",
+   "title_en": "Sports",
+   "slug": "sports",
+   "icon": "/textbooks/sports.webp",
+   "unit_label": "so'z",
+   "order": 10,
+   "is_published": false,
+   "lessons": []
+  }
+ ],
+ "categories": [
+  {
+   "slug": "family",
+   "name": "Oila",
+   "name_ru": "Семья",
+   "name_en": "Family",
+   "icon": "solar:users-group-rounded-linear",
+   "order": 0,
+   "unit_label": "imo-ishora",
+   "is_featured": true,
+   "is_emergency": false
+  },
+  {
+   "slug": "food",
+   "name": "Ovqat",
+   "name_ru": "Еда",
+   "name_en": "Food",
+   "icon": "solar:donut-bitten-linear",
+   "order": 1,
+   "unit_label": "imo-ishora",
+   "is_featured": true,
+   "is_emergency": false
+  },
+  {
+   "slug": "numbers",
+   "name": "Raqamlar",
+   "name_ru": "Числа",
+   "name_en": "Numbers",
+   "icon": "solar:hashtag-linear",
+   "order": 2,
+   "unit_label": "imo-ishora",
+   "is_featured": true,
+   "is_emergency": false
+  },
+  {
+   "slug": "medicine",
+   "name": "Dori",
+   "name_ru": "Лекарство",
+   "name_en": "Medicine",
+   "icon": "solar:pills-linear",
+   "order": 3,
+   "unit_label": "imo-ishora",
+   "is_featured": false,
+   "is_emergency": true
+  },
+  {
+   "slug": "alphabet",
+   "name": "Alifbo",
+   "name_ru": "Алфавит",
+   "name_en": "Alphabet",
+   "icon": "solar:text-square-linear",
+   "order": 4,
+   "unit_label": "harf",
+   "is_featured": true,
+   "is_emergency": false
+  },
+  {
+   "slug": "transportation",
+   "name": "Transport",
+   "name_ru": "Транспорт",
+   "name_en": "Transportation",
+   "icon": "solar:bus-linear",
+   "order": 5,
+   "unit_label": "imo-ishora",
+   "is_featured": false,
+   "is_emergency": false
+  },
+  {
+   "slug": "public-services",
+   "name": "Jamoat xizmatlari",
+   "name_ru": "Общественные услуги",
+   "name_en": "Public services",
+   "icon": "solar:buildings-2-linear",
+   "order": 6,
+   "unit_label": "imo-ishora",
+   "is_featured": false,
+   "is_emergency": false
+  },
+  {
+   "slug": "sports",
+   "name": "Sport",
+   "name_ru": "Спорт",
+   "name_en": "Sports",
+   "icon": "solar:basketball-linear",
+   "order": 7,
+   "unit_label": "imo-ishora",
+   "is_featured": false,
+   "is_emergency": false
+  }
+ ],
+ "signs": [
+  {
+   "key": 1,
+   "word": "Ota",
+   "transcription": "o-ta",
+   "translation_ru": "Отец",
+   "translation_en": "Father",
+   "meaning": "Kaft, holatini va konfiguratsiyasini oʻzgartirmasdan, iyakning oʻrtasiga silliq siljiting.",
+   "example_sentence": "Otam bir kompaniyada ishlaydi.",
+   "categories": [
+    "family"
+   ],
+   "related": [
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "key": 2,
+   "word": "Ona",
+   "transcription": "o-na",
+   "translation_ru": "Мать",
+   "translation_en": "Mother",
+   "meaning": "Kaft, holatini va konfiguratsiyasini oʻzgartirmasdan, boshqa yonoqqa silliq oʻtkazing.",
+   "example_sentence": "Onam uyni tozalayapti.",
+   "categories": [
+    "family"
+   ],
+   "related": [
+    1,
+    3,
+    4
+   ]
+  },
+  {
+   "key": 3,
+   "word": "Aka / Uka",
+   "transcription": "a-ka / u-ka",
+   "translation_ru": "Брат (старший / младший)",
+   "translation_en": "Brother",
+   "meaning": "Oʻng qoʻlingizni chap qoʻlingizga sekin tushiring.",
+   "example_sentence": "Akam juda koʻp mehnat qildi.",
+   "categories": [
+    "family"
+   ],
+   "related": [
+    4
+   ]
+  },
+  {
+   "key": 4,
+   "word": "Opa / Singil",
+   "transcription": "o-pa / sin-gil",
+   "translation_ru": "Сестра (старшая / младшая)",
+   "translation_en": "Sister",
+   "meaning": "Oʻng qoʻlingizni chap qoʻlingizga sekin tushiring.",
+   "example_sentence": "Singlim har kuni roman oʻqiydi.",
+   "categories": [
+    "family"
+   ],
+   "related": [
+    3
+   ]
+  },
+  {
+   "key": 5,
+   "word": "Bobo",
+   "transcription": "bo-bo",
+   "translation_ru": "Дедушка",
+   "translation_en": "Grandfather",
+   "meaning": "Qoʻlingizni pastga tushiring, barmoqlaringiz bilan \"soqol\" hosil qiling.",
+   "example_sentence": null,
+   "categories": [
+    "family"
+   ],
+   "related": [
+    6,
+    1
+   ]
+  },
+  {
+   "key": 6,
+   "word": "Buvi",
+   "transcription": "bu-vi",
+   "translation_ru": "Бабушка",
+   "translation_en": "Grandmother",
+   "meaning": "“a” konfiguratsiyasidagi qoʻl yonoqdan koʻtarilmasdan aylana tomon harakatlanadi.",
+   "example_sentence": null,
+   "categories": [
+    "family"
+   ],
+   "related": [
+    5,
+    2
+   ]
+  },
+  {
+   "key": 7,
+   "word": "Olma",
+   "transcription": "ol-ma",
+   "translation_ru": "Яблоко",
+   "translation_en": "Apple",
+   "meaning": "\"500\" konfiguratsiyasidagi qoʻl yuz (yoqak) boʻylab bir necha bor pastga sirpanib harakatlanadi.",
+   "example_sentence": "Men qizil olmalarni eyishni yaxshi koʻraman.",
+   "categories": [
+    "food"
+   ],
+   "related": [
+    8,
+    9
+   ]
+  },
+  {
+   "key": 8,
+   "word": "Nok",
+   "transcription": "nok",
+   "translation_ru": "Груша",
+   "translation_en": "Pear",
+   "meaning": "Koʻrsatkich barmogʻi burundan pastga qarab zigzag shaklida harakatlanadi.",
+   "example_sentence": "Nok mazali meva.",
+   "categories": [
+    "food"
+   ],
+   "related": [
+    7
+   ]
+  },
+  {
+   "key": 9,
+   "word": "Banan",
+   "transcription": "ba-nan",
+   "translation_ru": "Банан",
+   "translation_en": "Banana",
+   "meaning": "Ilgak holatidagi oʻng kaft \"a\" holatidagi chap kaftning ustidan pastga bananni tozalayotgandek yoʻnaltiriladi.",
+   "example_sentence": "Biz banan kokteyli tayyorlashimiz mumkin.",
+   "categories": [
+    "food"
+   ],
+   "related": [
+    10,
+    11
+   ]
+  },
+  {
+   "key": 10,
+   "word": "Anjir",
+   "transcription": "an-jir",
+   "translation_ru": "Инжир",
+   "translation_en": "Fig",
+   "meaning": "Xiyol ixchamlashgan \"S\" holatidagi kaftlar yoy shaklida bir-biri tomonga yoʻnaltiriladi.",
+   "example_sentence": "Anjir mazali va toʻyimli mevadir.",
+   "categories": [
+    "food"
+   ],
+   "related": [
+    11,
+    9
+   ]
+  },
+  {
+   "key": 11,
+   "word": "Tarvuz",
+   "transcription": "tar-vuz",
+   "translation_ru": "Арбуз",
+   "translation_en": "Watermelon",
+   "meaning": "\"R\" holatidagi oʻng kaft \"500\" holatidagi chap kaftni bir necha bor chertadi.",
+   "example_sentence": "Mening eng sevimli mevam tarvuz.",
+   "categories": [
+    "food"
+   ],
+   "related": [
+    10,
+    9
+   ]
+  }
+ ],
+ "achievements": [
+  {
+   "code": "streak_7",
+   "title": "7 kunlik streak",
+   "description": "7 kun ketma-ket dars o'ting",
+   "icon": "web/images/fire.png",
+   "condition_type": "streak_days",
+   "condition_value": 7,
+   "course_slug": null,
+   "order": 0
+  },
+  {
+   "code": "signs_50",
+   "title": "50 Imlo O‘rgandiz",
+   "description": "50 ta imo-ishorani o'rganing",
+   "icon": "web/images/books.png",
+   "condition_type": "signs_learned",
+   "condition_value": 50,
+   "course_slug": null,
+   "order": 1
+  },
+  {
+   "code": "daily_goal",
+   "title": "Kunlik maqsad",
+   "description": "Kunlik maqsadingizga bir marta erishing",
+   "icon": "web/images/accuracy.png",
+   "condition_type": "goal_days",
+   "condition_value": 1,
+   "course_slug": null,
+   "order": 2
+  },
+  {
+   "code": "night_learner",
+   "title": "Tungi O‘rganuvchi",
+   "description": "Soat 22:00 dan keyin dars tugating",
+   "icon": "web/images/night_learner.png",
+   "condition_type": "night_lessons",
+   "condition_value": 1,
+   "course_slug": null,
+   "order": 3
+  },
+  {
+   "code": "goal_days_7",
+   "title": "Maqsadga sodiq",
+   "description": "Kunlik maqsadga 7 kun erishing",
+   "icon": "web/images/electrical.png",
+   "condition_type": "goal_days",
+   "condition_value": 7,
+   "course_slug": null,
+   "order": 4
+  },
+  {
+   "code": "lessons_20",
+   "title": "Mukammal daraja",
+   "description": "20 ta darsni tugating",
+   "icon": "web/images/cyan_jewel.png",
+   "condition_type": "lessons_completed",
+   "condition_value": 20,
+   "course_slug": null,
+   "order": 5
+  },
+  {
+   "code": "signs_100",
+   "title": "100 imlo",
+   "description": "100 ta imo-ishorani o'rganing",
+   "icon": null,
+   "condition_type": "signs_learned",
+   "condition_value": 100,
+   "course_slug": null,
+   "order": 6
+  },
+  {
+   "code": "perfect_score",
+   "title": "Mukammal ball",
+   "description": "Darsni xatosiz tugating",
+   "icon": "web/images/star.png",
+   "condition_type": "perfect_lessons",
+   "condition_value": 1,
+   "course_slug": null,
+   "order": 7
+  },
+  {
+   "code": "streak_30",
+   "title": "30 kun streak",
+   "description": "30 kun ketma-ket dars o'ting",
+   "icon": "web/images/calendar.png",
+   "condition_type": "streak_days",
+   "condition_value": 30,
+   "course_slug": null,
+   "order": 8
+  },
+  {
+   "code": "alphabet_master",
+   "title": "Alifbo ustasi",
+   "description": "Alifboning barcha harflarini o'rganing",
+   "icon": "web/images/fire_hot.png",
+   "condition_type": "course_signs_learned",
+   "condition_value": 28,
+   "course_slug": "alphabet",
+   "order": 9
+  }
+ ]
+}

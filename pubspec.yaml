@@ -1,0 +1,407 @@
+name: signlang
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.5.3
+  flutter_localizations:
+    sdk: flutter
+  video_player: ^2.8.2
+  dropdown_button2: ^2.3.9
+  flutter_reorderable_grid_view: ^5.7.0
+  shimmer: ^3.0.0
+#  speech_to_text: ^6.6.0
+  speech_to_text: ^7.0.0
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  mask_text_input_formatter: ^2.9.0
+  connectivity_plus: ^7.2.0
+  url_launcher: ^6.3.2
+  package_info_plus: ^10.2.0
+  image_picker: ^1.2.3
+  share_plus: ^13.2.0
+  carousel_slider: ^5.1.2
+  smooth_page_indicator: ^2.0.1
+  http: ^1.6.0
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
+  flutter_local_notifications: ^19.0.0
+  firebase_auth: ^6.7.0
+  http_parser: ^4.1.2
+  camera: ^0.12.1
+  flutter_tts: ^4.2.5
+  flutter_svg: ^2.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^6.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    - lang/
+    - assets/icons/solar/
+#    -
+    - web/images/accuracy.png
+    - web/images/books.png
+    - web/images/book_3d.png
+    - web/images/calendar.png
+    - web/images/cyan_jewel.png
+    - web/images/daily_life.png
+    - web/images/electrical.png
+    - web/images/eng_flag.png
+    - web/images/exam.png
+    - web/images/family.png
+    - web/images/feelings.png
+    - web/images/fire.png
+    - web/images/fire_hot.png
+    - web/images/food.png
+    - web/images/night_learner.png
+    - web/images/not_notification.png
+    - web/images/notification_bell.png
+    - web/images/notebook.png
+    - web/images/number_image.png
+    - web/images/pass.png
+    - web/images/rus_flag.png
+    - web/images/saved.png
+    - web/images/sign_lang_wrap.png
+    - web/images/star.png
+    - web/images/to_day.png
+    - web/images/two_sign_lang.png
+    - web/images/uzbek_flag.png
+    - web/images/uzbek_sign_language.png
+    - web/images/well_done.png
+    - web/images/wrong_test.png
+    - web/images/zehnmind.png
+    - web/images/zoo.png
+#    -
+    - web/images/book.png
+    - web/images/bus.png
+    - web/images/eat.png
+    - web/images/emoji.png
+    - web/images/family_icon.png
+    - web/images/home.png
+    - web/images/med.png
+    - web/images/plus_sign.png
+    - web/images/public_services.png
+    - web/images/sports.png
+#    -
+    - web/icons/all.png
+    - web/icons/alphabet_icons.png
+    - web/icons/apple.png
+    - web/icons/bell.png
+    - web/icons/bolt_alt.png
+    - web/icons/book_icon.png
+    - web/icons/book_open.png
+    - web/icons/bookmark.png
+    - web/icons/bullseye.png
+    - web/icons/calendar_alt.png
+    - web/icons/capsule.png
+    - web/icons/chart_bar_big_columns.png
+    - web/icons/chart_bubble.png
+    - web/icons/code.png
+    - web/icons/connecting.png
+    - web/icons/curiosity.png
+    - web/icons/door_open_alt.png
+    - web/icons/edit.png
+    - web/icons/education.png
+    - web/icons/emergency.png
+    - web/icons/emoticons.png
+    - web/icons/facebook.png
+    - web/icons/family_icon.png
+    - web/icons/file_detail.png
+    - web/icons/folder.png
+    - web/icons/hand.png
+    - web/icons/hand_move.png
+    - web/icons/healthy_food.png
+    - web/icons/globe_alt.png
+    - web/icons/google.png
+    - web/icons/google_play.png
+    - web/icons/instagram.png
+    - web/icons/initial.png
+    - web/icons/info.png
+    - web/icons/info_yellow.png
+    - web/icons/level.png
+    - web/icons/lifestyle.png
+    - web/icons/lightning.png
+    - web/icons/link.png
+    - web/icons/message_circle_question_mark.png
+    - web/icons/museum.png
+    - web/icons/news.png
+    - web/icons/no_internet.png
+    - web/icons/noise.png
+    - web/icons/numbers.png
+    - web/icons/phone.png
+    - web/icons/public_services.png
+    - web/icons/refresh_ccw_dot.png
+    - web/icons/reload.png
+    - web/icons/sausage.png
+    - web/icons/save_icon.png
+    - web/icons/server.png
+    - web/icons/share.png
+    - web/icons/star.png
+    - web/icons/star_half.png
+    - web/icons/sports.png
+    - web/icons/sports_icon.png
+    - web/icons/telegram.png
+    - web/icons/time.png
+    - web/icons/time_day.png
+    - web/icons/trans.png
+    - web/icons/translate.png
+    - web/icons/transportation_icon.png
+    - web/icons/transports.png
+    - web/icons/trash.png
+    - web/icons/trophy.png
+    - web/icons/user.png
+    - web/icons/voice.png
+    - web/icons/youtube.png
+#    -
+    - web/sign_lang_image/five.png
+    - web/sign_lang_image/level_a.png
+    - web/sign_lang_image/level_b.png
+#    - web/sign_lang_image/level_d.png
+#    - web/sign_lang_image/level_e.png
+    - web/sign_lang_image/level_f.png
+#    - web/sign_lang_image/level_g.png
+    - web/sign_lang_image/level_h.png
+    - web/sign_lang_image/num_0.png
+    - web/sign_lang_image/num_1.png
+    - web/sign_lang_image/num_2.png
+    - web/sign_lang_image/num_3.png
+    - web/sign_lang_image/num_4.png
+    - web/sign_lang_image/num_5.png
+    - web/sign_lang_image/num_6.png
+    - web/sign_lang_image/num_7.png
+    - web/sign_lang_image/num_8.png
+    - web/sign_lang_image/num_9.png
+    - web/sign_lang_image/num_10.png
+    - web/sign_lang_image/num_11.png
+    - web/sign_lang_image/num_12.png
+    - web/sign_lang_image/num_13.png
+    - web/sign_lang_image/num_14.png
+    - web/sign_lang_image/num_15.png
+    - web/sign_lang_image/num_16.png
+    - web/sign_lang_image/num_17.png
+    - web/sign_lang_image/one.png
+    - web/sign_lang_image/three.png
+    - web/sign_lang_image/two.png
+#    -
+    - assets/videos/alphabet_fixed/level_A.mp4
+    - assets/videos/alphabet_fixed/level_B.mp4
+    - assets/videos/alphabet_fixed/level_Ch.mp4
+    - assets/videos/alphabet_fixed/level_D.mp4
+    - assets/videos/alphabet_fixed/level_E.mp4
+    - assets/videos/alphabet_fixed/level_F.mp4
+    - assets/videos/alphabet_fixed/level_G.mp4
+    - assets/videos/alphabet_fixed/level_G_apos.mp4
+    - assets/videos/alphabet_fixed/level_H.mp4
+    - assets/videos/alphabet_fixed/level_I.mp4
+    - assets/videos/alphabet_fixed/level_J.mp4
+    - assets/videos/alphabet_fixed/level_K.mp4
+    - assets/videos/alphabet_fixed/level_L.mp4
+    - assets/videos/alphabet_fixed/level_M.mp4
+    - assets/videos/alphabet_fixed/level_Ng.mp4
+    - assets/videos/alphabet_fixed/level_N.mp4
+    - assets/videos/alphabet_fixed/level_O_apos.mp4
+    - assets/videos/alphabet_fixed/Level_O.mp4
+    - assets/videos/alphabet_fixed/level_Q.mp4
+    - assets/videos/alphabet_fixed/level_R.mp4
+    - assets/videos/alphabet_fixed/level_Sh.mp4
+    - assets/videos/alphabet_fixed/level_S.mp4
+    - assets/videos/alphabet_fixed/level_T.mp4
+    - assets/videos/alphabet_fixed/level_U.mp4
+    - assets/videos/alphabet_fixed/level_V.mp4
+    - assets/videos/alphabet_fixed/level_X.mp4
+    - assets/videos/alphabet_fixed/level_Z.mp4
+#    -
+    - assets/videos/feelings_fixed/acquaintance.mp4
+    - assets/videos/feelings_fixed/always.mp4
+    - assets/videos/feelings_fixed/assalomu_alaykum.mp4
+    - assets/videos/feelings_fixed/by_chance.mp4
+    - assets/videos/feelings_fixed/bye.mp4
+    - assets/videos/feelings_fixed/didnt_recognize.mp4
+    - assets/videos/feelings_fixed/every.mp4
+    - assets/videos/feelings_fixed/everyone.mp4
+    - assets/videos/feelings_fixed/from_where.mp4
+    - assets/videos/feelings_fixed/gestural_name.mp4
+    - assets/videos/feelings_fixed/hello.mp4
+    - assets/videos/feelings_fixed/he_or_she.mp4
+    - assets/videos/feelings_fixed/how.mp4
+    - assets/videos/feelings_fixed/how_much.mp4
+    - assets/videos/feelings_fixed/I_am.mp4
+    - assets/videos/feelings_fixed/i_have.mp4
+    - assets/videos/feelings_fixed/it_hase_been.mp4
+    - assets/videos/feelings_fixed/it_will_happen.mp4
+    - assets/videos/feelings_fixed/low.mp4
+    - assets/videos/feelings_fixed/many.mp4
+    - assets/videos/feelings_fixed/more.mp4
+    - assets/videos/feelings_fixed/my.mp4
+    - assets/videos/feelings_fixed/my_own.mp4
+    - assets/videos/feelings_fixed/myself.mp4
+    - assets/videos/feelings_fixed/name.mp4
+    - assets/videos/feelings_fixed/never.mp4
+    - assets/videos/feelings_fixed/nobody.mp4
+    - assets/videos/feelings_fixed/no.mp4
+    - assets/videos/feelings_fixed/No.mp4
+    - assets/videos/feelings_fixed/no_need.mp4
+    - assets/videos/feelings_fixed/nothing.mp4
+    - assets/videos/feelings_fixed/own.mp4
+    - assets/videos/feelings_fixed/patronymic.mp4
+    - assets/videos/feelings_fixed/please.mp4
+    - assets/videos/feelings_fixed/precise.mp4
+    - assets/videos/feelings_fixed/slowly.mp4
+    - assets/videos/feelings_fixed/sometimes.mp4
+    - assets/videos/feelings_fixed/surname.mp4
+    - assets/videos/feelings_fixed/thank_you.mp4
+    - assets/videos/feelings_fixed/that_was.mp4
+    - assets/videos/feelings_fixed/there_is.mp4
+    - assets/videos/feelings_fixed/they.mp4
+    - assets/videos/feelings_fixed/this.mp4
+    - assets/videos/feelings_fixed/to_apologize.mp4
+    - assets/videos/feelings_fixed/to_get_acquainted.mp4
+    - assets/videos/feelings_fixed/to_go.mp4
+    - assets/videos/feelings_fixed/to_invite.mp4
+    - assets/videos/feelings_fixed/to_sorry.mp4
+    - assets/videos/feelings_fixed/to_wait.mp4
+    - assets/videos/feelings_fixed/we.mp4
+    - assets/videos/feelings_fixed/what.mp4
+    - assets/videos/feelings_fixed/when.mp4
+    - assets/videos/feelings_fixed/where.mp4
+    - assets/videos/feelings_fixed/where_to.mp4
+    - assets/videos/feelings_fixed/who.mp4
+    - assets/videos/feelings_fixed/whose.mp4
+    - assets/videos/feelings_fixed/why.mp4
+    - assets/videos/feelings_fixed/why_question.mp4
+    - assets/videos/feelings_fixed/yes.mp4
+    - assets/videos/feelings_fixed/you_have.mp4
+    - assets/videos/feelings_fixed/you.mp4
+    - assets/videos/feelings_fixed/You.mp4
+    - assets/videos/feelings_fixed/your.mp4
+    - assets/videos/feelings_fixed/yourself.mp4
+#    -
+    - assets/videos/numbers_fixed/0.mp4
+    - assets/videos/numbers_fixed/1.mp4
+    - assets/videos/numbers_fixed/1_first.mp4
+    - assets/videos/numbers_fixed/2.mp4
+    - assets/videos/numbers_fixed/2_second.mp4
+    - assets/videos/numbers_fixed/3.mp4
+    - assets/videos/numbers_fixed/3_third.mp4
+    - assets/videos/numbers_fixed/4.mp4
+    - assets/videos/numbers_fixed/5.mp4
+    - assets/videos/numbers_fixed/6.mp4
+    - assets/videos/numbers_fixed/7.mp4
+    - assets/videos/numbers_fixed/8.mp4
+    - assets/videos/numbers_fixed/9.mp4
+    - assets/videos/numbers_fixed/10.mp4
+    - assets/videos/numbers_fixed/11.mp4
+    - assets/videos/numbers_fixed/12.mp4
+    - assets/videos/numbers_fixed/13.mp4
+    - assets/videos/numbers_fixed/14.mp4
+    - assets/videos/numbers_fixed/15.mp4
+    - assets/videos/numbers_fixed/16.mp4
+    - assets/videos/numbers_fixed/17.mp4
+    - assets/videos/numbers_fixed/18.mp4
+    - assets/videos/numbers_fixed/19.mp4
+    - assets/videos/numbers_fixed/20.mp4
+    - assets/videos/numbers_fixed/30.mp4
+    - assets/videos/numbers_fixed/40.mp4
+    - assets/videos/numbers_fixed/50.mp4
+    - assets/videos/numbers_fixed/60.mp4
+    - assets/videos/numbers_fixed/70.mp4
+    - assets/videos/numbers_fixed/80.mp4
+    - assets/videos/numbers_fixed/90.mp4
+    - assets/videos/numbers_fixed/100.mp4
+    - assets/videos/numbers_fixed/200.mp4
+    - assets/videos/numbers_fixed/300.mp4
+    - assets/videos/numbers_fixed/400.mp4
+    - assets/videos/numbers_fixed/500.mp4
+    - assets/videos/numbers_fixed/600.mp4
+    - assets/videos/numbers_fixed/700.mp4
+    - assets/videos/numbers_fixed/800.mp4
+    - assets/videos/numbers_fixed/900.mp4
+    - assets/videos/numbers_fixed/1000.mp4
+    - assets/videos/numbers_fixed/2000.mp4
+    - assets/videos/numbers_fixed/3000.mp4
+    - assets/videos/numbers_fixed/4000.mp4
+    - assets/videos/numbers_fixed/5000.mp4
+    - assets/videos/numbers_fixed/1000000.mp4
+    - assets/videos/numbers_fixed/number.mp4
+    - assets/videos/numbers_fixed/thousand.mp4
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package

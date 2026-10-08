@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'package:signlang/components/uiDictionary/nameDictionary/nameStore.dart';
+import 'package:signlang/services/app_loading.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodEighteenResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodNineteenResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodSeventeenResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodThirtyFiveResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodThirtyFourResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodThirtyOneResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodThirtyResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodThirtyThreeResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodThirtyTwoResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyEightResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyFiveResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyFourResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyNineResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyOneResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentySevenResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentySixResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyThreeResult.dart';
+import 'package:signlang/components/uiDictionary/group/result/food/foodTwentyTwoResult.dart';
+import 'package:signlang/components/uiDictionary/nameDictionary/pageFood.dart';
+import 'package:signlang/l10n/app_localizations.dart';
+
+import '../../skeleton/skeleton.dart';
+
+import 'package:signlang/services/theme_service.dart';
+class SomeFruits extends StatefulWidget{
+  const SomeFruits({super.key});
+
+  /// Word page for a list item id (also used by the dictionary's "Last seen").
+  static Widget? pageFor(String id) => switch (id) {
+    '0' => const FruitOneResult(), '1' => const AppleOneResult(), '2' => const PearOneResult(), '3' => const ApricotOneResult(), '4' => const PeachOneResult(),
+    '5' => const PlumOneResult(), '6' => const CherryOneResult(), '7' => const SourCherryOneResult(), '8' => const GrapesOneResult(), '9' => const PomegranateOneResult(),
+    '10' => const FigOneResult(), '11' => const MelonOneResult(), '12' => const WatermelonOneResult(), '13' => const LemonOneResult(), '14' => const MandarinTangerineOneResult(),
+    '15' => const BananaOneResult(), '16' => const BerryOneResult(), '17' => const StrawberryOneResult(), '18' => const RaspberryOneResult(),
+    _ => null,
+  };
+
+  @override
+  State<SomeFruits> createState() => _SomeFruitsState();
+}
+
+class _SomeFruitsState extends State<SomeFruits> {
+  bool _isLoading = true;
+
+  late final List<Map<String, dynamic>> items;
+
+// =======================================================================
+  @override
+  void didChangeDependencies() { super.didChangeDependencies(); items = FruitsData(context: context).fruitsItem; }
+
+  @override
+  void initState() { super.initState(); _initData(); }
+
+  Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
+  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _initializeData() async { final results = await Future.wait([ AppLoading.ready() ]); if (!mounted) return; setState(() { _isLoading = false; }); }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
+        child: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: _handleRefresh, notificationPredicate: (ScrollNotification notification) { return notification.depth == 0; },
+            child: CustomScrollView(
+              slivers: [
+                if (_isLoading)
+                  SliverToBoxAdapter(child: Shimmer.fromColors(baseColor: AppPalette.bg(Colors.grey[200]!), highlightColor: AppPalette.bg(Color(0xFF42A5F5)).withValues(alpha: 0.2), child: AllPhrasesSkeleton.buildSkeleton()))
+                else
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)),
+                              child: const Icon(Icons.arrow_back_outlined),
+                            )
+                          ),
+                          const SizedBox(height: 16),
+                          Text(AppLocalizations.of(context)!.translate('fruit'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 30)),
+                          const SizedBox(height: 16), Column(children: List.generate(items.length, (index) => _buildFamily(items[index])))
+                        ]
+                      )
+                    )
+                  )
+              ]
+            )
+          )
+        )
+      )
+    );
+  }
+  Widget _buildFamily(Map<String, dynamic> item) {
+    return GestureDetector(
+      onTap: () => _openLessonsAll(item),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 18), padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Colors.white)),
+          boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.9), blurRadius: 15)]
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 56, width: 56, decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(16)),
+              child: Center(child: Image.asset(item['image'], width: 30, height: 30, color: AppPalette.fg(Colors.blue), errorBuilder: (_, __, ___) => Icon(Icons.person, size: 35, color: AppPalette.fg(Colors.blue)))),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item['title'], style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                  Text(item['title_sub'] ?? '', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[700]!))),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), shape: BoxShape.circle),
+              child: const Icon(Icons.chevron_right)
+            )
+          ]
+        )
+      )
+    );
+  }
+  // =======================================================================
+  Future<void> _openLessonsAll(Map<String, dynamic> item) async {
+    final id = item['id'];
+    final page = SomeFruits.pageFor(id);
+
+    if (page == null) return;
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+    // watched: show it first in the dictionary's "Last seen"
+    await LastSeenStore.instance.add(item['title'], item['image'] ?? '', source: 'SomeFruits', id: id);
+    if (mounted) setState(() {});
+  }
+}

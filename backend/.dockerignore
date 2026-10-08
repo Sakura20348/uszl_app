@@ -1,0 +1,11 @@
+.venv
+.pgdata
+media
+deploy
+scripts
+.env
+.env.*
+firebase-key.json
+*-firebase-adminsdk-*.json
+server.log
+**/__pycache__

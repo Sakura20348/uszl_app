@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+media/
+.pgdata/
+# Firebase service account keys (secret)
+firebase-key.json
+*-firebase-adminsdk-*.json
+server.log
+# Server secrets
+deploy/.env
+deploy/firebase-key.json

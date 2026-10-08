@@ -1,0 +1,1796 @@
+{
+ "lessons": [
+  {
+   "key": "alp_0",
+   "course": "alphabet",
+   "place": 0,
+   "words": [
+    {
+     "word": "A",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_A.mp4"
+    },
+    {
+     "word": "B",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_B.mp4"
+    },
+    {
+     "word": "D",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_D.mp4"
+    },
+    {
+     "word": "E",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_E.mp4"
+    }
+   ]
+  },
+  {
+   "key": "alp_1",
+   "course": "alphabet",
+   "place": 1,
+   "words": [
+    {
+     "word": "F",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_F.mp4"
+    },
+    {
+     "word": "G",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_G.mp4"
+    },
+    {
+     "word": "H",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_H.mp4"
+    },
+    {
+     "word": "I",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_I.mp4"
+    }
+   ]
+  },
+  {
+   "key": "alp_2",
+   "course": "alphabet",
+   "place": 2,
+   "words": [
+    {
+     "word": "J",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_J.mp4"
+    },
+    {
+     "word": "K",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_K.mp4"
+    },
+    {
+     "word": "L",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_L.mp4"
+    },
+    {
+     "word": "M",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_M.mp4"
+    }
+   ]
+  },
+  {
+   "key": "alp_3",
+   "course": "alphabet",
+   "place": 3,
+   "words": [
+    {
+     "word": "N",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_N.mp4"
+    },
+    {
+     "word": "O",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/Level_O.mp4"
+    },
+    {
+     "word": "P",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": null
+    },
+    {
+     "word": "Q",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_Q.mp4"
+    }
+   ]
+  },
+  {
+   "key": "alp_4",
+   "course": "alphabet",
+   "place": 4,
+   "words": [
+    {
+     "word": "R",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_R.mp4"
+    },
+    {
+     "word": "S",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_S.mp4"
+    },
+    {
+     "word": "T",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_T.mp4"
+    },
+    {
+     "word": "U",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_U.mp4"
+    }
+   ]
+  },
+  {
+   "key": "alp_5",
+   "course": "alphabet",
+   "place": 5,
+   "words": [
+    {
+     "word": "V",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_V.mp4"
+    },
+    {
+     "word": "X",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_X.mp4"
+    },
+    {
+     "word": "Y",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": null
+    },
+    {
+     "word": "Z",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_Z.mp4"
+    }
+   ]
+  },
+  {
+   "key": "alp_6",
+   "course": "alphabet",
+   "place": 6,
+   "words": [
+    {
+     "word": "Oʻ",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_O_apos.mp4"
+    },
+    {
+     "word": "Gʻ",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_G_apos.mp4"
+    },
+    {
+     "word": "Sh",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_Sh.mp4"
+    },
+    {
+     "word": "Ch",
+     "translationRu": null,
+     "translationEn": null,
+     "kind": "letter",
+     "video": "alphabet_fixed/level_Ch.mp4"
+    }
+   ]
+  },
+  {
+   "key": "num_0",
+   "course": "numbers",
+   "place": 0,
+   "words": [
+    {
+     "word": "0",
+     "translationRu": "0",
+     "translationEn": "0",
+     "kind": "number",
+     "video": "numbers_fixed/0.mp4"
+    },
+    {
+     "word": "1",
+     "translationRu": "1",
+     "translationEn": "1",
+     "kind": "number",
+     "video": "numbers_fixed/1.mp4"
+    },
+    {
+     "word": "2",
+     "translationRu": "2",
+     "translationEn": "2",
+     "kind": "number",
+     "video": "numbers_fixed/2.mp4"
+    },
+    {
+     "word": "3",
+     "translationRu": "3",
+     "translationEn": "3",
+     "kind": "number",
+     "video": "numbers_fixed/3.mp4"
+    },
+    {
+     "word": "4",
+     "translationRu": "4",
+     "translationEn": "4",
+     "kind": "number",
+     "video": "numbers_fixed/4.mp4"
+    },
+    {
+     "word": "5",
+     "translationRu": "5",
+     "translationEn": "5",
+     "kind": "number",
+     "video": "numbers_fixed/5.mp4"
+    },
+    {
+     "word": "6",
+     "translationRu": "6",
+     "translationEn": "6",
+     "kind": "number",
+     "video": "numbers_fixed/6.mp4"
+    },
+    {
+     "word": "7",
+     "translationRu": "7",
+     "translationEn": "7",
+     "kind": "number",
+     "video": "numbers_fixed/7.mp4"
+    },
+    {
+     "word": "8",
+     "translationRu": "8",
+     "translationEn": "8",
+     "kind": "number",
+     "video": "numbers_fixed/8.mp4"
+    },
+    {
+     "word": "9",
+     "translationRu": "9",
+     "translationEn": "9",
+     "kind": "number",
+     "video": "numbers_fixed/9.mp4"
+    }
+   ]
+  },
+  {
+   "key": "num_1",
+   "course": "numbers",
+   "place": 1,
+   "words": [
+    {
+     "word": "10",
+     "translationRu": "10",
+     "translationEn": "10",
+     "kind": "number",
+     "video": "numbers_fixed/10.mp4"
+    },
+    {
+     "word": "11",
+     "translationRu": "11",
+     "translationEn": "11",
+     "kind": "number",
+     "video": "numbers_fixed/11.mp4"
+    },
+    {
+     "word": "12",
+     "translationRu": "12",
+     "translationEn": "12",
+     "kind": "number",
+     "video": "numbers_fixed/12.mp4"
+    },
+    {
+     "word": "13",
+     "translationRu": "13",
+     "translationEn": "13",
+     "kind": "number",
+     "video": "numbers_fixed/13.mp4"
+    },
+    {
+     "word": "14",
+     "translationRu": "14",
+     "translationEn": "14",
+     "kind": "number",
+     "video": "numbers_fixed/14.mp4"
+    },
+    {
+     "word": "15",
+     "translationRu": "15",
+     "translationEn": "15",
+     "kind": "number",
+     "video": "numbers_fixed/15.mp4"
+    },
+    {
+     "word": "16",
+     "translationRu": "16",
+     "translationEn": "16",
+     "kind": "number",
+     "video": "numbers_fixed/16.mp4"
+    },
+    {
+     "word": "17",
+     "translationRu": "17",
+     "translationEn": "17",
+     "kind": "number",
+     "video": "numbers_fixed/17.mp4"
+    },
+    {
+     "word": "18",
+     "translationRu": "18",
+     "translationEn": "18",
+     "kind": "number",
+     "video": "numbers_fixed/18.mp4"
+    },
+    {
+     "word": "19",
+     "translationRu": "19",
+     "translationEn": "19",
+     "kind": "number",
+     "video": "numbers_fixed/19.mp4"
+    }
+   ]
+  },
+  {
+   "key": "num_2",
+   "course": "numbers",
+   "place": 2,
+   "words": [
+    {
+     "word": "20",
+     "translationRu": "20",
+     "translationEn": "20",
+     "kind": "number",
+     "video": "numbers_fixed/20.mp4"
+    },
+    {
+     "word": "30",
+     "translationRu": "30",
+     "translationEn": "30",
+     "kind": "number",
+     "video": "numbers_fixed/30.mp4"
+    },
+    {
+     "word": "40",
+     "translationRu": "40",
+     "translationEn": "40",
+     "kind": "number",
+     "video": "numbers_fixed/40.mp4"
+    },
+    {
+     "word": "50",
+     "translationRu": "50",
+     "translationEn": "50",
+     "kind": "number",
+     "video": "numbers_fixed/50.mp4"
+    },
+    {
+     "word": "60",
+     "translationRu": "60",
+     "translationEn": "60",
+     "kind": "number",
+     "video": "numbers_fixed/60.mp4"
+    },
+    {
+     "word": "70",
+     "translationRu": "70",
+     "translationEn": "70",
+     "kind": "number",
+     "video": "numbers_fixed/70.mp4"
+    },
+    {
+     "word": "80",
+     "translationRu": "80",
+     "translationEn": "80",
+     "kind": "number",
+     "video": "numbers_fixed/80.mp4"
+    },
+    {
+     "word": "90",
+     "translationRu": "90",
+     "translationEn": "90",
+     "kind": "number",
+     "video": "numbers_fixed/90.mp4"
+    },
+    {
+     "word": "100",
+     "translationRu": "100",
+     "translationEn": "100",
+     "kind": "number",
+     "video": "numbers_fixed/100.mp4"
+    },
+    {
+     "word": "Raqam",
+     "translationRu": "Число",
+     "translationEn": "number",
+     "kind": "number",
+     "video": "numbers_fixed/number.mp4"
+    }
+   ]
+  },
+  {
+   "key": "num_3",
+   "course": "numbers",
+   "place": 3,
+   "words": [
+    {
+     "word": "200",
+     "translationRu": "200",
+     "translationEn": "200",
+     "kind": "number",
+     "video": "numbers_fixed/200.mp4"
+    },
+    {
+     "word": "300",
+     "translationRu": "300",
+     "translationEn": "300",
+     "kind": "number",
+     "video": "numbers_fixed/300.mp4"
+    },
+    {
+     "word": "400",
+     "translationRu": "400",
+     "translationEn": "400",
+     "kind": "number",
+     "video": "numbers_fixed/400.mp4"
+    },
+    {
+     "word": "500",
+     "translationRu": "500",
+     "translationEn": "500",
+     "kind": "number",
+     "video": "numbers_fixed/500.mp4"
+    },
+    {
+     "word": "600",
+     "translationRu": "600",
+     "translationEn": "600",
+     "kind": "number",
+     "video": "numbers_fixed/600.mp4"
+    },
+    {
+     "word": "700",
+     "translationRu": "700",
+     "translationEn": "700",
+     "kind": "number",
+     "video": "numbers_fixed/700.mp4"
+    },
+    {
+     "word": "800",
+     "translationRu": "800",
+     "translationEn": "800",
+     "kind": "number",
+     "video": "numbers_fixed/800.mp4"
+    },
+    {
+     "word": "900",
+     "translationRu": "900",
+     "translationEn": "900",
+     "kind": "number",
+     "video": "numbers_fixed/900.mp4"
+    },
+    {
+     "word": "1000",
+     "translationRu": "1000",
+     "translationEn": "1000",
+     "kind": "number",
+     "video": "numbers_fixed/1000.mp4"
+    },
+    {
+     "word": "Ming",
+     "translationRu": "Тысяча",
+     "translationEn": "thousand",
+     "kind": "number",
+     "video": "numbers_fixed/thousand.mp4"
+    }
+   ]
+  },
+  {
+   "key": "num_4",
+   "course": "numbers",
+   "place": 4,
+   "words": [
+    {
+     "word": "2000",
+     "translationRu": "2000",
+     "translationEn": "2000",
+     "kind": "number",
+     "video": "numbers_fixed/2000.mp4"
+    },
+    {
+     "word": "3000",
+     "translationRu": "3000",
+     "translationEn": "3000",
+     "kind": "number",
+     "video": "numbers_fixed/3000.mp4"
+    },
+    {
+     "word": "4000",
+     "translationRu": "4000",
+     "translationEn": "4000",
+     "kind": "number",
+     "video": "numbers_fixed/4000.mp4"
+    },
+    {
+     "word": "5000",
+     "translationRu": "5000",
+     "translationEn": "5000",
+     "kind": "number",
+     "video": "numbers_fixed/5000.mp4"
+    },
+    {
+     "word": "1000000",
+     "translationRu": "1000000",
+     "translationEn": "1000000",
+     "kind": "number",
+     "video": "numbers_fixed/1000000.mp4"
+    },
+    {
+     "word": "Birinchi",
+     "translationRu": "Первый",
+     "translationEn": "first",
+     "kind": "number",
+     "video": "numbers_fixed/1_first.mp4"
+    },
+    {
+     "word": "Ikkinchi",
+     "translationRu": "Второй",
+     "translationEn": "second",
+     "kind": "number",
+     "video": "numbers_fixed/2_second.mp4"
+    },
+    {
+     "word": "Uchinchi",
+     "translationRu": "Третий",
+     "translationEn": "third",
+     "kind": "number",
+     "video": "numbers_fixed/3_third.mp4"
+    }
+   ]
+  },
+  {
+   "key": "fam_0",
+   "course": "family",
+   "place": 0,
+   "words": [
+    {
+     "word": "Oila",
+     "translationRu": "Семья",
+     "translationEn": "family",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Ota",
+     "translationRu": "Отец",
+     "translationEn": "father",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Ona",
+     "translationRu": "Мать",
+     "translationEn": "mother",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Ota-ona",
+     "translationRu": "Родители",
+     "translationEn": "parents",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Aka-uka",
+     "translationRu": "Брат",
+     "translationEn": "brother",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Opa-singil",
+     "translationRu": "Сестра",
+     "translationEn": "sister",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Aka-singillar",
+     "translationRu": "Братья и сестры",
+     "translationEn": "siblings",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Oʻgʻil",
+     "translationRu": "Сын",
+     "translationEn": "son",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qiz",
+     "translationRu": "Дочь",
+     "translationEn": "daughter",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Bolalar",
+     "translationRu": "Дети",
+     "translationEn": "children",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "fam_1",
+   "course": "family",
+   "place": 1,
+   "words": [
+    {
+     "word": "Bola",
+     "translationRu": "Ребенок",
+     "translationEn": "child",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Chaqaloq",
+     "translationRu": "Младенец",
+     "translationEn": "baby",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Aka",
+     "translationRu": "Старший брат",
+     "translationEn": "elder brother",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Opa",
+     "translationRu": "Старшая сестра",
+     "translationEn": "elder sister",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Uka",
+     "translationRu": "Младший брат",
+     "translationEn": "younger brother",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Singil",
+     "translationRu": "Младшая сестра",
+     "translationEn": "younger sister",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Odam",
+     "translationRu": "Человек",
+     "translationEn": "person",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Erkak",
+     "translationRu": "Мужчина",
+     "translationEn": "man",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Ayol",
+     "translationRu": "Женщина",
+     "translationEn": "woman",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Oʻgʻil bola",
+     "translationRu": "Мальчик",
+     "translationEn": "boy",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "fam_2",
+   "course": "family",
+   "place": 2,
+   "words": [
+    {
+     "word": "Qiz bola",
+     "translationRu": "Девочка",
+     "translationEn": "girl",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Egizak",
+     "translationRu": "Близнец",
+     "translationEn": "twin",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Egizak oʻgʻil",
+     "translationRu": "Брат-близнец",
+     "translationEn": "twin brother",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Egizak qiz",
+     "translationRu": "Сестра-близнец",
+     "translationEn": "twin sister",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Bobo",
+     "translationRu": "Дедушка",
+     "translationEn": "grandfather",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Buvi",
+     "translationRu": "Бабушка",
+     "translationEn": "grandmother",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Bobo va buvi",
+     "translationRu": "Дедушка и бабушка",
+     "translationEn": "grandparents",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Amaki/Toga",
+     "translationRu": "Дядя",
+     "translationEn": "uncle",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Amma/Xola",
+     "translationRu": "Тётя",
+     "translationEn": "aunt",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qarindosh",
+     "translationRu": "Двоюродный брат/сестра",
+     "translationEn": "cousin",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "fam_3",
+   "course": "family",
+   "place": 3,
+   "words": [
+    {
+     "word": "Jiyan (qiz)",
+     "translationRu": "Племянница",
+     "translationEn": "niece",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Jiyan (oʻgʻil)",
+     "translationRu": "Племянник",
+     "translationEn": "nephew",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qarindosh",
+     "translationRu": "Родственник",
+     "translationEn": "relative",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yurtdosh ayol",
+     "translationRu": "Землячка",
+     "translationEn": "countrywoman",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Avlod",
+     "translationRu": "Поколение",
+     "translationEn": "generation",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Oʻsmir",
+     "translationRu": "Подросток",
+     "translationEn": "teenager",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kelin",
+     "translationRu": "Невеста",
+     "translationEn": "bride",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kuyov",
+     "translationRu": "Жених",
+     "translationEn": "groom",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Nikoh",
+     "translationRu": "Брак",
+     "translationEn": "marriage",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Turmush oʻrtoq",
+     "translationRu": "Супруг/Супруга",
+     "translationEn": "spouse",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "fam_4",
+   "course": "family",
+   "place": 4,
+   "words": [
+    {
+     "word": "Ajralish",
+     "translationRu": "Развод",
+     "translationEn": "divorce",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Boʻydoq",
+     "translationRu": "Холостяк",
+     "translationEn": "bachelor",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Sevgili",
+     "translationRu": "Возлюбленный/Возлюбленная",
+     "translationEn": "lover",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Chiroyli",
+     "translationRu": "Красивый",
+     "translationEn": "pretty",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Er",
+     "translationRu": "Муж",
+     "translationEn": "husband",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Xotin",
+     "translationRu": "Жена",
+     "translationEn": "wife",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yoshlar",
+     "translationRu": "Молодежь",
+     "translationEn": "youth",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Baxtsiz",
+     "translationRu": "Несчастный",
+     "translationEn": "unfortunate",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Boy",
+     "translationRu": "Богатый",
+     "translationEn": "rich",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kambagʻal",
+     "translationRu": "Бедный",
+     "translationEn": "poor",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "fam_5",
+   "course": "family",
+   "place": 5,
+   "words": [
+    {
+     "word": "Hurmat qilish",
+     "translationRu": "Уважать",
+     "translationEn": "to respect",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yashash",
+     "translationRu": "Жить",
+     "translationEn": "to live",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Katta boʻlgan",
+     "translationRu": "Взрослый",
+     "translationEn": "grown up",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kattalar",
+     "translationRu": "Взрослый",
+     "translationEn": "adult",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Katta",
+     "translationRu": "Старший",
+     "translationEn": "elder",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kichik",
+     "translationRu": "Младший",
+     "translationEn": "younger",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Beva ayol",
+     "translationRu": "Вдова",
+     "translationEn": "marriage",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Beva erkak",
+     "translationRu": "Вдовец",
+     "translationEn": "widower",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Tugʻilish",
+     "translationRu": "Родиться",
+     "translationEn": "to be born",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Baland",
+     "translationRu": "Высокий",
+     "translationEn": "tall",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "fam_6",
+   "course": "family",
+   "place": 6,
+   "words": [
+    {
+     "word": "Kichik",
+     "translationRu": "Маленький",
+     "translationEn": "little",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Semiz",
+     "translationRu": "Толстый",
+     "translationEn": "thick",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kasal",
+     "translationRu": "Больной",
+     "translationEn": "ill",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Oriyq",
+     "translationRu": "Худой",
+     "translationEn": "thin",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yosh",
+     "translationRu": "Молодой",
+     "translationEn": "young",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Oʻlim",
+     "translationRu": "Смерть",
+     "translationEn": "death",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Vafot etish",
+     "translationRu": "Умереть",
+     "translationEn": "to die",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_0",
+   "course": "food",
+   "place": 0,
+   "words": [
+    {
+     "word": "Ovqat",
+     "translationRu": "еда",
+     "translationEn": "food",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Shoʻrva",
+     "translationRu": "суп",
+     "translationEn": "soup",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Palov",
+     "translationRu": "плов",
+     "translationEn": "pilaf",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Guruchli palov",
+     "translationRu": "рисовый плов",
+     "translationEn": "rice pilaf",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Somsa",
+     "translationRu": "самса",
+     "translationEn": "samosa",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_1",
+   "course": "food",
+   "place": 1,
+   "words": [
+    {
+     "word": "Manti",
+     "translationRu": "манты",
+     "translationEn": "steamed dumplings",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Chuchvara",
+     "translationRu": "пельмени",
+     "translationEn": "dumplings",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kabob",
+     "translationRu": "кебаб",
+     "translationEn": "kebab",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Pelmen",
+     "translationRu": "пельмени",
+     "translationEn": "pelmeni",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Pechenye",
+     "translationRu": "печенье",
+     "translationEn": "biscuit",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yangi",
+     "translationRu": "свежее",
+     "translationEn": "fresh",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qovurilgan tuxum",
+     "translationRu": "яичница",
+     "translationEn": "fried eggs",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Suv",
+     "translationRu": "вода",
+     "translationEn": "water",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qahva",
+     "translationRu": "кофе",
+     "translationEn": "coffee",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Choy",
+     "translationRu": "чай",
+     "translationEn": "tea",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_2",
+   "course": "food",
+   "place": 2,
+   "words": [
+    {
+     "word": "Shirin choy",
+     "translationRu": "сладкий чай",
+     "translationEn": "sweet tea",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Shampan",
+     "translationRu": "шампанское",
+     "translationEn": "champagne",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Goʻsht",
+     "translationRu": "мясо",
+     "translationEn": "meat",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Tuxum",
+     "translationRu": "яйцо",
+     "translationEn": "egg",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kotlet",
+     "translationRu": "котлета",
+     "translationEn": "rissole",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Sosiska",
+     "translationRu": "сосиски",
+     "translationEn": "sausages",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Seld baligʻi",
+     "translationRu": "селёдка",
+     "translationEn": "herring",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Tort",
+     "translationRu": "торт",
+     "translationEn": "cake",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Konserva",
+     "translationRu": "консервы",
+     "translationEn": "canned food",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yumshoq ovqat",
+     "translationRu": "нежная еда",
+     "translationEn": "canned food",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_3",
+   "course": "food",
+   "place": 3,
+   "words": [
+    {
+     "word": "Mevalar",
+     "translationRu": "фрукты",
+     "translationEn": "fruit",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Olma",
+     "translationRu": "яблоко",
+     "translationEn": "apple",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Nok",
+     "translationRu": "груша",
+     "translationEn": "pear",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Oʻrik",
+     "translationRu": "абрикос",
+     "translationEn": "apricot",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Shaftoli",
+     "translationRu": "персик",
+     "translationEn": "peach",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Olxoʻri",
+     "translationRu": "слива",
+     "translationEn": "plum",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Gilos",
+     "translationRu": "вишня",
+     "translationEn": "cherry",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Olcha",
+     "translationRu": "кислая вишня",
+     "translationEn": "sour cherry",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Uzum",
+     "translationRu": "виноград",
+     "translationEn": "grapes",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Anor",
+     "translationRu": "гранат",
+     "translationEn": "pomegranate",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_4",
+   "course": "food",
+   "place": 4,
+   "words": [
+    {
+     "word": "Anjir",
+     "translationRu": "инжир",
+     "translationEn": "fig",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qovun",
+     "translationRu": "дыня",
+     "translationEn": "melon",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Tarvuz",
+     "translationRu": "арбуз",
+     "translationEn": "watermelon",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Limon",
+     "translationRu": "лимон",
+     "translationEn": "lemon",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Mandarin",
+     "translationRu": "мандарин",
+     "translationEn": "mandarin tangerine",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Banan",
+     "translationRu": "банан",
+     "translationEn": "banana",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Rezavor mevalar",
+     "translationRu": "ягоды",
+     "translationEn": "berry",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qulupnay",
+     "translationRu": "клубника",
+     "translationEn": "strawberry",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Malina",
+     "translationRu": "малина",
+     "translationEn": "raspberry",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Sabzavotlar",
+     "translationRu": "овощи",
+     "translationEn": "vegetables",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_5",
+   "course": "food",
+   "place": 5,
+   "words": [
+    {
+     "word": "Piyoz",
+     "translationRu": "лук",
+     "translationEn": "onion",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Kartoshka",
+     "translationRu": "картофель",
+     "translationEn": "potato",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Sabzi",
+     "translationRu": "морковь",
+     "translationEn": "carrot",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Pomidor",
+     "translationRu": "помидор",
+     "translationEn": "tomato",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Bodring",
+     "translationRu": "огурец",
+     "translationEn": "cucumber",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Sarimsoq",
+     "translationRu": "чеснок",
+     "translationEn": "garlic",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Murch",
+     "translationRu": "перец",
+     "translationEn": "pepper",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Baqlajon",
+     "translationRu": "баклажан",
+     "translationEn": "eggplant aubergine",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qovoq",
+     "translationRu": "тыква",
+     "translationEn": "pumpkin",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Karam",
+     "translationRu": "капуста",
+     "translationEn": "cabbage",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_6",
+   "course": "food",
+   "place": 6,
+   "words": [
+    {
+     "word": "Lavlagi",
+     "translationRu": "свёкла",
+     "translationEn": "beetroot",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Rediska",
+     "translationRu": "редис",
+     "translationEn": "small red radish",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qora turp",
+     "translationRu": "чёрная редька",
+     "translationEn": "black radish",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Makkajoʻxori",
+     "translationRu": "кукуруза",
+     "translationEn": "corn/maize",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Qoʻziqorin",
+     "translationRu": "гриб",
+     "translationEn": "mushroom",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yorma",
+     "translationRu": "хлопья",
+     "translationEn": "cereal",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Grechka",
+     "translationRu": "гречка",
+     "translationEn": "buckwheat",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Tariq",
+     "translationRu": "пшено",
+     "translationEn": "millet",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Manna yormasi",
+     "translationRu": "манка",
+     "translationEn": "semolina",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Non",
+     "translationRu": "хлеб",
+     "translationEn": "bread",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_7",
+   "course": "food",
+   "place": 7,
+   "words": [
+    {
+     "word": "Tuz",
+     "translationRu": "соль",
+     "translationEn": "salt",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Shakar",
+     "translationRu": "сахар",
+     "translationEn": "sugar",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Un",
+     "translationRu": "мука",
+     "translationEn": "flour",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yongʻoq",
+     "translationRu": "орех",
+     "translationEn": "nut",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Urugʻlar",
+     "translationRu": "семечки",
+     "translationEn": "seeds",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yormalar",
+     "translationRu": "крупы",
+     "translationEn": "groats",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Boʻtqa",
+     "translationRu": "каша",
+     "translationEn": "porridge",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Makaron",
+     "translationRu": "макароны",
+     "translationEn": "macaroni",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Xamir",
+     "translationRu": "тесто",
+     "translationEn": "dough",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Yogurt",
+     "translationRu": "йогурт",
+     "translationEn": "yoghurt",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  },
+  {
+   "key": "eat_8",
+   "course": "food",
+   "place": 8,
+   "words": [
+    {
+     "word": "Kefir",
+     "translationRu": "кефир",
+     "translationEn": "kefir",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Tvorog",
+     "translationRu": "творог",
+     "translationEn": "cottage cheese",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Sariyog",
+     "translationRu": "сливочное масло",
+     "translationEn": "butter",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Sut",
+     "translationRu": "молоко",
+     "translationEn": "milk",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Pishloq",
+     "translationRu": "сыр",
+     "translationEn": "cheese",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Smetana",
+     "translationRu": "сметана",
+     "translationEn": "sour cream",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Moy",
+     "translationRu": "масло",
+     "translationEn": "oil",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Oʻsimlik yogʻi",
+     "translationRu": "растительное масло",
+     "translationEn": "vegetable oil",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Muzqaymoq",
+     "translationRu": "мороженое",
+     "translationEn": "ice cream",
+     "kind": "word",
+     "video": null
+    },
+    {
+     "word": "Quymoq",
+     "translationRu": "блины",
+     "translationEn": "pancakes",
+     "kind": "word",
+     "video": null
+    }
+   ]
+  }
+ ]
+}

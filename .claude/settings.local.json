@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze *)",
+      "Bash(sed -n '/dependencies:/,/dev_dependencies:/p' /home/botirali/Public/signlang/pubspec.yaml 2>/dev/null)",
+      "Bash(python3 -c ' *)",
+      "Bash(pip install *)",
+      "Bash(python3 -m pip install numpy -q)",
+      "Bash(cp medicine.png medicine.png.bak)"
+    ]
+  }
+}

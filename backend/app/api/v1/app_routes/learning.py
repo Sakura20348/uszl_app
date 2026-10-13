@@ -276,10 +276,15 @@ async def finish(attempt_id: int, user: CurrentUser, db: DB, background: Backgro
     attempt = await _own_attempt(db, user, attempt_id)
     lesson = await db.get(Lesson, attempt.lesson_id)
     assert lesson is not None
-    # Exercises left unanswered count as wrong
-    total = await db.scalar(select(func.count()).where(Exercise.lesson_id == lesson.id)) or 0
+    # Exercises left unanswered count as wrong; "learn" slides are not questions and don't count
+    total = await db.scalar(
+        select(func.count()).where(Exercise.lesson_id == lesson.id, Exercise.type != "learn")
+    ) or 0
     correct = await db.scalar(
-        select(func.count()).where(ExerciseAnswer.attempt_id == attempt.id, ExerciseAnswer.is_correct.is_(True))
+        select(func.count())
+        .select_from(ExerciseAnswer)
+        .join(Exercise, Exercise.id == ExerciseAnswer.exercise_id)
+        .where(ExerciseAnswer.attempt_id == attempt.id, ExerciseAnswer.is_correct.is_(True), Exercise.type != "learn")
     ) or 0
     return await _complete(db, user, lesson, attempt, correct, total, background)
 

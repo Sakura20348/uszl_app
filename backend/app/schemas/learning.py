@@ -8,7 +8,7 @@ from app.schemas.dictionary import SignBrief, SignVideoOut
 from app.schemas.users import AchievementOut, UserStatsOut
 
 # Same names as the dashboard's lesson builder
-ExerciseType = Literal["chooseText", "chooseImage", "matching", "order"]
+ExerciseType = Literal["chooseText", "chooseImage", "matching", "order", "learn"]
 Difficulty = Literal["easy", "medium", "hard"]
 
 
@@ -92,6 +92,10 @@ class OptionOut(Schema):
     sign_id: int | None
     # First video of sign_id, ready to play
     sign_video: str | None = None
+    # "learn" slides only: the text under the slide's title
+    description: str | None = None
+    description_ru: str | None = None
+    description_en: str | None = None
 
 
 class ExerciseOut(Schema):
@@ -118,8 +122,12 @@ class OptionIn(Schema):
     image: str | None = Field(default=None, max_length=100)
     sign_id: int | None = None
     is_correct: bool = False
-    # Correct place, for "order" exercises (0, 1, 2, ...)
+    # Correct place, for "order" exercises (0, 1, 2, ...); slide order for "learn"
     position: int | None = Field(default=None, ge=0)
+    # "learn" slides only: the text under the slide's title
+    description: str | None = Field(default=None, max_length=255)
+    description_ru: str | None = Field(default=None, max_length=255)
+    description_en: str | None = Field(default=None, max_length=255)
 
 
 class ExerciseIn(Schema):
@@ -129,6 +137,8 @@ class ExerciseIn(Schema):
     matching:    options are pairs: each has a video (signId) or image, and the text it matches
     order:       options are words; the answer's words have their correct position,
                  extra (wrong) words have no position
+    learn:       not a question: options are carousel slides, each a sign video (signId)
+                 with its title (text) and description; nothing to answer
     """
 
     type: ExerciseType
@@ -139,11 +149,17 @@ class ExerciseIn(Schema):
     explanation: str | None = Field(default=None, max_length=500)
     explanation_ru: str | None = Field(default=None, max_length=500)
     explanation_en: str | None = Field(default=None, max_length=500)
-    options: list[OptionIn] = Field(min_length=2, max_length=12)
+    options: list[OptionIn] = Field(min_length=1, max_length=20)
 
     @model_validator(mode="after")
     def _check(self) -> "ExerciseIn":
         opts = self.options
+        if self.type == "learn":
+            if not all(o.sign_id and o.text for o in opts):
+                raise ValueError("learn: every slide needs a video (signId) and a title")
+            return self
+        if not 2 <= len(opts) <= 12:
+            raise ValueError(f"{self.type}: give 2 to 12 options")
         if self.type in ("chooseText", "chooseImage"):
             if sum(o.is_correct for o in opts) != 1:
                 raise ValueError(f"{self.type}: mark exactly one option as correct")

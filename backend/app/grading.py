@@ -27,6 +27,10 @@ def grade(exercise: Exercise, answer: dict[str, Any]) -> Grade:
         correct = next((o.id for o in options if o.is_correct), None)
         return Grade(is_correct=answer.get("optionId") == correct, correct_option_id=correct)
 
+    if exercise.type == "learn":
+        # Slides to watch, not a question
+        return Grade(is_correct=True)
+
     if exercise.type == "matching":
         # Each pair must join an option's video/image with that same option's text
         pairs = answer.get("pairs")

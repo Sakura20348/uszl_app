@@ -361,7 +361,7 @@ class Exercise(Base):
 
     id: Mapped[int] = _pk()
     lesson_id: Mapped[int] = _fk("lessons.id", "CASCADE")
-    # choose_text | choose_image | matching | order (see app/grading.py)
+    # chooseText | chooseImage | matching | order | learn (see app/grading.py)
     type: Mapped[str] = mapped_column(String(20))
     prompt: Mapped[str | None] = mapped_column(String(255))
     prompt_ru: Mapped[str | None] = mapped_column(String(255))
@@ -391,8 +391,12 @@ class ExerciseOption(Base):
     image: Mapped[str | None] = mapped_column(String(100))
     sign_id: Mapped[int | None] = _fk("signs.id", "RESTRICT", nullable=True)
     is_correct: Mapped[bool] = _flag(False)
-    # Correct place for "order" exercises
+    # Correct place for "order" exercises; slide order for "learn"
     position: Mapped[int | None] = mapped_column(SmallInteger)
+    # "learn" slides only: the text under the slide's title
+    description: Mapped[str | None] = mapped_column(String(255))
+    description_ru: Mapped[str | None] = mapped_column(String(255))
+    description_en: Mapped[str | None] = mapped_column(String(255))
 
 
 # ============================== progress ==============================

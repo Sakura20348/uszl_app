@@ -694,6 +694,25 @@ class QuickPhrase(Base):
     created_at: Mapped[datetime] = _now()
 
 
+# ============================== support ==============================
+class SupportMessage(Base):
+    """A learner's message to the team, or an admin's reply. Each learner has one thread."""
+
+    __tablename__ = "support_messages"
+    __table_args__ = (Index(None, "user_id", "created_at"),)
+
+    id: Mapped[int] = _pk()
+    # The learner whose thread this is
+    user_id: Mapped[int] = _fk("users.id", "CASCADE")
+    from_admin: Mapped[bool] = _flag(False)
+    # The admin who replied (empty for the learner's own messages)
+    admin_id: Mapped[int | None] = _fk("users.id", "SET NULL", nullable=True)
+    text: Mapped[str] = mapped_column(Text)
+    # Read by the other side: admins for the learner's messages, the learner for replies
+    is_read: Mapped[bool] = _flag(False)
+    created_at: Mapped[datetime] = _now()
+
+
 # ============================== app settings ==============================
 class AppConfig(Base):
     """Settings of the mobile app that admins change in the dashboard (Settings → App).

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:signlang/api/api_errors.dart';
 import 'package:signlang/api/uzsl_api.dart';
 import 'package:signlang/components/web/notification/notificationModal.dart';
+import 'package:signlang/components/profile/group/support/supportChat.dart';
 import '../../../l10n/app_localizations.dart';
 
 import 'package:signlang/services/theme_service.dart';
@@ -68,7 +69,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _openNotification(AppNotification item) async {
-    final Widget page = NotificationModal(notification: item);
+    // A reply from the team opens the conversation (Profile → Help)
+    final Widget page = item.type == 'support' ? const SupportChat() : NotificationModal(notification: item);
 
     await showModalBottomSheet(
       context: context,

@@ -862,5 +862,11 @@
   "email_in_use": "Bu email allaqachon roʻyxatdan oʻtgan. Kirish boʻlimidan foydalaning.", "wrong_email_password": "Email yoki parol notoʻgʻri.", "weak_password": "Parol juda oddiy. Kuchliroq parol tanlang.", "email_login_off": "Email orqali kirish hozircha mavjud emas.", "verify_email_first": "Bu email bilan hisob bor. Emailingizga yuborilgan havolani oching va qayta kiring.", "verification_sent": "Emailingizga tasdiqlash havolasini yubordik.",
   "lesson_no_exercises": "Bu darsda hali mashqlar yoʻq.", "choose_right_answer": "Toʻgʻri javobni tanlang", "match_hint": "Imo-ishorani, keyin uning soʻzini bosing", "order_hint": "Soʻzlarni toʻgʻri tartibda bosing", "lesson_minutes": "{n} daqiqa", "xp_earned": "+{n} XP", "achievement_unlocked": "Yangi yutuq: {name}", "lesson_load_failed": "Darsni yuklab boʻlmadi.", "dict_all_signs": "Barcha imo-ishoralar", "dict_signs_count": "ta imo-ishora", "dict_search_hint": "Imo-ishora qidirish...", "dict_no_results": "Hech narsa topilmadi", "dict_kind_word": "So'z", "dict_kind_phrase": "Ibora", "dict_kind_letter": "Harf", "dict_kind_number": "Raqam", "dict_group_word": "So'zlar", "dict_group_phrase": "Iboralar", "dict_group_letter": "Harflar", "dict_group_number": "Raqamlar", "dict_load_failed": "Imo-ishorani yuklab boʻlmadi.", "sign_movement": "Harakat", "loading": "Yuklanmoqda", "lesson_needs_online": "Bu dars uchun internet va hisobga kirish kerak.", "lesson_result_failed": "Natijani saqlab boʻlmadi. Internetni tekshirib, qayta urinib koʻring.",
   "sms_unavailable": "SMS kod orqali kirish hozircha ishlamaydi. Email orqali kiring.",
-  "social_login_off": "{name} orqali kirish hozircha mavjud emas. Email yoki telefon orqali kiring."
+  "social_login_off": "{name} orqali kirish hozircha mavjud emas. Email yoki telefon orqali kiring.",
+  "support_title": "Yordam",
+  "support_subtitle": "UzSL jamoasiga yozing, javob shu yerda keladi",
+  "support_placeholder": "Savolingizni yozing…",
+  "support_empty_title": "Qanday yordam bera olamiz?",
+  "support_empty_text": "Savol bering yoki muammo haqida yozing. Jamoa shu yerda javob beradi va sizga bildirishnoma keladi.",
+  "support_team": "UzSL jamoasi"
 }

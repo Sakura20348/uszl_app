@@ -907,5 +907,11 @@
   "email_in_use": "This email is already registered. Log in instead.", "wrong_email_password": "Wrong email or password.", "weak_password": "This password is too easy to guess. Choose a stronger one.", "email_login_off": "Email sign-in is not available right now.", "verify_email_first": "This email already has an account. Open the link we sent to your email, then log in again.", "verification_sent": "We sent a confirmation link to your email.",
   "lesson_no_exercises": "This lesson has no exercises yet.", "choose_right_answer": "Choose the right answer", "match_hint": "Tap a sign, then the word it means", "order_hint": "Tap the words in the right order", "lesson_minutes": "{n} min", "xp_earned": "+{n} XP", "achievement_unlocked": "New achievement: {name}", "lesson_load_failed": "The lesson could not be loaded.", "dict_all_signs": "All signs", "dict_signs_count": "signs", "dict_search_hint": "Search signs...", "dict_no_results": "Nothing found", "dict_kind_word": "Word", "dict_kind_phrase": "Phrase", "dict_kind_letter": "Letter", "dict_kind_number": "Number", "dict_group_word": "Words", "dict_group_phrase": "Phrases", "dict_group_letter": "Letters", "dict_group_number": "Numbers", "dict_load_failed": "The sign could not be loaded.", "sign_movement": "Movement", "loading": "Loading", "lesson_needs_online": "This lesson needs the internet and a signed-in account.", "lesson_result_failed": "The result could not be saved. Check the connection and try again.",
   "sms_unavailable": "Login by SMS code is not available yet. Please use email.",
-  "social_login_off": "{name} sign-in is not available yet. Please use email or phone."
+  "social_login_off": "{name} sign-in is not available yet. Please use email or phone.",
+  "support_title": "Help",
+  "support_subtitle": "Write to the UzSL team, we will answer here",
+  "support_placeholder": "Write your question…",
+  "support_empty_title": "How can we help?",
+  "support_empty_text": "Ask a question or tell us about a problem. The team replies here and you get a notification.",
+  "support_team": "UzSL team"
 }

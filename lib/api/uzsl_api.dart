@@ -186,6 +186,19 @@ class UzslApi {
     }
   }
 
+  // ======================== support (Profile → Help) ========================
+  /// The conversation with the team, oldest first (the team's replies become read).
+  static Future<List<SupportMessage>> supportMessages() async {
+    final data = await _request('GET', '/app/support/messages', auth: true) as List;
+    return data.map((e) => SupportMessage.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  /// A question or feedback; admins answer on the dashboard and the reply comes as a notification.
+  static Future<SupportMessage> writeToSupport(String text) async {
+    final data = await _request('POST', '/app/support/messages', body: {'text': text}, auth: true);
+    return SupportMessage.fromJson(data as Map<String, dynamic>);
+  }
+
   /// The app was closed or logged out: the dashboard shows the user offline right away
   /// (the next request after it shows them online again).
   static Future<void> goOffline() async {
@@ -395,6 +408,21 @@ class ApiException implements Exception {
 }
 
 /// A notification from the dashboard (news, reminder, system) or the app itself (achievement).
+/// A message in the learner's conversation with the team (Profile → Help)
+class SupportMessage {
+  final int id;
+  final bool fromAdmin;
+  final String text;
+  final DateTime createdAt;
+
+  SupportMessage({required this.id, required this.fromAdmin, required this.text, required this.createdAt});
+
+  factory SupportMessage.fromJson(Map<String, dynamic> j) => SupportMessage(
+    id: j['id'] as int, fromAdmin: j['fromAdmin'] as bool, text: j['text'] as String,
+    createdAt: DateTime.parse(j['createdAt'] as String).toLocal(),
+  );
+}
+
 class AppNotification {
   final int id;
   final String type;

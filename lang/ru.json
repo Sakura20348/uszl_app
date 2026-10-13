@@ -864,5 +864,11 @@
   "email_in_use": "Этот email уже зарегистрирован. Войдите.", "wrong_email_password": "Неверный email или пароль.", "weak_password": "Слишком простой пароль. Выберите надёжнее.", "email_login_off": "Вход по email сейчас недоступен.", "verify_email_first": "У этого email уже есть аккаунт. Откройте ссылку из письма и войдите снова.", "verification_sent": "Мы отправили ссылку для подтверждения на ваш email.",
   "lesson_no_exercises": "В этом уроке пока нет заданий.", "choose_right_answer": "Выберите правильный ответ", "match_hint": "Нажмите на жест, затем на его слово", "order_hint": "Нажимайте слова в правильном порядке", "lesson_minutes": "{n} мин", "xp_earned": "+{n} XP", "achievement_unlocked": "Новое достижение: {name}", "lesson_load_failed": "Не удалось загрузить урок.", "dict_all_signs": "Все жесты", "dict_signs_count": "жестов", "dict_search_hint": "Поиск жестов...", "dict_no_results": "Ничего не найдено", "dict_kind_word": "Слово", "dict_kind_phrase": "Фраза", "dict_kind_letter": "Буква", "dict_kind_number": "Цифра", "dict_group_word": "Слова", "dict_group_phrase": "Фразы", "dict_group_letter": "Буквы", "dict_group_number": "Цифры", "dict_load_failed": "Не удалось загрузить жест.", "sign_movement": "Движение", "loading": "Загрузка", "lesson_needs_online": "Для этого урока нужны интернет и вход в аккаунт.", "lesson_result_failed": "Не удалось сохранить результат. Проверьте подключение и попробуйте снова.",
   "sms_unavailable": "Вход по SMS-коду пока недоступен. Войдите через email.",
-  "social_login_off": "Вход через {name} пока недоступен. Войдите по email или телефону."
+  "social_login_off": "Вход через {name} пока недоступен. Войдите по email или телефону.",
+  "support_title": "Помощь",
+  "support_subtitle": "Напишите команде UzSL, ответ придёт сюда",
+  "support_placeholder": "Напишите ваш вопрос…",
+  "support_empty_title": "Чем можем помочь?",
+  "support_empty_text": "Задайте вопрос или расскажите о проблеме. Команда ответит здесь, и вы получите уведомление.",
+  "support_team": "Команда UzSL"
 }

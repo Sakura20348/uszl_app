@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:signlang/components/profile/group/support/supportChat.dart';
 import 'package:signlang/api/uzsl_api.dart';
 import 'package:signlang/services/app_loading.dart';
 
@@ -636,6 +637,7 @@ class _ProfileState extends State<Profile> {
         '1' => const StatisticsSheen(),
         '3' => const NotificationProfile(),
         '4' => const Saved(),
+        '6' => const SupportChat(),
         '7' => const AboutSheet(),
         _ => null,
       };

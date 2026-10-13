@@ -61,10 +61,7 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
     super.initState();
     _input.addListener(() => setState(() {}));
     final initial = widget.initialText?.trim() ?? '';
-    if (initial.isNotEmpty) {
-      _input.text = initial.length > _maxLength ? initial.substring(0, _maxLength) : initial;
-      WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _translate(); });
-    }
+    if (initial.isNotEmpty) { _input.text = initial.length > _maxLength ? initial.substring(0, _maxLength) : initial; WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _translate(); }); }
   }
 
   @override
@@ -110,10 +107,7 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
       await controller.initialize();
       await controller.setPlaybackSpeed(_speed);
       return controller;
-    } catch (_) {
-      controller.dispose();
-      return null;
-    }
+    } catch (_) { controller.dispose(); return null; }
   }
 
   Future<void> _playFrom(int i) async {
@@ -128,10 +122,7 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
       next = _preloaded;
       _preloaded = null; _preloadedIndex = -1;
       await next!.setPlaybackSpeed(_speed);
-    } else {
-      setState(() { _index = i; _playing = true; _finished = false; });
-      next = await _load(i);
-    }
+    } else { setState(() { _index = i; _playing = true; _finished = false; }); next = await _load(i); }
     if (!mounted || token != _playToken) { if (next != _video) next?.dispose(); return; }
 
     setState(() { _index = i; _video = next; _playing = true; _finished = false; _showMissing = next == null; });
@@ -265,12 +256,10 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
         builder: (sheetContext, setSheet) {
           final c = AppColors.of(sheetContext);
           return Container(
-            margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            padding: EdgeInsets.fromLTRB(18, 10, 18, 16 + MediaQuery.of(sheetContext).viewPadding.bottom * 0.5),
+            margin: const EdgeInsets.fromLTRB(12, 0, 12, 12), padding: EdgeInsets.fromLTRB(18, 10, 18, 16 + MediaQuery.of(sheetContext).viewPadding.bottom * 0.5),
             decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(26)),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(child: Container(width: 40, height: 5, decoration: BoxDecoration(color: c.track, borderRadius: BorderRadius.circular(3)))),
                 const SizedBox(height: 14),
@@ -358,23 +347,21 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // ===== 2) sign video =====
-                      _player(loc, c),
-                      const SizedBox(height: 10),
+                      _player(loc, c), const SizedBox(height: 10),
                       // ===== 3) again / speed / corner =====
-                      _videoActions(loc),
-                      const SizedBox(height: 12),
+                      _videoActions(loc), const SizedBox(height: 12),
                       // ===== 4) write text =====
-                      _inputCard(loc, c),
-                      const SizedBox(height: 12),
+                      _inputCard(loc, c), const SizedBox(height: 12),
                       // ===== 5) voice =====
-                      _voiceCard(loc, c),
-                      const SizedBox(height: 12),
+                      _voiceCard(loc, c), const SizedBox(height: 12),
                       // ===== 6) font =====
-                      Container(width: double.infinity, padding: const EdgeInsets.fromLTRB(14, 12, 14, 14), decoration: _cardDecoration(c), child: _fontControls(loc, c, _fontSize, _weight, (v) => setState(() => _fontSize = v), (v) => setState(() => _weight = v))),
+                      Container(
+                        width: double.infinity, padding: const EdgeInsets.fromLTRB(14, 12, 14, 14), decoration: _cardDecoration(c),
+                        child: _fontControls(loc, c, _fontSize, _weight, (v) => setState(() => _fontSize = v), (v) => setState(() => _weight = v))
+                      ),
                       const SizedBox(height: 12),
                       // ===== 7) tip =====
-                      _tipCard(loc, c),
-                      const SizedBox(height: 16),
+                      _tipCard(loc, c), const SizedBox(height: 16),
                       // ===== 8) main button =====
                       _mainButton(loc, c),
                     ],
@@ -615,8 +602,7 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
   Widget _fontControls(AppLocalizations loc, AppColors c, double size, int weight, ValueChanged<double> onSize, ValueChanged<int> onWeight) {
     final weightLabels = [loc.translate('gt_light'), loc.translate('gt_medium'), loc.translate('gt_bold')];
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min,
       children: [
         _label(loc.translate('gt_font_size')),
         Row(
@@ -624,7 +610,10 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
             Text('A', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.subText)),
             Expanded(
               child: SliderTheme(
-                data: SliderTheme.of(context).copyWith(trackHeight: 2, activeTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)), inactiveTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)), thumbColor: Colors.white, overlayColor: AppPalette.fg(_blue).withValues(alpha: 0.1), thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9, elevation: 3)),
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 2, activeTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)), inactiveTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)), thumbColor: Colors.white,
+                  overlayColor: AppPalette.fg(_blue).withValues(alpha: 0.1), thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9, elevation: 3)
+                ),
                 child: Slider(value: size, min: 14, max: 34, onChanged: onSize),
               ),
             ),
@@ -662,14 +651,12 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
 
   Widget _tipCard(AppLocalizations loc, AppColors c) {
     return Container(
-      width: double.infinity, padding: const EdgeInsets.all(14),
-      decoration: _cardDecoration(c),
+      width: double.infinity, padding: const EdgeInsets.all(14), decoration: _cardDecoration(c),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFFFEDD5)), borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFFFEDD5)), borderRadius: BorderRadius.circular(12)),
             child: Icon(Icons.info_rounded, size: 20, color: AppPalette.fg(const Color(0xFFF59E0B))),
           ),
           const SizedBox(width: 12),
@@ -730,17 +717,13 @@ class _FullScreenSign extends StatelessWidget {
           child: Stack(
             children: [
               Center(child: AspectRatio(aspectRatio: controller.value.aspectRatio, child: VideoPlayer(controller))),
-              Positioned(
-                top: 12, right: 12,
-                child: IconButton.filledTonal(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded)),
-              ),
+              Positioned(top: 12, right: 12, child: IconButton.filledTonal(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded))),
               if (label.isNotEmpty)
                 Positioned(
                   left: 0, right: 0, bottom: 24,
                   child: Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
                       child: Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                     ),
                   ),

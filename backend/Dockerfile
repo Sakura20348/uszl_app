@@ -5,6 +5,9 @@ COPY --from=ghcr.io/astral-sh/uv:0.12 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PROJECT_ENVIRONMENT=/opt/venv PATH=/opt/venv/bin:$PATH PYTHONUNBUFFERED=1
 WORKDIR /srv
 
+# ffmpeg re-encodes uploaded videos the phones can't play (app/media.py)
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
+
 # Dependencies first, so code changes don't reinstall them
 COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --frozen --no-dev --no-install-project

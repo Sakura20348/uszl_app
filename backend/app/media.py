@@ -1,6 +1,9 @@
 """Saving uploaded files under MEDIA_DIR (served at /media)."""
 
+import asyncio
 import re
+import shutil
+import subprocess
 import uuid
 from pathlib import Path
 
@@ -18,6 +21,28 @@ def _stored_name(filename: str | None, extension: str) -> str:
     """"Mushuk (1).MP4" -> "Mushuk-1.mp4": safe for URLs, short, with the right extension."""
     stem = re.sub(r"[^A-Za-z0-9_-]+", "-", Path(filename or "").stem).strip("-")[:40]
     return f"{stem or 'file'}{extension}"
+
+
+def _make_playable(path: Path) -> None:
+    """Phones only play H.264 in yuv420p; other videos (e.g. yuv444p) are re-encoded in place. Without ffmpeg they stay as uploaded."""
+    if not (shutil.which("ffmpeg") and shutil.which("ffprobe")):
+        return
+    probe = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name,pix_fmt", "-of", "csv=p=0", str(path)],
+        capture_output=True, text=True,
+    )
+    if probe.returncode != 0 or probe.stdout.strip() == "h264,yuv420p":
+        return
+    tmp = path.with_suffix(".tmp.mp4")
+    result = subprocess.run(
+        ["ffmpeg", "-v", "error", "-y", "-i", str(path), "-c:v", "libx264", "-profile:v", "main", "-pix_fmt", "yuv420p",
+         "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", "-crf", "20", "-movflags", "+faststart", "-c:a", "aac", str(tmp)],
+        capture_output=True,
+    )
+    if result.returncode == 0:
+        tmp.replace(path)
+    else:
+        tmp.unlink(missing_ok=True)
 
 
 async def save_upload(file: UploadFile, folder: str, allowed: dict[str, str]) -> MediaOut:
@@ -44,4 +69,6 @@ async def save_upload(file: UploadFile, folder: str, allowed: dict[str, str]) ->
     except BaseException:
         path.unlink(missing_ok=True)
         raise
+    if extension == ".mp4":
+        await asyncio.to_thread(_make_playable, path)
     return MediaOut(path=relative, url=media_url(relative) or "", name=file.filename or relative)

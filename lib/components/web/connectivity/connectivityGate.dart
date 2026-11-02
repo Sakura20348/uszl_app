@@ -38,11 +38,7 @@ class _ConnectivityGateState extends State<ConnectivityGate> {
 
   void _apply(List<ConnectivityResult> results) {
     if (!mounted) return;
-    if (_isOffline(results)) {
-      AppSheets.showNoInternet(onRetry: _retry);
-    } else {
-      AppSheets.hideNoInternet();
-    }
+    if (_isOffline(results)) { AppSheets.showNoInternet(onRetry: _retry); } else { AppSheets.hideNoInternet(); }
   }
 
   Future<void> _retry() async => _apply(await _connectivity.checkConnectivity());

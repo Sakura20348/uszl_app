@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// One achievement: its artwork, texts and the task that opens it ([target] reached by [progress]).
@@ -23,37 +25,42 @@ class AchievementService {
   static const _kNew = 'ach_new';
   static const _kNight = 'ach_night_lesson';
   static const _kPerfect = 'ach_perfect_lesson';
+  static const kTextbookDone = 'ach_textbook_done';
 
-  static int _streak(SharedPreferences p) {
-    final a = p.getInt('streak_count') ?? 0, b = p.getInt('stat_streak_record') ?? 0;
-    return a > b ? a : b;
-  }
+  static int _streak(SharedPreferences p) { final a = p.getInt('streak_count') ?? 0, b = p.getInt('stat_streak_record') ?? 0; return a > b ? a : b; }
 
-  static int _learnedSigns(SharedPreferences p) =>
-      (p.getStringList('lp_learned') ?? []).fold(0, (sum, e) => sum + (int.tryParse(e.split(':').last) ?? 0));
+  static int _learnedSigns(SharedPreferences p) => (p.getStringList('lp_learned') ?? []).fold(0, (sum, e) => sum + (int.tryParse(e.split(':').last) ?? 0));
 
   static int _learnedOf(SharedPreferences p, String id) {
-    for (final e in p.getStringList('lp_learned') ?? []) {
-      final parts = e.split(':');
-      if (parts.length == 2 && parts[0] == id) return int.tryParse(parts[1]) ?? 0;
-    }
+    for (final e in p.getStringList('lp_learned') ?? []) { final parts = e.split(':'); if (parts.length == 2 && parts[0] == id) return int.tryParse(parts[1]) ?? 0; }
     return 0;
   }
 
   static int _goalDays(SharedPreferences p) => (p.getStringList('stat_goal_days') ?? []).length;
   static int _flag(SharedPreferences p, String key) => (p.getBool(key) ?? false) ? 1 : 0;
 
+  // the app's own textbooks set the flag on their "lessons over" screen; dashboard ones count from the saved list
+  static int _textbookDone(SharedPreferences p) {
+    if (p.getBool(kTextbookDone) ?? false) return 1;
+    try {
+      final courses = jsonDecode(p.getString('published_textbooks') ?? '[]') as List;
+      return courses.any((c) { final lessons = c['lessonCount'] as int? ?? 0; return lessons > 0 && (c['completedLessons'] as int? ?? 0) >= lessons; }) ? 1 : 0;
+    } catch (_) { return 0; }
+  }
+
   static final List<AchievementDef> all = [
-    AchievementDef(id: '0', image: 'web/images/fire.png', titleKey: 'day_series', taskKey: 'ach_task_0', doneKey: 'day_series_sub', target: 7, progress: _streak),
-    AchievementDef(id: '1', image: 'web/images/books.png', titleKey: 'spelling_learner', taskKey: 'ach_task_1', doneKey: 'ach_done_1', target: 50, progress: _learnedSigns),
-    AchievementDef(id: '2', image: 'web/images/accuracy.png', titleKey: 'daily_goal', taskKey: 'ach_task_2', doneKey: 'ach_done_2', target: 1, progress: _goalDays),
-    AchievementDef(id: '3', image: 'web/images/night_learner.png', titleKey: 'night_learner', taskKey: 'ach_task_3', doneKey: 'ach_done_3', target: 1, progress: (p) => _flag(p, _kNight)),
-    AchievementDef(id: '4', image: 'web/images/electrical.png', titleKey: 'goal_days_7', taskKey: 'ach_task_4', doneKey: 'ach_done_4', target: 7, progress: _goalDays),
-    AchievementDef(id: '5', image: 'web/images/cyan_jewel.png', titleKey: 'perfect_level', taskKey: 'ach_task_5', doneKey: 'ach_done_5', target: 20, progress: (p) => (p.getStringList('lp_completed') ?? []).length),
-    AchievementDef(id: '6', image: '', titleKey: 'spelling_100', taskKey: 'ach_task_6', doneKey: 'ach_done_6', target: 100, progress: _learnedSigns),
-    AchievementDef(id: '7', image: 'web/images/star.png', titleKey: 'perfect_score', taskKey: 'ach_task_7', doneKey: 'ach_done_7', target: 1, progress: (p) => _flag(p, _kPerfect)),
-    AchievementDef(id: '8', image: 'web/images/calendar.png', titleKey: 'streak_30', taskKey: 'ach_task_8', doneKey: 'ach_done_8', target: 30, progress: _streak),
-    AchievementDef(id: '9', image: 'web/images/fire_hot.png', titleKey: 'alphabet_master', taskKey: 'ach_task_9', doneKey: 'ach_done_9', target: 28, progress: (p) => _learnedOf(p, '0')),
+    AchievementDef(id: '10', image: 'web/images/ach_sparkle.webp', titleKey: 'first_lesson', taskKey: 'ach_task_first', doneKey: 'ach_done_first', target: 1, progress: (p) => (p.getStringList('lp_completed') ?? []).length),
+    AchievementDef(id: '0', image: 'web/images/fire_hot.webp', titleKey: 'day_series', taskKey: 'ach_task_0', doneKey: 'day_series_sub', target: 7, progress: _streak),
+    AchievementDef(id: '11', image: 'web/images/pass.webp', titleKey: 'textbook_done', taskKey: 'ach_task_textbook', doneKey: 'ach_done_textbook', target: 1, progress: _textbookDone),
+    AchievementDef(id: '1', image: 'web/images/ach_pencil.webp', titleKey: 'spelling_learner', taskKey: 'ach_task_1', doneKey: 'ach_done_1', target: 50, progress: _learnedSigns),
+    AchievementDef(id: '2', image: 'web/images/ach_target.webp', titleKey: 'daily_goal', taskKey: 'ach_task_2', doneKey: 'ach_done_2', target: 1, progress: _goalDays),
+    AchievementDef(id: '3', image: 'web/images/ach_moon.webp', titleKey: 'night_learner', taskKey: 'ach_task_3', doneKey: 'ach_done_3', target: 1, progress: (p) => _flag(p, _kNight)),
+    AchievementDef(id: '4', image: 'web/images/ach_lightning.webp', titleKey: 'goal_days_7', taskKey: 'ach_task_4', doneKey: 'ach_done_4', target: 7, progress: _goalDays),
+    AchievementDef(id: '5', image: 'web/images/cyan_jewel.webp', titleKey: 'perfect_level', taskKey: 'ach_task_5', doneKey: 'ach_done_5', target: 20, progress: (p) => (p.getStringList('lp_completed') ?? []).length),
+    AchievementDef(id: '6', image: 'web/images/ach_book.webp', titleKey: 'spelling_100', taskKey: 'ach_task_6', doneKey: 'ach_done_6', target: 100, progress: _learnedSigns),
+    AchievementDef(id: '7', image: 'web/images/star.webp', titleKey: 'perfect_score', taskKey: 'ach_task_7', doneKey: 'ach_done_7', target: 1, progress: (p) => _flag(p, _kPerfect)),
+    AchievementDef(id: '8', image: 'web/images/calendar.webp', titleKey: 'streak_30', taskKey: 'ach_task_8', doneKey: 'ach_done_8', target: 30, progress: _streak),
+    AchievementDef(id: '9', image: 'web/images/ach_pencil.webp', titleKey: 'alphabet_master', taskKey: 'ach_task_9', doneKey: 'ach_done_9', target: 28, progress: (p) => _learnedOf(p, '0')),
   ];
 
   SharedPreferences? _prefs;

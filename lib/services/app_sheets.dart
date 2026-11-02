@@ -48,14 +48,11 @@ class AppSheets {
     final id = _open.entries.where((e) => e.value == route).map((e) => e.key).firstOrNull;
     if (id == null) return;
     _open.remove(id);
-    if (removed && id == 'noInternet') {
-      WidgetsBinding.instance.addPostFrameCallback((_) => onNoInternetRemoved?.call());
-    }
+    if (removed && id == 'noInternet') { WidgetsBinding.instance.addPostFrameCallback((_) => onNoInternetRemoved?.call()); }
   }
 
   // ---------------- No internet ----------------
-  static Future<void> showNoInternet({required VoidCallback onRetry}) =>
-      _showOnce('noInternet', (context) => NoInternetSheet.show(context, onRetry: onRetry));
+  static Future<void> showNoInternet({required VoidCallback onRetry}) => _showOnce('noInternet', (context) => NoInternetSheet.show(context, onRetry: onRetry));
 
   /// Closes the no-internet sheet (e.g. when the connection comes back).
   static void hideNoInternet() {
@@ -69,12 +66,7 @@ class AppSheets {
   }
 
   // ---------------- Server error ----------------
-  static Future<void> showServerError({VoidCallback? onRetry}) => _showOnce('serverError', (context) {
-    return ErrorSheet.show(context, sheet: ErrorSheet.server(onRetry: () {
-      navigatorKey.currentState?.pop();
-      onRetry?.call();
-    }));
-  });
+  static Future<void> showServerError({VoidCallback? onRetry}) => _showOnce('serverError', (context) { return ErrorSheet.show(context, sheet: ErrorSheet.server(onRetry: () { navigatorKey.currentState?.pop(); onRetry?.call(); })); });
 
   // ---------------- Session ended ----------------
   static Future<void> showSessionEnded() => _showOnce('sessionEnded', (context) => SessionEndedSheet.show(context));
@@ -95,15 +87,11 @@ class AppSheets {
     try {
       final info = await PackageInfo.fromPlatform();
       if (!_isOlder(info.version, minVersion)) return false;
-    } catch (_) {
-      return false;
-    }
+    } catch (_) { return false; }
     _showOnce('update', (context) => UpdateSheet.show(context, onUpdate: () async {
       try {
         return await launchUrl(Uri.parse(storeUrl), mode: LaunchMode.externalApplication);
-      } catch (_) {
-        return false;
-      }
+      } catch (_) { return false; }
     }));
     return true;
   }

@@ -16,38 +16,20 @@ class GradientLoading extends StatefulWidget {
   State<GradientLoading> createState() => _GradientLoadingState();
 }
 
-class _GradientLoadingState extends State<GradientLoading>
-    with SingleTickerProviderStateMixin {
+class _GradientLoadingState extends State<GradientLoading> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    )..repeat(); // spin forever
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))..repeat(); // spin forever
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  void dispose() { _controller.dispose(); super.dispose(); }
 
   @override
-  Widget build(BuildContext context) {
-    return RotationTransition(
-      turns: _controller,
-      child: CustomPaint(
-        size: Size(widget.size, widget.size),
-        painter: _GradientCircularPainter(
-          progress: 0.75, // fixed arc length (3/4 circle) that spins
-          strokeWidth: widget.strokeWidth,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) { return RotationTransition(turns: _controller, child: CustomPaint(size: Size(widget.size, widget.size), painter: _GradientCircularPainter(progress: 0.75, strokeWidth: widget.strokeWidth))); }
 }
 
 class _GradientCircularPainter extends CustomPainter {
@@ -91,7 +73,5 @@ class _GradientCircularPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _GradientCircularPainter oldDelegate) {
-    return oldDelegate.progress != progress;
-  }
+  bool shouldRepaint(covariant _GradientCircularPainter oldDelegate) { return oldDelegate.progress != progress; }
 }

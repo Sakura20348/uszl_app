@@ -40,16 +40,10 @@ class SessionTracker with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
-      _finish();
-    } else if (state == AppLifecycleState.resumed && _source != null) {
-      _startedAt ??= DateTime.now();
-    }
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) { _finish(); }
+    else if (state == AppLifecycleState.resumed && _source != null) { _startedAt ??= DateTime.now(); }
   }
 
   /// The main screen closed (log out): send the visit and stop.
-  static void stop() {
-    _finish();
-    _source = null;
-  }
+  static void stop() { _finish(); _source = null; }
 }

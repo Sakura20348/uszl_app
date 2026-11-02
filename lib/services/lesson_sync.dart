@@ -27,17 +27,14 @@ class LessonSync {
     final pending = prefs.getStringList(_pendingKey) ?? [];
     if (pending.isEmpty) return;
     final left = <String>[];
-    for (final raw in pending) {
-      if (!await _send(jsonDecode(raw) as Map<String, dynamic>)) left.add(raw);
-    }
+    for (final raw in pending) { if (!await _send(jsonDecode(raw) as Map<String, dynamic>)) left.add(raw); }
     await prefs.setStringList(_pendingKey, left);
   }
 
   /// True when the server took it, or refused it for good (e.g. unknown lesson): nothing to retry.
   static Future<bool> _send(Map<String, dynamic> r) async {
     try {
-      await UzslApi.completeBuiltinLesson(r['key'] as String,
-          correct: r['correct'] as int, wrong: r['wrong'] as int, durationSeconds: r['duration'] as int);
+      await UzslApi.completeBuiltinLesson(r['key'] as String, correct: r['correct'] as int, wrong: r['wrong'] as int, durationSeconds: r['duration'] as int);
       return true;
     } on ApiException catch (e) {
       debugPrint('Lesson result not sent (${r['key']}): $e');

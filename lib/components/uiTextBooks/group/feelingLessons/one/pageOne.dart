@@ -21,7 +21,7 @@ class _FeelingsAndCoarseState extends State<FeelingsAndCoarse> {
 
 // =======================================================================
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
-  Future<void> _handleRefresh() async { setState(() {_isLoading = true;}); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
   @override
@@ -63,7 +63,7 @@ class _FeelingsAndCoarseState extends State<FeelingsAndCoarse> {
                               color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Colors.white)),
                               boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.9), blurRadius: 15)],
                             ),
-                            child: Center(child: Image.asset('web/images/plus_sign.png', width: 183, height: 171)),
+                            child: Center(child: Image.asset('web/images/plus_sign.webp', width: 183, height: 171)),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -80,9 +80,9 @@ class _FeelingsAndCoarseState extends State<FeelingsAndCoarse> {
                             ),
                             child: Row(
                               children: [
-                                _stat('web/icons/time.png', loc.translate('duration'), '5 ${loc.translate('time')}'), _divider(),
-                                _stat('web/icons/level.png', loc.translate('level'), loc.translate('medium')), _divider(),
-                                _stat('web/icons/hand.png', loc.translate('gesture'), '10 ${loc.translate('pieces')}'),
+                                _stat('web/icons/time.webp', loc.translate('duration'), '5 ${loc.translate('time')}'), _divider(),
+                                _stat('web/icons/level.webp', loc.translate('level'), loc.translate('medium')), _divider(),
+                                _stat('web/icons/hand.webp', loc.translate('gesture'), '10 ${loc.translate('pieces')}'),
                               ],
                             ),
                           ),
@@ -98,7 +98,7 @@ class _FeelingsAndCoarseState extends State<FeelingsAndCoarse> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFFFF176)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.yellow)), borderRadius: BorderRadius.circular(15)),
-                                  child: Image.asset('web/icons/info_yellow.png', width: 28, height: 28, color: AppPalette.fg(Colors.orange)),
+                                  child: Image.asset('web/icons/info_yellow.webp', width: 28, height: 28, color: AppPalette.fg(Colors.orange)),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(

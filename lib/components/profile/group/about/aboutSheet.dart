@@ -61,16 +61,16 @@ class _AboutSheetState extends State<AboutSheet> {
     } finally { if (mounted) setState(() => _facebookLoading = false); }
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _loadVersion() async { final info = await PackageInfo.fromPlatform(); if (mounted) { setState(() => _appVersion = info.version); } }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations loc = AppLocalizations.of(context)!;
-    const ImageInstagram = 'web/icons/instagram.png'; const ImageTelegram = 'web/icons/telegram.png'; const ImageFacebook = 'web/icons/facebook.png';
+    const ImageInstagram = 'web/icons/instagram.webp'; const ImageTelegram = 'web/icons/telegram.webp'; const ImageFacebook = 'web/icons/facebook.webp';
 
-    final Color isColors = _selectedIndex == -1 ? AppPalette.auto(Color(0xFFBBDEFB)).withOpacity(0.9) : AppPalette.auto(Color(0xFFBBDEFB)).withOpacity(0.5);
-    final Color isColor =_selectedIndex == -1 ? AppPalette.auto(Color(0xFF4A7FD0)).withOpacity(0.5) : AppPalette.auto(Color(0xFF4A7FD0)).withOpacity(0.1);
+    final Color isColors = _selectedIndex == -1 ? AppPalette.auto(Color(0xFFBBDEFB)).withValues(alpha: 0.9) : AppPalette.auto(Color(0xFFBBDEFB)).withValues(alpha: 0.5);
+    final Color isColor =_selectedIndex == -1 ? AppPalette.auto(Color(0xFF4A7FD0)).withValues(alpha: 0.5) : AppPalette.auto(Color(0xFF4A7FD0)).withValues(alpha: 0.1);
 
     return Scaffold(
       body: Container(
@@ -91,11 +91,8 @@ class _AboutSheetState extends State<AboutSheet> {
                           padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
                           child: GestureDetector(
                             onTap: () => Navigator.pop(context),
-                            child: Container(
-                              padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)),
-                              child: const Icon(Icons.arrow_back_outlined),
-                            )
-                          ),
+                            child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined))
+                          )
                         ),
                         const SizedBox(height: 18),
                         Padding(
@@ -112,14 +109,12 @@ class _AboutSheetState extends State<AboutSheet> {
                         Center(
                           child: Column(
                             children: [
-                              Image.asset('web/images/sign_lang_wrap.png', width: 120, height: 100, color: AppPalette.fg(Colors.blue[600]!)),
-                              const SizedBox(height: 12),
-                              Text('Uzbek Sign Language', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 25))
-                            ],
-                          ),
+                              Image.asset('web/images/sign_lang_wrap.webp', width: 120, height: 100, color: AppPalette.fg(Colors.blue[600]!)),
+                              const SizedBox(height: 12), Text('Uzbek Sign Language', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 25))
+                            ]
+                          )
                         ),
-                        const SizedBox(height: 32),
-                        Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Column(children: List.generate(aboutItem.length, (index) { return _buildAbout(aboutItem[index]); }))),
+                        const SizedBox(height: 32), Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Column(children: List.generate(aboutItem.length, (index) { return _buildAbout(aboutItem[index]); }))),
                         const SizedBox(height: 18),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -139,72 +134,58 @@ class _AboutSheetState extends State<AboutSheet> {
                               Expanded(
                                 child: Container(
                                   height: 72,
-                                  decoration: BoxDecoration(
-                                    color: AppPalette.bg(Color(0xFFF1F5F9)).withOpacity(0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)],
-                                  ),
+                                  decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFF1F5F9)).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)]),
                                   child: Material(
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(24), onTap: (_instagramLoading) ? null : _handleInstagram,
-                                      child: Center(
-                                        child: _instagramLoading ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0)))) : Image.asset(ImageInstagram, width: 36, height: 36),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                      child: Center(child: _instagramLoading ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0)))) : Image.asset(ImageInstagram, width: 36, height: 36))
+                                    )
+                                  )
+                                )
                               ),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Container(
                                   height: 72,
-                                  decoration: BoxDecoration(
-                                    color: AppPalette.bg(Color(0xFFF1F5F9)).withOpacity(0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)],
-                                  ),
+                                  decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFF1F5F9)).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)]),
                                   child: Material(
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(24), onTap: (_telegramLoading) ? null : _handleTelegram,
-                                      child: Center(
-                                        child: _telegramLoading
-                                          ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0)))) : Image.asset(ImageTelegram, width: 36, height: 36),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                      child: Center(child: _telegramLoading ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0)))) : Image.asset(ImageTelegram, width: 36, height: 36))
+                                    )
+                                  )
+                                )
                               ),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Container(
                                   height: 72,
-                                  decoration: BoxDecoration(
-                                    color: AppPalette.bg(Color(0xFFF1F5F9)).withOpacity(0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)],
-                                  ),
+                                  decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFF1F5F9)).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)]),
                                   child: Material(
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(24), onTap: (_facebookLoading) ? null : _handleFacebook,
-                                      child: Center(
-                                        child: _facebookLoading
-                                          ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0)))) : Image.asset(ImageFacebook, width: 36, height: 36),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                                      child: Center(child: _facebookLoading ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0)))) : Image.asset(ImageFacebook, width: 36, height: 36))
+                                    )
+                                  )
+                                )
+                              )
+                            ]
+                          )
                         ),
                         const SizedBox(height: 18),
                         SizedBox(width: double.infinity, child: Align(alignment: Alignment.center, child: Text('App version $_appVersion', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11, color: AppPalette.fg(Colors.grey))))),
                         const SizedBox(height: 18)
-                      ],
-                    ),
+                      ]
+                    )
                   )
-              ],
+              ]
             )
           )
-        ),
-      ),
+        )
+      )
     );
   }
 
@@ -214,7 +195,7 @@ class _AboutSheetState extends State<AboutSheet> {
       child: Container(
         width: double.infinity, padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 18),
         decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white).withOpacity(0.4), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF29B6F6)).withOpacity(0.9), blurRadius: 15)]
+          color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF29B6F6)).withValues(alpha: 0.9), blurRadius: 15)]
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -223,8 +204,7 @@ class _AboutSheetState extends State<AboutSheet> {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
+                    padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
                     child: Image.asset(item['image'], width: 22, height: 22),
                   ),
                   const SizedBox(width: 12),
@@ -233,22 +213,21 @@ class _AboutSheetState extends State<AboutSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(item['titleKey'] ?? '', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
-                        Text(item['subKey'] ?? '', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13, color: AppPalette.fg(Colors.grey[700]!)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                        Text(item['subKey'] ?? '', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13, color: AppPalette.fg(Colors.grey[700]!)), maxLines: 1, overflow: TextOverflow.ellipsis)
+                      ]
+                    )
+                  )
+                ]
+              )
             ),
             const SizedBox(width: 12),
             Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
-              child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: 24, color: AppPalette.fg(Color(0xFF0D47A1)).withOpacity(0.9))),
+              padding: const EdgeInsets.all(2), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
+              child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: 24, color: AppPalette.fg(Color(0xFF0D47A1)).withValues(alpha: 0.9)))
             )
-          ],
-        ),
-      ),
+          ]
+        )
+      )
     );
   }
 }

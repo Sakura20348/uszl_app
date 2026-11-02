@@ -25,14 +25,10 @@ class _DownloadState extends State<Download> {
   void initState() { super.initState(); _initData(); }
 
   @override
-  void dispose() {
-    for (final t in _timers.values) { t.cancel(); }
-    super.dispose();
-  }
+  void dispose() { for (final t in _timers.values) { t.cancel(); } super.dispose(); }
 
   Future<void> _initData() async { await Future.delayed(const Duration(milliseconds: 800)); if (!mounted) return; setState(() { _isLoading = false; }); }
-
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initData(); }
+  Future<void> _handleRefresh() async { await _initData(); }
 
   // Tap handler: starts the download. Ignored if already downloading/completed.
   void _startDownload(int index) {
@@ -55,8 +51,7 @@ class _DownloadState extends State<Download> {
     final loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: _handleRefresh, notificationPredicate: (ScrollNotification n) => n.depth == 0,
@@ -75,21 +70,18 @@ class _DownloadState extends State<Download> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 24),
-                          Text(loc.translate('offline_download'), style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A)))),
-                          const SizedBox(height: 4),
-                          Text(loc.translate('offline_download_sub'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.blueGrey).withOpacity(0.7))),
-                          const SizedBox(height: 24),
-                          _buildDownloadContent(loc),
-                        ],
+                          const SizedBox(height: 24), Text(loc.translate('offline_download'), style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A)))),
+                          const SizedBox(height: 4), Text(loc.translate('offline_download_sub'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.blueGrey).withValues(alpha: 0.7))),
+                          const SizedBox(height: 24), _buildDownloadContent(loc)
+                        ]
                       )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+                  ]
+                )
+              )
+            )
+          )
+        )
+      )
     );
   }
 
@@ -98,12 +90,9 @@ class _DownloadState extends State<Download> {
       onTap: () => Navigator.pop(context),
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
-        ),
-        child: Icon(Icons.arrow_back_outlined, color: AppPalette.fg(Color(0xFF334155)), size: 22),
-      ),
+        decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))]),
+        child: Icon(Icons.arrow_back_outlined, color: AppPalette.fg(Color(0xFF334155)), size: 22)
+      )
     );
   }
 
@@ -112,14 +101,11 @@ class _DownloadState extends State<Download> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (int i = 0; i < downloadItems.length; i++) _buildDownloadCard(i, downloadItems[i], loc),
-        const SizedBox(height: 5),
-        Text(loc.translate('settings'), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
-        _buildSettingTile( loc.translate('only_wifi'), loc.translate('only_wifi_sub'), _onlyWifi, Icons.wifi, (val) => setState(() => _onlyWifi = val) ),
-        const SizedBox(height: 12),
-        _buildSettingTile( loc.translate('automatic_update'), loc.translate('automatic_update_sub'), _autoUpdate, Icons.refresh_rounded, (val) => setState(() => _autoUpdate = val) ),
-        const SizedBox(height: 40),
-      ],
+        const SizedBox(height: 5), Text(loc.translate('settings'), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16), _buildSettingTile( loc.translate('only_wifi'), loc.translate('only_wifi_sub'), _onlyWifi, Icons.wifi, (val) => setState(() => _onlyWifi = val) ),
+        const SizedBox(height: 12), _buildSettingTile( loc.translate('automatic_update'), loc.translate('automatic_update_sub'), _autoUpdate, Icons.refresh_rounded, (val) => setState(() => _autoUpdate = val) ),
+        const SizedBox(height: 40)
+      ]
     );
   }
 
@@ -132,7 +118,7 @@ class _DownloadState extends State<Download> {
       margin: const EdgeInsets.only(bottom: 16), padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.3), borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppPalette.border(Colors.white), width: 1), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF90CAF9)).withOpacity(0.9), blurRadius: 15)]
+        border: Border.all(color: AppPalette.border(Colors.white), width: 1), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF90CAF9)).withValues(alpha: 0.9), blurRadius: 15)]
       ),
       child: Column(
         children: [
@@ -148,13 +134,13 @@ class _DownloadState extends State<Download> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(loc.translate(item['key']), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF1E293B)))),
-                    Text(item['size'], style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.blueGrey).withOpacity(0.9))),
-                  ],
-                ),
+                    Text(item['size'], style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.blueGrey).withValues(alpha: 0.9)))
+                  ]
+                )
               ),
               // The animated download button (replaces the old status icon).
-              DownloadButton(status: item['status'] as String, onTap: () => _startDownload(index)),
-            ],
+              DownloadButton(status: item['status'] as String, onTap: () => _startDownload(index))
+            ]
           ),
           if (isDownloading) ...[
             const SizedBox(height: 16),
@@ -167,12 +153,12 @@ class _DownloadState extends State<Download> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text('${(progress * 100).toInt()}%', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF64748B)))),
-              ],
-            ),
+                Text('${(progress * 100).toInt()}%', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF64748B))))
+              ]
+            )
           ]
-        ],
-      ),
+        ]
+      )
     );
   }
 
@@ -181,7 +167,7 @@ class _DownloadState extends State<Download> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.3), borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppPalette.border(Colors.white), width: 1), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF90CAF9)).withOpacity(0.9), blurRadius: 15)]
+        border: Border.all(color: AppPalette.border(Colors.white), width: 1), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF90CAF9)).withValues(alpha: 0.9), blurRadius: 15)]
       ),
       child: Row(
         children: [
@@ -195,14 +181,14 @@ class _DownloadState extends State<Download> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF1E293B)))),
-                Text(subtitle, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.blueGrey).withOpacity(0.9))),
+                Text(subtitle, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.blueGrey).withValues(alpha: 0.9))),
               ],
             ),
           ),
           const SizedBox(width: 10),
           CustomSwitch(value: value, onChanged: onChanged) // custom switch
-        ],
-      ),
+        ]
+      )
     );
   }
 }

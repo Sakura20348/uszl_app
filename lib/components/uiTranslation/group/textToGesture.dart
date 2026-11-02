@@ -324,28 +324,31 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
         decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient)),
         child: SafeArea(
           bottom: false,
-          child: Column(
+          child: RefreshIndicator(
+            onRefresh: () async {}, notificationPredicate: (ScrollNotification notification) {return notification.depth == 0;},
+            child: Column(
             children: [
-              // ===== 1) header =====
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
-                    ),
-                    Expanded(child: Text(loc.translate('text_gesture'), textAlign: TextAlign.center, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text))),
-                    const SizedBox(width: 48),
-                  ],
-                ),
-              ),
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 16 + MediaQuery.of(context).viewPadding.bottom),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // ===== 1) header =====
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 16),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
+                            ),
+                            Expanded(child: Text(loc.translate('text_gesture'), textAlign: TextAlign.center, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text))),
+                            const SizedBox(width: 48),
+                          ],
+                        ),
+                      ),
                       // ===== 2) sign video =====
                       _player(loc, c), const SizedBox(height: 10),
                       // ===== 3) again / speed / corner =====
@@ -369,7 +372,7 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
                 ),
               ),
             ],
-          ),
+          )),
         ),
       ),
     );
@@ -607,7 +610,7 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
         _label(loc.translate('gt_font_size')),
         Row(
           children: [
-            Text('A', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.subText)),
+            Text('A', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.text)),
             Expanded(
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
@@ -617,15 +620,18 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
                 child: Slider(value: size, min: 14, max: 34, onChanged: onSize),
               ),
             ),
-            Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: c.subText)),
+            Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: c.text)),
           ],
         ),
         const SizedBox(height: 4),
-        Text(loc.translate('gt_font_weight'), style: TextStyle(fontSize: 13, color: c.subText)),
+        Text(loc.translate('gt_font_weight'), style: TextStyle(fontSize: 13, color: c.text)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE2E8F0)).withValues(alpha: 0.7), borderRadius: BorderRadius.circular(14)),
+          decoration: BoxDecoration(
+            color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(14), border: Border.all(width: 1, color: AppPalette.border(Colors.white)),
+            boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.9), blurRadius: 15)]
+          ),
           child: Row(
             children: [
               for (int i = 0; i < 3; i++)
@@ -651,12 +657,17 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
 
   Widget _tipCard(AppLocalizations loc, AppColors c) {
     return Container(
-      width: double.infinity, padding: const EdgeInsets.all(14), decoration: _cardDecoration(c),
+      width: double.infinity, padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppPalette.bg(Color(0xFFFFCC80)).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFFFC107)).withValues(alpha: 0.2)),
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFFFFCC80)).withValues(alpha: 0.9), blurRadius: 15)]
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFFFEDD5)), borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFFFF176).withValues(alpha: 0.6)), border: Border.all(width: 1, color: AppPalette.border(Colors.yellow)), borderRadius: BorderRadius.circular(12)),
             child: Icon(Icons.info_rounded, size: 20, color: AppPalette.fg(const Color(0xFFF59E0B))),
           ),
           const SizedBox(width: 12),
@@ -666,7 +677,7 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
               children: [
                 Text(loc.translate('gt_tip_title'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.text)),
                 const SizedBox(height: 4),
-                Text(loc.translate('tg_tip'), style: TextStyle(fontSize: 13, height: 1.4, color: c.subText)),
+                Text(loc.translate('gt_tip'), style: TextStyle(fontSize: 15, height: 1.4, color: c.text.withValues(alpha: 0.7))),
               ],
             ),
           ),
@@ -683,7 +694,10 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
           onPressed: _rewrite,
           icon: Icon(Icons.refresh_rounded, color: c.subText),
           label: Text(loc.translate('gt_retake'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: c.subText)),
-          style: TextButton.styleFrom(backgroundColor: c.isDark ? c.chip : Colors.white.withValues(alpha: 0.6), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+          style: TextButton.styleFrom(
+            backgroundColor: c.isDark ? c.chip : Colors.white.withValues(alpha: 0.6), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)), elevation: 6,
+            side: BorderSide(width: 1, color: c.isDark ? c.chip : Color(0xFF1A237E).withValues(alpha: 0.2)), shadowColor: c.isDark ? c.chip : Colors.grey.withValues(alpha: 0.9),
+          ),
         ),
       );
     }
@@ -692,8 +706,9 @@ class _TextToGestureState extends State<TextToGesture> with SingleTickerProvider
       child: ElevatedButton(
         onPressed: _input.text.trim().isEmpty ? null : _translate,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppPalette.bg(_blue), foregroundColor: Colors.white, disabledBackgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.45), disabledForegroundColor: Colors.white,
-          elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          backgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.1), foregroundColor: AppPalette.fg(Colors.white), shadowColor: AppPalette.bg(_blue).withValues(alpha: 0.9),
+          disabledBackgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.5), disabledForegroundColor: Colors.white,
+          elevation: 6, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         ),
         child: Text(loc.translate('gt_translate'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       ),

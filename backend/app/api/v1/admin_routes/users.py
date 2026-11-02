@@ -41,6 +41,7 @@ from app.schemas.admin import (
     PerformanceMonth,
     PerformanceOut,
     PerformanceType,
+    LessonLearner,
     PopularLesson,
     StatsOut,
 )
@@ -194,6 +195,22 @@ async def popular_lessons(db: DB, limit: int = Query(default=5, ge=1, le=20)) ->
             average_accuracy=round(avg) if avg is not None else None,
         )
         for lid, lt, cid, ct, icon, c, n, avg in rows.all()
+    ]
+
+
+@router.get("/stats/popular-lessons/{lesson_id}/learners", response_model=list[LessonLearner], tags=["admin: users"])
+async def lesson_learners(lesson_id: int, db: DB) -> list[LessonLearner]:
+    """Learners who completed the lesson, most recent first."""
+    await get_or_404(db, Lesson, lesson_id, "Lesson")
+    rows = await db.execute(
+        select(User.id, User.full_name, User.phone, User.avatar, UserLessonProgress.best_accuracy, UserLessonProgress.completed_at)
+        .join(User, User.id == UserLessonProgress.user_id)
+        .where(UserLessonProgress.lesson_id == lesson_id, UserLessonProgress.status == "completed", User.is_staff.is_(False))
+        .order_by(UserLessonProgress.completed_at.desc().nulls_last(), User.id)
+    )
+    return [
+        LessonLearner(user_id=uid, name=name or "", phone=phone or "", avatar=avatar, accuracy=acc, completed_at=at)
+        for uid, name, phone, avatar, acc, at in rows.all()
     ]
 
 

@@ -18,7 +18,7 @@ class _WellDoneState extends State<WellDone> {
 
   @override
   Widget build(BuildContext context){
-    const String ImagePath = 'web/images/well_done.png';
+    const String ImagePath = 'web/images/well_done.webp';
 
     final greatData = GreatData(context: context);
     final greatItem = greatData.storeGreatItem['0'] ?? [];

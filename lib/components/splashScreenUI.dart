@@ -28,8 +28,7 @@ class _SplashScreenUIState extends State<SplashScreenUI> {
               // --- 1) ---
               Column(
                 children: [
-                  Image.asset('web/images/sign_lang_wrap.png', width: 120, height: 100, color: AppPalette.fg(Colors.blue[600]!)),
-                  const SizedBox(height: 24),
+                  Image.asset('web/images/sign_lang_wrap.webp', width: 120, height: 100, color: AppPalette.fg(Colors.blue[600]!)), const SizedBox(height: 24),
                   Text('Uzbek Sign\nLanguage', textAlign: TextAlign.center, style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppPalette.fg(Colors.black))),
                 ],
               ),
@@ -39,18 +38,16 @@ class _SplashScreenUIState extends State<SplashScreenUI> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Powered by ', style: TextStyle(color: AppPalette.fg(Colors.grey[600]!), fontSize: 13)),
-                    const SizedBox(width: 6),
-                    Image.asset('web/images/zehnmind.png', width: 20, height: 20),
-                    const SizedBox(width: 6),
-                    Text('zehnmind.ai', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppPalette.fg(Colors.black87))),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                    Text('Powered by ', style: TextStyle(color: AppPalette.fg(Colors.grey[600]!), fontSize: 13)), const SizedBox(width: 6),
+                    Image.asset('web/images/zehnmind.webp', width: 20, height: 20), const SizedBox(width: 6),
+                    Text('zehnmind.ai', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppPalette.fg(Colors.black87)))
+                  ]
+                )
+              )
+            ]
+          )
+        )
+      )
     );
   }
 }

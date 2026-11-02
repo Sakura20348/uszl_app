@@ -4,11 +4,15 @@ import 'package:shimmer/shimmer.dart';
 import 'package:signlang/components/uiDictionary/skeleton/skeleton.dart';
 import 'package:signlang/l10n/app_localizations.dart';
 
-import '../../nameDictionary/nameDictionary.dart';
+import 'package:signlang/api/uzsl_api.dart';
+import 'package:signlang/components/uiDictionary/server/category_icon.dart';
 
 import 'package:signlang/services/theme_service.dart';
+/// Every dictionary category from the dashboard. Tapping one closes this page with its index,
+/// and the dictionary opens that category's signs.
 class AllPhrases extends StatefulWidget{
-  const AllPhrases({super.key});
+  final List<ApiCategory> categories;
+  const AllPhrases({super.key, required this.categories});
 
   @override
   State<AllPhrases> createState() => _AllPhrasesState();
@@ -17,22 +21,12 @@ class AllPhrases extends StatefulWidget{
 class _AllPhrasesState extends State<AllPhrases> {
   bool _isLoading = true;
 
-  late final StoresDictionaryCardsData storesData;
-  late final List<Map<String, dynamic>> items;
-
 // =======================================================================
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    storesData = StoresDictionaryCardsData(context: context);
-    items = (storesData.storesDictionaryCardsByCategory['0'] ?? []).where((s) => s['id'] != '0').toList();
-  }
-
   @override
   void initState() { super.initState(); _initData(); }
 
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
   @override
@@ -57,29 +51,29 @@ class _AllPhrasesState extends State<AllPhrases> {
                         children: [
                           GestureDetector(
                             onTap: () => Navigator.pop(context),
-                            child: Container(
-                              padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)),
-                              child: const Icon(Icons.arrow_back_outlined),
-                            )
+                            child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined))
                           ),
-                          const SizedBox(height: 16),
-                          Text(AppLocalizations.of(context)!.translate('all_phrases'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 30)),
-                          const SizedBox(height: 16),
-                          Column(children: List.generate(items.length, (index) => _categoryColumn(items[index], '0')))
-                        ],
-                      ),
-                    ),
+                          const SizedBox(height: 16), Text(AppLocalizations.of(context)!.translate('all_phrases'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 30)),
+                          const SizedBox(height: 16), Column(children: List.generate(widget.categories.length, (index) => _categoryColumn(index)))
+                        ]
+                      )
+                    )
                   )
-              ],
+              ]
             )
           )
-        ),
-      ),
+        )
+      )
     );
   }
-  Widget _categoryColumn(Map<String, dynamic> item, String categoryId) {
+
+  Widget _categoryColumn(int index) {
+    final cat = widget.categories[index];
+    final loc = AppLocalizations.of(context)!;
+    final lang = Localizations.localeOf(context).languageCode;
+    final unit = lang == 'uz' && (cat.unitLabel?.isNotEmpty ?? false) ? cat.unitLabel! : loc.translate('dict_signs_count');
     return GestureDetector(
-      onTap: () => _openLessonsAll(categoryId, item),
+      onTap: () => Navigator.pop(context, index),
       child: Container(
         margin: const EdgeInsets.only(bottom: 18), padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -90,45 +84,26 @@ class _AllPhrasesState extends State<AllPhrases> {
           children: [
             Container(
               height: 56, width: 56, decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(16)),
-              child: Center(child: Image.asset(item['image'], width: 30, height: 30, color: AppPalette.fg(Colors.blue), errorBuilder: (_, __, ___) => Icon(Icons.person, size: 35, color: AppPalette.fg(Colors.blue)))),
+              child: Center(child: CategoryIcon(cat.icon ?? CategoryIcon.bySlug[cat.slug] ?? CategoryIcon.fallback, size: 30, color: AppPalette.fg(Colors.blue))),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item['title'], style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                  Text(item['title_sub'] ?? '', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[700]!))),
-                ],
-              ),
+                  Text(cat.nameFor(lang), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                  Text('${cat.signCount} $unit', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[700]!)))
+                ]
+              )
             ),
             Container(
               padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), shape: BoxShape.circle),
-              child: const Icon(Icons.chevron_right),
+              child: const Icon(Icons.chevron_right)
             )
-          ],
-        ),
-      ),
+          ]
+        )
+      )
     );
   }
 
-  // =======================================================================
-  Future<void> _openLessonsAll(String categoryId, Map<String, dynamic> item) async {
-    final id = item['id'];
-    Widget? page;
-
-    if (categoryId == '0') {
-      page = switch (id) {
-      // '0' => const AlphabetResult(),
-      // '1' => const FamilyResult(),
-      // '2' => const AlphabetResult(),
-      // '3' => const AlphabetResult(),
-        _ => null,
-      };
-    }
-
-    if (page == null) return;
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => page!));
-    if (mounted) setState(() {});
-  }
 }

@@ -54,9 +54,7 @@ class _CodeNumberState extends State<CodeNumber> {
   void _startTimer() {
     _timer?.cancel();
     setState(() => _secondsLeft = 60);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_secondsLeft == 0) { timer.cancel(); if (mounted) setState(() {}); } else { if (mounted) setState(() => _secondsLeft--); }
-    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) { if (_secondsLeft == 0) { timer.cancel(); if (mounted) setState(() {}); } else { if (mounted) setState(() => _secondsLeft--); } });
   }
 
   String get _formattedTime {
@@ -111,16 +109,14 @@ class _CodeNumberState extends State<CodeNumber> {
     // Onboarding answers given before login go to the server (dashboard: Source, daily goal, ...)
     await OnboardingAnswers.sync();
 
-    if (mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateProfile()));
-    }
+    if (mounted) { Navigator.push(context, MaterialPageRoute(builder: (_) => const CreateProfile())); }
     // Ask to allow notifications (unless answered in onboarding) and register this phone
     PushService.afterLogin();
   }
 
   @override
   Widget build(BuildContext context) {
-    const String ImagePathCode = 'web/icons/code.png';
+    const String ImagePathCode = 'web/icons/code.webp';
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: SizedBox(
@@ -142,28 +138,20 @@ class _CodeNumberState extends State<CodeNumber> {
                             // ===== 1) back =====
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
-                              child: Container(
-                                padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined),
-                              ),
+                              child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
                             ),
                             const SizedBox(height: 40),
                             // ===== 2) text otp =====
                             Image.asset(ImagePathCode, width: 36, height: 36),
-                            const SizedBox(height: 8),
-                            Text(loc.translate('confirmation_code'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30)),
-                            const SizedBox(height: 4),
-                            Text(loc.translate('confirmation_code_sub'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[600]!))),
-                            const SizedBox(height: 18),
-                            Text(widget.phoneNumber, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                            const SizedBox(height: 8), Text(loc.translate('confirmation_code'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30)),
+                            const SizedBox(height: 4), Text(loc.translate('confirmation_code_sub'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[600]!))),
+                            const SizedBox(height: 18), Text(widget.phoneNumber, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                             const SizedBox(height: 8),
                             // =====  OTP boxes =====
                             _OtpInput(
                               length: 6,
                               onChanged: (code) => setState(() => _code = code),
-                              onCompleted: (code) {
-                                setState(() => _code = code);
-                                print('Entered code: $code');
-                              },
+                              onCompleted: (code) { setState(() => _code = code); print('Entered code: $code'); },
                             ),
                             const SizedBox(height: 16),
                             Row(
@@ -171,14 +159,11 @@ class _CodeNumberState extends State<CodeNumber> {
                               children: [
                                 GestureDetector(
                                   onTap: _secondsLeft == 0 ? _handleResend : null,
-                                  child: Text(
-                                    loc.translate('resend_code'),
-                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: _secondsLeft == 0 ? AppPalette.fg(Color(0xFF4A7FD0)) : AppPalette.fg(Color(0xFF94A3B8))),
-                                  ),
+                                  child: Text(loc.translate('resend_code'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: _secondsLeft == 0 ? AppPalette.fg(Color(0xFF4A7FD0)) : AppPalette.fg(Color(0xFF94A3B8)))),
                                 ),
-                                Text(_formattedTime, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppPalette.fg(Colors.grey[600]!)),
-                                ),
-                              ],
+                                Text(_formattedTime, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppPalette.fg(Colors.grey[600]!))
+                                )
+                              ]
                             ),
                             const Spacer(),
 
@@ -188,10 +173,9 @@ class _CodeNumberState extends State<CodeNumber> {
                               child: ElevatedButton(
                                 onPressed: _handleValidation,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: !_isComplete ? AppPalette.bg(Color(0xFF4A7FD0)).withOpacity(0.1) : AppPalette.bg(Color(0xFF4A7FD0)).withOpacity(0.15),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), foregroundColor: AppPalette.fg(Colors.white),
-                                  elevation: !_isComplete ? 0 : 6, shadowColor: AppPalette.shadow(Color(0xFFBBDEFB)).withOpacity(0.9),
-                                  side: BorderSide(width: 1, color: !_isComplete ? AppPalette.border(Colors.black12) : AppPalette.border(Color(0xFF1A237E)).withOpacity(0.2))
+                                  backgroundColor: !_isComplete ? AppPalette.bg(Color(0xFF4A7FD0)).withValues(alpha: 0.1) : AppPalette.bg(Color(0xFF4A7FD0)).withValues(alpha: 0.15),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), foregroundColor: AppPalette.fg(Colors.white), elevation: !_isComplete ? 0 : 6,
+                                  shadowColor: AppPalette.shadow(Color(0xFFBBDEFB)).withValues(alpha: 0.9), side: BorderSide(width: 1, color: !_isComplete ? AppPalette.border(Colors.black12) : AppPalette.border(Color(0xFF1A237E)).withValues(alpha: 0.2))
                                 ),
                                 child: _verifying
                                   ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Colors.blue[900]!)))
@@ -236,32 +220,19 @@ class _OtpInputState extends State<_OtpInput> {
   final FocusNode _focusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(() => setState(() {})); // highlight the active box only while typing
-  }
+  void initState() { super.initState(); _focusNode.addListener(() => setState(() {})); }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
+  void dispose() { _controller.dispose(); _focusNode.dispose(); super.dispose(); }
 
   void _onChanged(String code) {
     setState(() {});
     widget.onChanged?.call(code);
-    if (code.length == widget.length) {
-      _focusNode.unfocus();
-      widget.onCompleted(code);
-    }
+    if (code.length == widget.length) { _focusNode.unfocus(); widget.onCompleted(code); }
   }
 
   // tapping any box edits the code from its end, the cursor never sits in the middle
-  void _focusInput() {
-    _focusNode.requestFocus();
-    _controller.selection = TextSelection.collapsed(offset: _controller.text.length);
-  }
+  void _focusInput() { _focusNode.requestFocus(); _controller.selection = TextSelection.collapsed(offset: _controller.text.length); }
 
   @override
   Widget build(BuildContext context) {
@@ -304,13 +275,13 @@ class _OtpInputState extends State<_OtpInput> {
                   filled ? code[index] : '0',
                   style: filled
                     ? TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A)))
-                    : TextStyle(fontSize: 22, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFFB0B8C4))),
-                ),
+                    : TextStyle(fontSize: 22, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFFB0B8C4)))
+                )
               );
-            }),
-          ),
-        ),
-      ],
+            })
+          )
+        )
+      ]
     );
   }
 }

@@ -12,16 +12,10 @@ class _PulseDotState extends State<PulseDot> with SingleTickerProviderStateMixin
   late final AnimationController _c;
 
   @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
-  }
+  void initState() { super.initState(); _c = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat(); }
 
   @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
+  void dispose() { _c.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -35,33 +29,17 @@ class _PulseDotState extends State<PulseDot> with SingleTickerProviderStateMixin
             animation: _c,
             builder: (_, __) {
               final t = _c.value; // 0→1
-              return Container(
-                width: 10 + t * 30,   // 6px → 30px
-                height: 10 + t * 30,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppPalette.bg(Color(0xFF00FF00)).withOpacity((1 - t) * 0.7), // fade out
-                ),
-              );
+              return Container(width: 10 + t * 30, height: 10 + t * 30, decoration: BoxDecoration(shape: BoxShape.circle, color: AppPalette.bg(Color(0xFF00FF00)).withValues(alpha: (1 - t) * 0.7)));
             },
           ),
           // solid green dot in the middle
           Container(
             width: 18, height: 18,
-            decoration: BoxDecoration(
-              color: AppPalette.bg(Color(0xFF00FF00)).withOpacity(0.2),
-              boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF00FF00)).withOpacity(0.9), blurRadius: 15)],
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                widget.count > 9 ? '9+' : '${widget.count}',
-                style: TextStyle(color: AppPalette.fg(Colors.black), fontSize: 10, fontWeight: FontWeight.w700, height: 1),
-              ),
-            ),
-          ),
-        ],
-      ),
+            decoration: BoxDecoration(color: AppPalette.bg(Color(0xFF00FF00)).withValues(alpha: 0.2), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF00FF00)).withValues(alpha: 0.9), blurRadius: 15)], shape: BoxShape.circle),
+            child: Center(child: Text(widget.count > 9 ? '9+' : '${widget.count}', style: TextStyle(color: AppPalette.fg(Colors.black), fontSize: 10, fontWeight: FontWeight.w700, height: 1)))
+          )
+        ]
+      )
     );
   }
 }

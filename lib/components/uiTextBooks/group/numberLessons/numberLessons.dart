@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:signlang/api/api_errors.dart';
 import 'package:signlang/components/uiTextBooks/apiTextbooks/api_textbooks.dart';
 import 'package:signlang/services/app_loading.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:signlang/components/uiTextBooks/group/numberLessons/five/pageFive.dart';
-import 'package:signlang/components/uiTextBooks/group/numberLessons/four/pageFour.dart';
-import 'package:signlang/components/uiTextBooks/group/numberLessons/one/pageOne.dart';
-import 'package:signlang/components/uiTextBooks/group/numberLessons/three/pageThree.dart';
-import 'package:signlang/components/uiTextBooks/group/numberLessons/two/pageTwo.dart';
 import 'package:signlang/components/uiTextBooks/nameTextbooks/buildLessonsTextbooks.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -56,7 +52,7 @@ class _NumberLessonsState extends State<NumberLessons> {
 
 // =======================================================================
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
 // =======================================================================
@@ -71,19 +67,10 @@ class _NumberLessonsState extends State<NumberLessons> {
       if (mounted) setState(() => _recomputeLearned());
       return;
     }
-    Widget? page;
-    switch (id) {
-      case 'num_0': page = const ZeroAndNine(); break;
-      case 'num_1': page = const TenAndNineteen(); break;
-      case 'num_2': page = const TwentyAndNumber(); break;
-      case 'num_3': page = const TwoHundredAndThousand(); break;
-      case 'num_4': page = const TwoThousandAndThird(); break;
-    }
-    if (page == null) return;
-
-    LessonProgress.instance.resetStats();
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => page!));
-    if (mounted) setState(() => _recomputeLearned());
+    // The numbers lessons only exist in the dashboard now (like the alphabet ones):
+    // they need the internet and a logged-in account
+    if (!mounted) return;
+    showGreySnackBar(context, AppLocalizations.of(context)!.translate('lesson_needs_online'));
   }
 
   void _recomputeLearned() {

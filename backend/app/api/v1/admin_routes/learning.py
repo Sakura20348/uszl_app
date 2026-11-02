@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from app.api.v1.common import commit, crud_routes, get_or_404
 from app.deps import DB
-from app.models import Achievement, Course, Exercise, ExerciseOption, ExerciseReport, Lesson, LessonSign, Sign, User
+from app.models import Achievement, Course, Exercise, ExerciseOption, ExerciseReport, Lesson, LessonSign, Sign, User, UserAchievement
 from app.schemas.admin import AchievementIn, AdminReportOut, ReportUpdate
 from app.schemas.common import Page
 from app.schemas.learning import (
@@ -23,6 +23,13 @@ router = APIRouter()
 TAG = "admin: learning"
 
 crud_routes(router, "/achievements", Achievement, AchievementIn, AchievementOut, (Achievement.order, Achievement.id), TAG)
+
+
+@router.get("/achievements/learners", response_model=dict[int, int], tags=[TAG])
+async def achievement_learners(db: DB) -> dict[int, int]:
+    """How many learners earned each achievement, by achievement id (none yet = left out)."""
+    rows = await db.execute(select(UserAchievement.achievement_id, func.count()).group_by(UserAchievement.achievement_id))
+    return dict(rows.all())
 
 
 # ===== courses =====
@@ -175,7 +182,9 @@ def _reports_query():
     return (
         select(
             ExerciseReport,
-            Exercise.type, Exercise.prompt, Lesson.id, Lesson.title, Course.id, Course.title, User.full_name, User.phone,
+            Exercise.type, Exercise.prompt, Exercise.prompt_ru, Exercise.prompt_en,
+            Lesson.id, Lesson.title, Lesson.title_ru, Lesson.title_en,
+            Course.id, Course.title, Course.title_ru, Course.title_en, User.full_name, User.phone,
         )
         .join(Exercise, Exercise.id == ExerciseReport.exercise_id)
         .join(Lesson, Lesson.id == Exercise.lesson_id)
@@ -185,11 +194,14 @@ def _reports_query():
 
 
 def _report_out(row) -> AdminReportOut:
-    report, ex_type, prompt, lesson_id, lesson_title, course_id, course_title, name, phone = row
+    (report, ex_type, prompt, prompt_ru, prompt_en, lesson_id, lesson_title, lesson_title_ru, lesson_title_en,
+     course_id, course_title, course_title_ru, course_title_en, name, phone) = row
     return AdminReportOut(
         id=report.id, exercise_id=report.exercise_id, reason=report.reason, comment=report.comment,
-        status=report.status, created_at=report.created_at, exercise_type=ex_type, exercise_prompt=prompt,
-        lesson_id=lesson_id, lesson_title=lesson_title, course_id=course_id, course_title=course_title,
+        status=report.status, created_at=report.created_at, exercise_type=ex_type,
+        exercise_prompt=prompt, exercise_prompt_ru=prompt_ru, exercise_prompt_en=prompt_en,
+        lesson_id=lesson_id, lesson_title=lesson_title, lesson_title_ru=lesson_title_ru, lesson_title_en=lesson_title_en,
+        course_id=course_id, course_title=course_title, course_title_ru=course_title_ru, course_title_en=course_title_en,
         user_id=report.user_id, user_name=name or phone,
     )
 

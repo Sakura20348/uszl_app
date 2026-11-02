@@ -23,18 +23,8 @@ class _OrderExerciseState extends State<OrderExercise> {
   late final List<ApiOption> _bank = [...widget.exercise.options]..shuffle();
 
   void _report() => widget.onAnswer(_answer.isEmpty ? null : {'optionIds': List<int>.from(_answer)});
-
-  void _place(int id) {
-    if (widget.result != null || _answer.contains(id)) return;
-    setState(() => _answer.add(id));
-    _report();
-  }
-
-  void _remove(int id) {
-    if (widget.result != null) return;
-    setState(() => _answer.remove(id));
-    _report();
-  }
+  void _place(int id) { if (widget.result != null || _answer.contains(id)) return; setState(() => _answer.add(id)); _report(); }
+  void _remove(int id) { if (widget.result != null) return; setState(() => _answer.remove(id)); _report(); }
 
   @override
   Widget build(BuildContext context) {
@@ -44,23 +34,18 @@ class _OrderExerciseState extends State<OrderExercise> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LessonVideoBox(url: widget.exercise.signVideo),
-        const SizedBox(height: 16),
+        LessonVideoBox(url: widget.exercise.signVideo), const SizedBox(height: 16),
         Text(widget.question, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppPalette.fg(const Color(0xFF0F172A)))),
         const SizedBox(height: 14),
         // --- the answer being built ---
         Container(
-          width: double.infinity, constraints: const BoxConstraints(minHeight: 70), padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(color: AppPalette.bg(Colors.white).withValues(alpha: 0.5), borderRadius: BorderRadius.circular(20)),
+          width: double.infinity, constraints: const BoxConstraints(minHeight: 70), padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white).withValues(alpha: 0.5), borderRadius: BorderRadius.circular(20)),
           child: Wrap(spacing: 10, runSpacing: 10, children: [for (final id in _answer) _chip(byId[id]?.text ?? '', onTap: () => _remove(id), border: answerBorder)]),
         ),
         const SizedBox(height: 14),
         // --- word bank (used words leave an empty slot) ---
-        Wrap(
-          spacing: 10, runSpacing: 10,
-          children: [for (final o in _bank) _answer.contains(o.id) ? _emptySlot(o.text ?? '') : _chip(o.text ?? '', onTap: () => _place(o.id), border: Colors.transparent)],
-        ),
-      ],
+        Wrap(spacing: 10, runSpacing: 10, children: [for (final o in _bank) _answer.contains(o.id) ? _emptySlot(o.text ?? '') : _chip(o.text ?? '', onTap: () => _place(o.id), border: Colors.transparent)])
+      ]
     );
   }
 
@@ -77,8 +62,7 @@ class _OrderExerciseState extends State<OrderExercise> {
   );
 
   Widget _emptySlot(String text) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppPalette.border(Colors.grey).withValues(alpha: 0.4), width: 1.5)),
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppPalette.border(Colors.grey).withValues(alpha: 0.4), width: 1.5)),
     child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.transparent)),
   );
 }

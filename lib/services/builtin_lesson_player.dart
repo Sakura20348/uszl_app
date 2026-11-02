@@ -35,9 +35,7 @@ class BuiltinLessonPlayer {
     try {
       final after = await UzslApi.builtinLesson(key).timeout(_lookupTimeout);
       if (after.status == 'completed') LessonProgress.instance.markCompletedOnServer(key);
-    } on Exception catch (e) {
-      debugPrint('Lesson $key progress not checked: $e');
-    }
+    } on Exception catch (e) { debugPrint('Lesson $key progress not checked: $e'); }
     return true;
   }
 }

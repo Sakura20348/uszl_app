@@ -33,7 +33,7 @@ class _NotificationState extends State<NotificationBell> {
 
   @override
   Widget build(BuildContext context) {
-    const String ImagePath = 'web/images/notification_bell.png';
+    const String ImagePath = 'web/images/notification_bell.webp';
     return Scaffold(
       resizeToAvoidBottomInset: false, // no text field here: a closing keyboard must not squeeze the page
       body: SizedBox(

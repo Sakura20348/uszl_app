@@ -1,3 +1,4 @@
+import 'package:signlang/components/uiDictionary/nameDictionary/nameStore.dart';
 import 'dart:convert';
 import 'package:signlang/services/app_loading.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class _SavedState extends State<Saved> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredItems = _items.where((item) {
-        final matchesQuery = (item['word'] ?? '').toLowerCase().contains(query);
+        final matchesQuery = storedWordFor(item, Localizations.localeOf(context).languageCode).toLowerCase().contains(query);
         final matchesTab = _selectedTab == 0 ||
           (_selectedTab == 1 && (item['type'] == 'word' || item['type'] == null)) ||
           (_selectedTab == 2 && item['type'] == 'phrase');
@@ -61,14 +62,13 @@ class _SavedState extends State<Saved> {
     });
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
 
 // ================================ Button ==================================
   void _handleNext() { Navigator.pop(context); }
   void _toggleSave(Map<String, dynamic> item) {
     // Optimistic update: remove from UI immediately
     setState(() { _items.removeWhere((e) => e['word'] == item['word']); _filterItems(); });
-
     SavedStore.instance.toggle(item);
   }
 
@@ -97,18 +97,21 @@ class _SavedState extends State<Saved> {
                     onTap: () => Navigator.pop(context),
                     child: Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))]),
-                      child: Icon(Icons.arrow_back_outlined, color: AppPalette.fg(Color(0xFF334155)), size: 22),
-                    ),
-                  ),
+                      decoration: BoxDecoration(
+                        color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(16),
+                        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))]
+                      ),
+                      child: Icon(Icons.arrow_back_outlined, color: AppPalette.fg(Color(0xFF334155)), size: 22)
+                    )
+                  )
                 ),
                 const SizedBox(height: 20),
                 Expanded(child: _isLoading ? const Center(child: CircularProgressIndicator()) : ( _items.isEmpty ? _isNoSaved(loc) : _isSaved(loc) ))
-              ],
+              ]
             )
-          ),
-        ),
-      ),
+          )
+        )
+      )
     );
   }
 
@@ -119,14 +122,10 @@ class _SavedState extends State<Saved> {
         hintText: loc.translate('search_saved_hint'),
         hintStyle: TextStyle(color: AppPalette.fg(Colors.blueGrey), fontWeight: FontWeight.w400, fontSize: 16),
         prefixIcon: Icon(Icons.search, color: AppPalette.fg(Color(0xFF94A3B8))),
-        suffixIcon: GestureDetector(
-          onTap: _handleVoiceSearch,
-          child: Padding(padding: const EdgeInsets.all(12), child: Image.asset('web/icons/voice.png', width: 26, height: 26)),
-        ),
-        filled: true,
-        fillColor: AppPalette.bg(Color(0xFFEDF2F7)),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-      ),
+        suffixIcon: GestureDetector(onTap: _handleVoiceSearch, child: Padding(padding: const EdgeInsets.all(12), child: Image.asset('web/icons/voice.webp', width: 26, height: 26))),
+        filled: true, fillColor: AppPalette.bg(Color(0xFFEDF2F7)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none)
+      )
     );
   }
 
@@ -152,13 +151,13 @@ class _SavedState extends State<Saved> {
                 ),
                 child: Text(
                   tabs[index], textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: isActive ? FontWeight.w700 : FontWeight.w500, color: isActive ? AppPalette.fg(Colors.black) : AppPalette.fg(Colors.grey[700]!)),
-                ),
-              ),
-            ),
+                  style: TextStyle(fontWeight: isActive ? FontWeight.w700 : FontWeight.w500, color: isActive ? AppPalette.fg(Colors.black) : AppPalette.fg(Colors.grey[700]!))
+                )
+              )
+            )
           );
-        }),
-      ),
+        })
+      )
     );
   }
 
@@ -167,10 +166,8 @@ class _SavedState extends State<Saved> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          const Spacer(flex: 2),
-          Image.asset('web/images/saved.png', height: 220),
-          const SizedBox(height: 25),
-          Text(loc.translate('no_saved_phrases'), textAlign: TextAlign.center, style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
+          const Spacer(flex: 2), Image.asset('web/images/saved.webp', height: 220),
+          const SizedBox(height: 25), Text(loc.translate('no_saved_phrases'), textAlign: TextAlign.center, style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -182,26 +179,21 @@ class _SavedState extends State<Saved> {
             child: ElevatedButton(
               onPressed: _handleNext,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-                shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withOpacity(0.2)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withValues(alpha: 0.9),
+                side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    loc.translate('see_achievement'),
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18, color: AppPalette.fg(Colors.white))
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(Icons.arrow_forward, color: AppPalette.fg(Colors.white), size: 20),
-                ],
+                  Text(loc.translate('see_achievement'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18, color: AppPalette.fg(Colors.white))),
+                  const SizedBox(width: 8), Icon(Icons.arrow_forward, color: AppPalette.fg(Colors.white), size: 20)
+                ]
               )
-            ),
+            )
           ),
-          const SizedBox(height: 20),
-        ],
-      ),
+          const SizedBox(height: 20)
+        ]
+      )
     );
   }
 
@@ -216,12 +208,10 @@ class _SavedState extends State<Saved> {
             children: [
               Text(loc.translate('saved'), style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
               Text(loc.translate('saved_subtitle'), style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.grey[600]!))),
-              const SizedBox(height: 24),
-              _searchBar(loc),
-              const SizedBox(height: 16),
-              _tabs(loc),
-            ],
-          ),
+              const SizedBox(height: 24), _searchBar(loc),
+              const SizedBox(height: 16), _tabs(loc)
+            ]
+          )
         ),
         const SizedBox(height: 18),
         Expanded(
@@ -241,7 +231,8 @@ class _SavedState extends State<Saved> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white).withValues(alpha: 0.8), borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withValues(alpha: 0.9), blurRadius: 10, offset: const Offset(0, 4))],
+          color: AppPalette.bg(Colors.white).withValues(alpha: 0.8), borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withValues(alpha: 0.9), blurRadius: 10, offset: const Offset(0, 4))],
         ),
         child: Row(
           children: [
@@ -254,24 +245,23 @@ class _SavedState extends State<Saved> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item['word'] ?? '', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
-                  const SizedBox(height: 4),
-                  Text(item['phonetic'] ?? '', style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.grey[600]!)),
-                  ),
-                ],
-              ),
+                  Text(storedWordFor(item, Localizations.localeOf(context).languageCode), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
+                  const SizedBox(height: 4), Text(item['phonetic'] ?? '', style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.grey[600]!))
+                  )
+                ]
+              )
             ),
             InkWell(
               onTap: () => _toggleSave(item),
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: AppPalette.border(Color(0xFF80D8FF)))),
-                child: Icon(Icons.bookmark, color: AppPalette.fg(Color(0xFF4A7FD0)), size: 24),
-              ),
-            ),
-          ],
-        ),
-      ),
+                child: Icon(Icons.bookmark, color: AppPalette.fg(Color(0xFF4A7FD0)), size: 24)
+              )
+            )
+          ]
+        )
+      )
     );
   }
 }
@@ -293,9 +283,7 @@ class SavedStore {
       for (final e in stored.map(_normalize))
         if ((e['word'] as String).isNotEmpty && seen.add(e['word'])) e,
     ];
-    if (items.length != stored.length || !stored.every((e) => e['word'] is String)) {
-      await prefs.setString(_key, jsonEncode(items));
-    }
+    if (items.length != stored.length || !stored.every((e) => e['word'] is String)) { await prefs.setString(_key, jsonEncode(items)); }
     return items;
   }
 
@@ -304,11 +292,7 @@ class SavedStore {
     if ((item['word'] as String).isEmpty) return;
     final items = await load();
     final index = items.indexWhere((e) => e['word'] == item['word']);
-    if (index >= 0) {
-      items.removeAt(index);
-    } else {
-      items.insert(0, item);
-    }
+    if (index >= 0) { items.removeAt(index); } else { items.insert(0, item); }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, jsonEncode(items));
   }

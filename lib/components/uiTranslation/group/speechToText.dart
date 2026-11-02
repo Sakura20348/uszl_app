@@ -23,21 +23,19 @@ class SpeechToTextPage extends StatefulWidget {
 class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerProviderStateMixin {
   static const Color _blue = Color(0xFF4A7FD0);
   static const Color _liveRed = Color(0xFFAE3A12);
-  static const List<({String id, String label})> _languages = [
-    (id: 'uz_UZ', label: "O'zbek"), (id: 'ru_RU', label: 'Русский'), (id: 'en_US', label: 'English'),
-  ];
+  static const List<({String id, String label})> _languages = [ (id: 'uz_UZ', label: "O'zbek"), (id: 'ru_RU', label: 'Русский'), (id: 'en_US', label: 'English') ];
 
   final SpeechToText _speech = SpeechToText();
-  bool _ready = false;        // engine initialized
-  bool _unavailable = false;  // no recognizer / mic permission refused
-  bool _wantListening = false; // user pressed start and not stop yet
+  bool _ready = false;
+  bool _unavailable = false;
+  bool _wantListening = false;
   bool _listening = false;
   Set<String> _installed = {};
   late String _language;
 
   String _finalText = '';
   String _partial = '';
-  double _level = 0; // smoothed sound level 0..1
+  double _level = 0;
   final Stopwatch _elapsed = Stopwatch();
   Timer? _ticker;
   late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1600));
@@ -49,10 +47,7 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
   String get _text => [_finalText, _partial].where((s) => s.isNotEmpty).join(' ');
 
   @override
-  void initState() {
-    super.initState();
-    _language = 'en_US';
-  }
+  void initState() { super.initState(); _language = 'en_US'; }
 
   @override
   void didChangeDependencies() {
@@ -80,7 +75,7 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
     if (!ok) { setState(() => _unavailable = true); return; }
     final locales = await _speech.locales();
     if (!mounted) return;
-    setState(() { _ready = true; _installed = locales.map((l) => l.localeId).toSet(); });
+    setState(() { _ready = true; _unavailable = false; _installed = locales.map((l) => l.localeId).toSet(); });
   }
 
   void _onStatus(String status) {
@@ -90,17 +85,12 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
       setState(() { _listening = false; _commitPartial(); });
       // Android ends a session after a short pause: keep going until the user taps stop
       if (_wantListening) Future.delayed(const Duration(milliseconds: 250), () { if (mounted && _wantListening && !_speech.isListening) _listen(); });
-    } else if (status == 'listening') {
-      setState(() => _listening = true);
-    }
+    } else if (status == 'listening') { setState(() => _listening = true); }
   }
 
   void _onError(SpeechRecognitionError error) {
     if (!mounted) return;
-    if (error.errorMsg.contains('permission') || error.errorMsg.contains('insufficient')) {
-      _stop();
-      setState(() => _unavailable = true);
-    }
+    if (error.errorMsg.contains('permission') || error.errorMsg.contains('insufficient')) { _stop(); setState(() => _unavailable = true); }
     // no_match / speech_timeout are normal pauses; _onStatus restarts listening
   }
 
@@ -110,9 +100,7 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
       if (result.finalResult) {
         _finalText = [_finalText, result.recognizedWords].where((s) => s.isNotEmpty).join(' ');
         _partial = '';
-      } else {
-        _partial = result.recognizedWords;
-      }
+      } else { _partial = result.recognizedWords; }
     });
   }
 
@@ -158,9 +146,7 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
 
   void _toggle() => _wantListening ? _stop() : _start();
 
-  void _clear() {
-    setState(() { _finalText = ''; _partial = ''; _elapsed.reset(); });
-  }
+  void _clear() { setState(() { _finalText = ''; _partial = ''; _elapsed.reset(); }); }
 
   Future<void> _changeLanguage(String id) async {
     if (id == _language) return;
@@ -205,49 +191,44 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
         decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient)),
         child: SafeArea(
           bottom: false,
-          child: Column(
+          child: RefreshIndicator(
+            onRefresh: _init, notificationPredicate: (ScrollNotification notification) {return notification.depth == 0;},
+            child: Column(
             children: [
-              // ===== 1) header =====
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
-                    ),
-                    Expanded(child: Text(loc.translate('speech_text'), textAlign: TextAlign.center, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text))),
-                    const SizedBox(width: 48),
-                  ],
-                ),
-              ),
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 16 + MediaQuery.of(context).viewPadding.bottom),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // ===== 1) header =====
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 16),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
+                            ),
+                            Expanded(child: Text(loc.translate('speech_text'), textAlign: TextAlign.center, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text))),
+                            const SizedBox(width: 48),
+                          ],
+                        ),
+                      ),
                       // ===== 2) language =====
-                      Text(loc.translate('sp_language'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: c.text)),
-                      const SizedBox(height: 8),
-                      _languageChips(),
-                      if (_ready && !_installed.contains(_language)) ...[
-                        const SizedBox(height: 6),
-                        Text(loc.translate('sp_lang_missing'), style: TextStyle(fontSize: 12, color: AppPalette.fg(const Color(0xFFB45309)))),
-                      ],
+                      Text(loc.translate('sp_language'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: c.text)),
+                      const SizedBox(height: 8), _languageChips(),
+                      if (_ready && !_installed.contains(_language)) ...[const SizedBox(height: 6), Text(loc.translate('sp_lang_missing'), style: TextStyle(fontSize: 12, color: AppPalette.fg(const Color(0xFFB45309))))],
                       const SizedBox(height: 12),
                       // ===== 3) microphone =====
-                      _micCard(loc),
-                      const SizedBox(height: 12),
+                      _micCard(loc), const SizedBox(height: 12),
                       // ===== 4) transcript =====
-                      _transcriptCard(loc, c),
-                      const SizedBox(height: 12),
+                      _transcriptCard(loc, c), const SizedBox(height: 12),
                       // ===== 5) font =====
-                      _fontCard(loc, c),
-                      const SizedBox(height: 12),
+                      _fontCard(loc, c), const SizedBox(height: 12),
                       // ===== 6) tip =====
-                      _tipCard(loc, c),
-                      const SizedBox(height: 16),
+                      _tipCard(loc, c), const SizedBox(height: 16),
                       // ===== 7) show in signs =====
                       SizedBox(
                         width: double.infinity, height: 54,
@@ -256,8 +237,9 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
                           icon: const Icon(Icons.sign_language_rounded),
                           label: Text(loc.translate('tg_show'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppPalette.bg(_blue), foregroundColor: Colors.white, disabledBackgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.45), disabledForegroundColor: Colors.white,
-                            elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            backgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.1), foregroundColor: AppPalette.fg(Colors.white), shadowColor: AppPalette.bg(_blue).withValues(alpha: 0.9),
+                            disabledBackgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.5), disabledForegroundColor: Colors.white,
+                            elevation: 6, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                           ),
                         ),
                       ),
@@ -266,7 +248,7 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
                 ),
               ),
             ],
-          ),
+          )),
         ),
       ),
     );
@@ -282,16 +264,16 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
               child: Container(
                 height: 40, alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: _language == lang.id ? AppPalette.bg(_blue) : AppPalette.bg(Colors.white).withValues(alpha: 0.6),
+                  color: _language == lang.id ? AppPalette.bg(_blue).withValues(alpha: 0.7) : AppPalette.bg(Colors.white).withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(12), border: Border.all(color: AppPalette.border(Colors.white)),
                 ),
-                child: Text(lang.label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _language == lang.id ? Colors.white : AppPalette.fg(const Color(0xFF475569)))),
-              ),
-            ),
+                child: Text(lang.label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: _language == lang.id ? Colors.white : AppPalette.fg(const Color(0xFF475569))))
+              )
+            )
           ),
-          if (lang != _languages.last) const SizedBox(width: 8),
-        ],
-      ],
+          if (lang != _languages.last) const SizedBox(width: 8)
+        ]
+      ]
     );
   }
 
@@ -301,9 +283,8 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
     return Container(
       width: double.infinity, height: 250,
       decoration: BoxDecoration(
-        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppPalette.bg(const Color(0xFF5B8FE0)), AppPalette.bg(const Color(0xFF3D6DBA))]),
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(_blue).withValues(alpha: 0.3), blurRadius: 18, offset: const Offset(0, 8))],
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppPalette.bg(const Color(0xFFB2EBF2).withValues(alpha: 0.2)), AppPalette.bg(const Color(0xFF80DEEA).withValues(alpha: 0.4))]),
+        borderRadius: BorderRadius.circular(22), border: Border.all(color: AppPalette.border(Colors.white).withValues(alpha: 0.3)), boxShadow: [BoxShadow(color: AppPalette.shadow(_blue).withValues(alpha: 0.7), blurRadius: 18, offset: const Offset(0, 8))],
       ),
       child: Stack(
         children: [
@@ -319,11 +300,11 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
                     children: [
                       Container(width: 7, height: 7, decoration: const BoxDecoration(color: Color(0xFF16A34A), shape: BoxShape.circle)),
                       const SizedBox(width: 5),
-                      Text('LIVE · $_clock', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF166534))),
-                    ],
-                  ),
-                ),
-              ),
+                      Text('LIVE · $_clock', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF166534)))
+                    ]
+                  )
+                )
+              )
             ),
           Center(
             child: Column(
@@ -338,11 +319,11 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
                       child: GestureDetector(
                         onTap: _toggle,
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
+                          duration: Duration(milliseconds: on ? 400 : 900),
                           width: 84, height: 84,
                           decoration: BoxDecoration(
-                            color: on ? AppPalette.bg(_liveRed) : Colors.white, shape: BoxShape.circle,
-                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.18), blurRadius: 16, offset: const Offset(0, 6))],
+                            color: on ? AppPalette.bg(_liveRed).withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.3), shape: BoxShape.circle,
+                            boxShadow: [BoxShadow(color: on ? AppPalette.bg(_liveRed).withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.8), blurRadius: 16, offset: const Offset(0, 6))],
                           ),
                           child: Icon(on ? Icons.stop_rounded : Icons.mic_rounded, size: 40, color: on ? Colors.white : AppPalette.fg(_blue)),
                         ),
@@ -353,7 +334,7 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(loc.translate(status), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
+                  child: Text(loc.translate(status), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ],
             ),
@@ -364,15 +345,15 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
   }
 
   BoxDecoration _cardDecoration(AppColors c) => BoxDecoration(
-    color: c.isDark ? c.card : Colors.white.withValues(alpha: 0.55), borderRadius: BorderRadius.circular(20),
-    border: Border.all(color: c.cardBorder), boxShadow: [BoxShadow(color: AppPalette.shadow(_blue).withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4))],
+    color: c.isDark ? c.card : Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20),
+    border: Border.all(color: c.cardBorder), boxShadow: [BoxShadow(color: c.glow.withValues(alpha: c.isDark? 0.3 : 0.9), blurRadius: 15, offset: const Offset(0, 4))],
   );
 
-  Widget _label(String text) => Text(text, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppPalette.fg(_blue)));
+  Widget _label(String text) => Text(text, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white)));
 
   Widget _iconAction(IconData icon, VoidCallback onTap, bool enabled) => GestureDetector(
     onTap: enabled ? onTap : null,
-    child: Padding(padding: const EdgeInsets.all(5), child: Icon(icon, size: 19, color: AppPalette.fg(enabled ? const Color(0xFF64748B) : const Color(0xFFCBD5E1)))),
+    child: Padding(padding: const EdgeInsets.all(5), child: Icon(icon, size: 20, color: AppPalette.fg(enabled ? const Color(0xFF263238) : Colors.black))),
   );
 
   Widget _transcriptCard(AppLocalizations loc, AppColors c) {
@@ -396,45 +377,48 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
           Padding(
             padding: const EdgeInsets.only(right: 6),
             child: empty
-              ? Text(loc.translate('sp_text_hint'), style: base.copyWith(fontSize: 17, fontWeight: FontWeight.w500, color: AppPalette.fg(const Color(0xFFB6C0CC))))
+              ? Text(loc.translate('sp_text_hint'), style: base.copyWith(fontSize: 17, fontWeight: FontWeight.w500, color: AppPalette.fg(const Color(0xFFFFFFFF))))
               // words still being recognized are lighter
               : Text.rich(TextSpan(style: base, children: [
                   TextSpan(text: _finalText),
                   if (_partial.isNotEmpty) TextSpan(text: '${_finalText.isEmpty ? '' : ' '}$_partial', style: TextStyle(color: c.subText.withValues(alpha: 0.7))),
-                ])),
-          ),
-        ],
-      ),
+                ]))
+          )
+        ]
+      )
     );
   }
 
   Widget _fontCard(AppLocalizations loc, AppColors c) {
     final weightLabels = [loc.translate('gt_light'), loc.translate('gt_medium'), loc.translate('gt_bold')];
     return Container(
-      width: double.infinity, padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-      decoration: _cardDecoration(c),
+      width: double.infinity, padding: const EdgeInsets.fromLTRB(14, 12, 14, 14), decoration: _cardDecoration(c),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _label(loc.translate('gt_font_size')),
           Row(
             children: [
-              Text('A', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.subText)),
+              Text('A', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.text)),
               Expanded(
                 child: SliderTheme(
-                  data: SliderTheme.of(context).copyWith(trackHeight: 2, activeTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)), inactiveTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)), thumbColor: Colors.white, overlayColor: AppPalette.fg(_blue).withValues(alpha: 0.1), thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9, elevation: 3)),
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 2, activeTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)), inactiveTrackColor: AppPalette.fg(const Color(0xFFCBD5E1)),
+                    thumbColor: Colors.white, overlayColor: AppPalette.fg(_blue).withValues(alpha: 0.1), thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9, elevation: 3)
+                  ),
                   child: Slider(value: _fontSize, min: 14, max: 34, onChanged: (v) => setState(() => _fontSize = v)),
                 ),
               ),
-              Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: c.subText)),
+              Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: c.text)),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(loc.translate('gt_font_weight'), style: TextStyle(fontSize: 13, color: c.subText)),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4), Text(loc.translate('gt_font_weight'), style: TextStyle(fontSize: 13, color: c.text)), const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE2E8F0)).withValues(alpha: 0.7), borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(
+              color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(14), border: Border.all(width: 1, color: AppPalette.border(Colors.white)),
+              boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.9), blurRadius: 15)]
+            ),
             child: Row(
               children: [
                 for (int i = 0; i < 3; i++)
@@ -462,13 +446,16 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
   Widget _tipCard(AppLocalizations loc, AppColors c) {
     return Container(
       width: double.infinity, padding: const EdgeInsets.all(14),
-      decoration: _cardDecoration(c),
+      decoration: BoxDecoration(
+        color: AppPalette.bg(Color(0xFFFFCC80)).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFFFC107)).withValues(alpha: 0.2)),
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFFFFCC80)).withValues(alpha: 0.9), blurRadius: 15)]
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFFFEDD5)), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFFFF176).withValues(alpha: 0.6)), border: Border.all(width: 1, color: AppPalette.border(Colors.yellow)), borderRadius: BorderRadius.circular(12)),
             child: Icon(Icons.info_rounded, size: 20, color: AppPalette.fg(const Color(0xFFF59E0B))),
           ),
           const SizedBox(width: 12),
@@ -478,7 +465,7 @@ class _SpeechToTextPageState extends State<SpeechToTextPage> with SingleTickerPr
               children: [
                 Text(loc.translate('gt_tip_title'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.text)),
                 const SizedBox(height: 4),
-                Text(loc.translate('sp_tip'), style: TextStyle(fontSize: 13, height: 1.4, color: c.subText)),
+                Text(loc.translate('gt_tip'), style: TextStyle(fontSize: 15, height: 1.4, color: c.text.withValues(alpha: 0.7))),
               ],
             ),
           ),

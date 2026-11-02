@@ -79,9 +79,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
 
     if (!FirebaseSetup.ready) {
       await EmailStorage.save(email);
-      if (mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const PhoneLogin()));
-      }
+      if (mounted) { Navigator.push(context, MaterialPageRoute(builder: (_) => const PhoneLogin())); }
       return;
     }
     setState(() => _loading = true);
@@ -125,18 +123,10 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
     } on FirebaseAuthException catch (e) {
       if (mounted) showRedSnackBar(context, _firebaseError(loc, e));
     } on ApiException catch (e) {
-      if (mounted) {
-        if (e.status == 409) {
-          showRedSnackBar(context, loc.translate('verify_email_first'));
-        } else {
-          showApiError(context, e, onRetry: _handleValidation);
-        }
-      }
+      if (mounted) { if (e.status == 409) { showRedSnackBar(context, loc.translate('verify_email_first')); } else { showApiError(context, e, onRetry: _handleValidation); } }
       // The server didn't log in: don't stay half signed in
       await FirebaseAuth.instance.signOut();
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+    } finally { if (mounted) setState(() => _loading = false); }
   }
 
   String _firebaseError(AppLocalizations loc, FirebaseAuthException e) {
@@ -157,11 +147,8 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
   void _switchMode(bool register) {
     if (register == _isRegister) return;
     setState(() { _isRegister = register; _submitted = false; });
-    if (register) {
-      _confirmAnim.forward();
-    } else {
-      _confirmAnim.reverse().whenComplete(() { if (mounted && !_isRegister) _confirmController.clear(); });
-    }
+    if (register) { _confirmAnim.forward(); }
+    else { _confirmAnim.reverse().whenComplete(() { if (mounted && !_isRegister) _confirmController.clear(); }); }
   }
 
 // ======================================================
@@ -190,15 +177,12 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
                             // ===== 1) back =====
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
-                              child: Container(
-                                padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined),
-                              ),
+                              child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
                             ),
                             const SizedBox(height: 28),
                             // ===== 2) icon and text =====
                             Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(color: AppPalette.bg(_blue).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14)),
+                              padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppPalette.bg(_blue).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14)),
                               child: Icon(Icons.mail_rounded, size: 28, color: AppPalette.fg(_blue)),
                             ),
                             const SizedBox(height: 10),
@@ -208,24 +192,18 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
                                 duration: _switchDuration, switchInCurve: Curves.easeOutCubic, switchOutCurve: Curves.easeInCubic,
                                 // keep old and new text left-aligned while they cross (the default centers them → jump)
                                 layoutBuilder: (current, previous) => Stack(alignment: Alignment.topLeft, children: [...previous, ?current]),
-                                transitionBuilder: (child, animation) => FadeTransition(
-                                  opacity: animation,
-                                  child: SlideTransition(position: Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(animation), child: child),
-                                ),
+                                transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: SlideTransition(position: Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(animation), child: child)),
                                 child: Column(
                                   key: ValueKey(_isRegister), crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(loc.translate(_isRegister ? 'email_title_register' : 'log_in'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 30)),
-                                    const SizedBox(height: 4),
+                                    Text(loc.translate(_isRegister ? 'email_title_register' : 'log_in'), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 30)), const SizedBox(height: 4),
                                     Text(loc.translate(_isRegister ? 'email_sub_register' : 'email_sub_login'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[600]!))),
                                   ],
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 20),
                             // ===== 3) register / log in switch =====
-                            _modeSwitch(loc),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 20), _modeSwitch(loc), const SizedBox(height: 20),
                             // ===== 4) fields =====
                             _label(loc.translate('email')),
                             _field(
@@ -243,8 +221,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
                             ),
                             // folds like a SizeTransition but without clipping, so the field keeps its full shadow
                             AnimatedBuilder(
-                              animation: _confirmSize,
-                              builder: (context, child) => Align(alignment: Alignment.topCenter, heightFactor: _confirmSize.value, child: child),
+                              animation: _confirmSize, builder: (context, child) => Align(alignment: Alignment.topCenter, heightFactor: _confirmSize.value, child: child),
                               child: FadeTransition(
                                 opacity: _confirmFade,
                                 child: Column(
@@ -269,41 +246,40 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
                               child: ElevatedButton(
                                 onPressed: _handleValidation,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: !valid ? AppPalette.bg(_blue).withValues(alpha: 0.1) : AppPalette.bg(_blue).withValues(alpha: 0.15),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), foregroundColor: AppPalette.fg(Colors.white),
-                                  elevation: !valid ? 0 : 6, shadowColor: AppPalette.shadow(Color(0xFFBBDEFB)).withValues(alpha: 0.9),
+                                  backgroundColor: !valid ? AppPalette.bg(_blue).withValues(alpha: 0.1) : AppPalette.bg(_blue).withValues(alpha: 0.15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                  foregroundColor: AppPalette.fg(Colors.white), elevation: !valid ? 0 : 6, shadowColor: AppPalette.shadow(Color(0xFFBBDEFB)).withValues(alpha: 0.9),
                                   side: BorderSide(width: 1, color: !valid ? AppPalette.border(Colors.black12) : AppPalette.border(Color(0xFF1A237E)).withValues(alpha: 0.2)),
                                 ),
                                 child: _loading
                                   ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(_blue)))
                                   : AnimatedSwitcher(
-                                      duration: _switchDuration,
-                                      child: Text(loc.translate(_isRegister ? 'account_sub' : 'log_in'), key: ValueKey(_isRegister), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: !valid ? AppPalette.fg(Colors.blue[700]!) : AppPalette.fg(Colors.blue[900]!))),
-                                    ),
-                              ),
+                                    duration: _switchDuration,
+                                    child: Text(
+                                      loc.translate(_isRegister ? 'account_sub' : 'log_in'), key: ValueKey(_isRegister), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: !valid ? AppPalette.fg(Colors.blue[700]!) : AppPalette.fg(Colors.blue[900]!))
+                                    )
+                                  )
+                              )
                             ),
                             const Spacer(),
                             // ===== 6) back to phone =====
                             Center(
                               child: TextButton.icon(
-                                onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const PhoneLogin()));
-                                },
+                                onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (_) => const PhoneLogin())); },
                                 icon: Icon(Icons.phone_iphone_rounded, size: 18, color: AppPalette.fg(Colors.blue)),
-                                label: Text(loc.translate('use_phone'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: AppPalette.fg(Colors.blue))),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                                label: Text(loc.translate('use_phone'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: AppPalette.fg(Colors.blue)))
+                              )
+                            )
+                          ]
+                        )
+                      )
+                    )
+                  )
                 );
               }
             )
-          ),
-        ),
-      ),
+          )
+        )
+      )
     );
   }
 
@@ -312,8 +288,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
     final tabs = [(label: loc.translate('account_sub'), register: true), (label: loc.translate('log_in'), register: false)];
 
     return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE2E8F0)).withValues(alpha: 0.7), borderRadius: BorderRadius.circular(20)),
+      padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE2E8F0)).withValues(alpha: 0.7), borderRadius: BorderRadius.circular(20)),
       child: Row(
         children: [
           for (final tab in tabs)
@@ -341,10 +316,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _label(String text) => Padding(
-    padding: const EdgeInsets.only(bottom: 8),
-    child: Text(text, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15)),
-  );
+  Widget _label(String text) => Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(text, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15)));
 
   Widget _field({
     required TextEditingController controller, required String hint, required IconData icon,
@@ -357,8 +329,7 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: AppPalette.bg(Color(0xFFF1F5F9)), borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: error != null ? AppPalette.border(Color(0xFFD32F2F)) : Colors.transparent),
+            color: AppPalette.bg(Color(0xFFF1F5F9)), borderRadius: BorderRadius.circular(20), border: Border.all(color: error != null ? AppPalette.border(Color(0xFFD32F2F)) : Colors.transparent),
             boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.2), blurRadius: 15)],
           ),
           child: TextField(
@@ -369,19 +340,13 @@ class _EmailAuthState extends State<EmailAuth> with SingleTickerProviderStateMix
             decoration: InputDecoration(
               border: InputBorder.none, contentPadding: const EdgeInsets.symmetric(vertical: 14), hintText: hint, hintStyle: TextStyle(color: AppPalette.fg(Color(0xFF94A3B8)), fontSize: 15, fontWeight: FontWeight.w400),
               prefixIcon: Icon(icon, size: 20, color: AppPalette.fg(Color(0xFF64748B))),
-              suffixIcon: onToggleObscure == null ? null : IconButton(
-                onPressed: onToggleObscure,
-                icon: Icon(obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20, color: AppPalette.fg(Color(0xFF64748B))),
-              ),
-            ),
-          ),
+              suffixIcon: onToggleObscure == null ? null : IconButton(onPressed: onToggleObscure, icon: Icon(obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20, color: AppPalette.fg(Color(0xFF64748B))))
+            )
+          )
         ),
         if (error != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-            child: Text(error, style: TextStyle(fontSize: 12, color: AppPalette.fg(Color(0xFFD32F2F)))),
-          ),
-      ],
+          Padding(padding: const EdgeInsets.fromLTRB(12, 6, 12, 0), child: Text(error, style: TextStyle(fontSize: 12, color: AppPalette.fg(Color(0xFFD32F2F)))))
+      ]
     );
   }
 }

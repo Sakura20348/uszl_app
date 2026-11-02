@@ -53,9 +53,7 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
     if (mounted) setState(() { _saved..clear()..addAll(items.map((e) => e['word'] as String)); });
   }
 
-  Future<void> _call(String number) async {
-    await launchUrl(Uri(scheme: 'tel', path: number));
-  }
+  Future<void> _call(String number) async { await launchUrl(Uri(scheme: 'tel', path: number)); }
 
   Future<void> _toggleSave(String word) async {
     await SavedStore.instance.toggle({'word': word, 'type': 'word', 'source': 'emergency'});
@@ -75,8 +73,7 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
 
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient)),
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient)),
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -90,21 +87,11 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                     child: _reveal(0.1, _sectionTitle(loc.translate('emergency_call_title'), loc.translate('emergency_call_sub'), c)),
                   ),
-                  const SizedBox(height: 12),
-                  _reveal(0.15, _servicesGrid(loc, c)),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12), _reveal(0.15, _servicesGrid(loc, c)), const SizedBox(height: 20),
                   // ===== 3) tip =====
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: _reveal(0.25, _tipCard(loc, c)),
-                  ),
-                  const SizedBox(height: 24),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _reveal(0.25, _tipCard(loc, c))), const SizedBox(height: 24),
                   // ===== 4) signs =====
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: _reveal(0.35, _sectionTitle(loc.translate('emergency_signs'), '', c)),
-                  ),
-                  const SizedBox(height: 12),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _reveal(0.35, _sectionTitle(loc.translate('emergency_signs'), '', c))), const SizedBox(height: 12),
                 ],
               ),
             ),
@@ -113,15 +100,12 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
               padding: EdgeInsets.fromLTRB(16, 0, 16, 32 + MediaQuery.of(context).viewPadding.bottom),
               sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.05),
-                delegate: SliverChildBuilderDelegate(
-                  (context, i) => _reveal((0.4 + i * 0.04).clamp(0.0, 0.5), _signCard(_signs[i], loc, c)),
-                  childCount: _signs.length,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+                delegate: SliverChildBuilderDelegate((context, i) => _reveal((0.4 + i * 0.04).clamp(0.0, 0.5), _signCard(_signs[i], loc, c)), childCount: _signs.length)
+              )
+            )
+          ]
+        )
+      )
     );
   }
 
@@ -131,8 +115,7 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
       padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 16, 16, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppPalette.bg(const Color(0xFFEF5350)), AppPalette.bg(_redDark)]),
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(_red).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, 8))],
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)), boxShadow: [BoxShadow(color: AppPalette.shadow(_red).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, 8))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,8 +128,8 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
                 color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
                 boxShadow: [BoxShadow(color: Colors.white.withValues(alpha: 0.7), blurRadius: 15, offset: const Offset(0, 4))]
               ),
-              child: const Icon(Icons.arrow_back_outlined, color: Colors.black),
-            ),
+              child: const Icon(Icons.arrow_back_outlined, color: Colors.black)
+            )
           ),
           const SizedBox(height: 20),
           Row(
@@ -157,7 +140,7 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
                   color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(18), border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
                   boxShadow: [BoxShadow(color: Colors.white.withValues(alpha: 0.7), blurRadius: 15, offset: const Offset(0, 4))]
                 ),
-                child: Image.asset('web/icons/emergency.png', width: 32, height: 32, errorBuilder: (_, _, _) => const Icon(Icons.emergency, color: Colors.white, size: 32)),
+                child: Image.asset('web/icons/emergency.webp', width: 32, height: 32, errorBuilder: (_, _, _) => const Icon(Icons.emergency, color: Colors.white, size: 32)),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -166,24 +149,21 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
                   children: [
                     Text(loc.translate('emergency_phrases'), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700, color: Colors.white)),
                     const SizedBox(height: 4),
-                    Text(loc.translate('emergency_phrases_sub'), style: TextStyle(fontSize: 14, height: 1.35, color: Colors.white.withValues(alpha: 0.85))),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+                    Text(loc.translate('emergency_phrases_sub'), style: TextStyle(fontSize: 14, height: 1.35, color: Colors.white.withValues(alpha: 0.85)))
+                  ]
+                )
+              )
+            ]
+          )
+        ]
+      )
     );
   }
 
   Widget _sectionTitle(String title, String sub, AppColors c) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: c.text)),
-        if (sub.isNotEmpty) Text(sub, style: TextStyle(fontSize: 14, color: c.subText)),
-      ],
+      children: [Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: c.text)), if (sub.isNotEmpty) Text(sub, style: TextStyle(fontSize: 14, color: c.subText))],
     );
   }
 
@@ -200,37 +180,32 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
               boxShadow: [BoxShadow(color: AppPalette.shadow(s.color).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, 4))],
             ),
             child: Material(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-              clipBehavior: Clip.antiAlias,
+              color: Colors.transparent, borderRadius: BorderRadius.circular(20), clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: () => _call(s.number),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   child: Row(
                     children: [
-                      Container(
-                        height: 42, width: 42, decoration: BoxDecoration(color: AppPalette.bg(s.color).withValues(alpha: 0.15), shape: BoxShape.circle),
-                        child: Icon(s.icon, color: AppPalette.fg(s.color), size: 24),
-                      ),
+                      Container(height: 42, width: 42, decoration: BoxDecoration(color: AppPalette.bg(s.color).withValues(alpha: 0.15), shape: BoxShape.circle), child: Icon(s.icon, color: AppPalette.fg(s.color), size: 24)),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(s.number, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppPalette.fg(s.color))),
-                            Text(loc.translate(s.labelKey), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: c.subText)),
-                          ],
-                        ),
+                            Text(loc.translate(s.labelKey), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: c.subText))
+                          ]
+                        )
                       ),
-                      Icon(Icons.call_rounded, size: 18, color: AppPalette.fg(s.color)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
+                      Icon(Icons.call_rounded, size: 18, color: AppPalette.fg(s.color))
+                    ]
+                  )
+                )
+              )
+            )
+          )
+      ]
     );
   }
 
@@ -238,18 +213,16 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
     return Container(
       width: double.infinity, padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppPalette.bg(const Color(0xFFFFF3E0)).withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppPalette.border(const Color(0xFFFFB74D)).withValues(alpha: 0.6)),
+        color: AppPalette.bg(const Color(0xFFFFF3E0)).withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppPalette.border(const Color(0xFFFFB74D)).withValues(alpha: 0.6)),
         boxShadow: [BoxShadow(color: AppPalette.shadow(const Color(0xFFFFB74D)).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, 4))]
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.tips_and_updates_rounded, color: AppPalette.fg(const Color(0xFFEF6C00))),
-          const SizedBox(width: 12),
-          Expanded(child: Text(loc.translate('emergency_tip'), style: TextStyle(fontSize: 14, height: 1.4, color: AppPalette.fg(const Color(0xFF5D4037))))),
-        ],
-      ),
+          Icon(Icons.tips_and_updates_rounded, color: AppPalette.fg(const Color(0xFFEF6C00))), const SizedBox(width: 12),
+          Expanded(child: Text(loc.translate('emergency_tip'), style: TextStyle(fontSize: 14, height: 1.4, color: AppPalette.fg(const Color(0xFF5D4037)))))
+        ]
+      )
     );
   }
 
@@ -261,15 +234,11 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
     return Container(
       margin: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: c.card.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: c.cardBorder),
+        color: c.card.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(22), border: Border.all(color: c.cardBorder),
         boxShadow: [BoxShadow(color: c.glow.withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, 4))],
       ),
       child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(22),
-        clipBehavior: Clip.antiAlias, // ripple stays inside the rounded corners
+        color: Colors.transparent, borderRadius: BorderRadius.circular(22), clipBehavior: Clip.antiAlias, // ripple stays inside the rounded corners
         child: InkWell(
           onTap: () => _openSign(sign),
           child: Padding(
@@ -282,11 +251,7 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        height: 60, width: 60,
-                        decoration: BoxDecoration(
-                          color: AppPalette.bg(_red).withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                        ),
+                        height: 60, width: 60, decoration: BoxDecoration(color: AppPalette.bg(_red).withValues(alpha: 0.12), shape: BoxShape.circle),
                         child: Icon(sign.icon, color: AppPalette.fg(_red).withValues(alpha: 0.9), size: 34),
                       ),
                       const SizedBox(height: 8),
@@ -297,12 +262,12 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
                 // ===== play: top-right =====
                 Positioned(top: 0, right: 0, child: Icon(Icons.play_circle_fill_rounded, size: 22, color: AppPalette.fg(blue))),
                 // ===== saved: top-left =====
-                if (saved) Positioned(top: 0, left: 0, child: Icon(Icons.bookmark, size: 20, color: AppPalette.fg(blue))),
-              ],
-            ),
-          ),
-        ),
-      ),
+                if (saved) Positioned(top: 0, left: 0, child: Icon(Icons.bookmark, size: 20, color: AppPalette.fg(blue)))
+              ]
+            )
+          )
+        )
+      )
     );
   }
 
@@ -329,16 +294,11 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(20, 12, 20, 28 + navBar),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(child: Container(width: 40, height: 5, decoration: BoxDecoration(color: c.track, borderRadius: BorderRadius.circular(3)))),
                   const SizedBox(height: 18),
-                  Container(
-                    height: 190, width: double.infinity,
-                    decoration: BoxDecoration(color: c.chip, borderRadius: BorderRadius.circular(20)),
-                    child: const LessonVideoUnavailable(),
-                  ),
+                  Container(height: 190, width: double.infinity, decoration: BoxDecoration(color: c.chip, borderRadius: BorderRadius.circular(20)), child: const LessonVideoUnavailable()),
                   const SizedBox(height: 18),
                   Row(
                     children: [
@@ -352,21 +312,18 @@ class _EmergencyPhrasesState extends State<EmergencyPhrases> with SingleTickerPr
                   if (hasSyllables) ...[
                     const SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE3F2FD)), borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE3F2FD)), borderRadius: BorderRadius.circular(12)),
                       child: Text('${loc.translate('syllables')}: $syllables', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppPalette.fg(const Color(0xFF1565C0)))),
                     ),
                   ],
-                  const SizedBox(height: 16),
-                  Text(loc.translate('how_to_show'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.text)),
-                  const SizedBox(height: 6),
-                  Text(hasMeaning ? meaning : loc.translate('no_description'), style: TextStyle(fontSize: 15, height: 1.45, color: c.subText)),
-                ],
-              ),
-            ),
+                  const SizedBox(height: 16), Text(loc.translate('how_to_show'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.text)),
+                  const SizedBox(height: 6), Text(hasMeaning ? meaning : loc.translate('no_description'), style: TextStyle(fontSize: 15, height: 1.45, color: c.subText))
+                ]
+              )
+            )
           );
-        },
-      ),
+        }
+      )
     );
   }
 }

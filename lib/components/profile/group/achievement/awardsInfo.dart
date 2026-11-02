@@ -32,8 +32,8 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
     _slideUp = Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic));
     // a just-opened achievement "pops" open; others simply appear
     _badgePop = isNew
-        ? Tween<double>(begin: 0.4, end: 1.0).animate(CurvedAnimation(parent: _animController, curve: const Interval(0.2, 1.0, curve: Curves.elasticOut)))
-        : const AlwaysStoppedAnimation(1.0);
+      ? Tween<double>(begin: 0.4, end: 1.0).animate(CurvedAnimation(parent: _animController, curve: const Interval(0.2, 1.0, curve: Curves.elasticOut)))
+      : const AlwaysStoppedAnimation(1.0);
     _animController.forward();
   }
 
@@ -51,7 +51,7 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
     final AppLocalizations loc = AppLocalizations.of(context)!;
     final bool unlocked = widget.item['unlocked'] ?? false;
     final bool isNew = widget.item['isNew'] ?? false;
-    final String image = widget.item['image'] ?? 'web/images/fire.png';
+    final String image = widget.item['image'] ?? 'web/images/fire.webp';
     final String title = widget.item['titleKey'] ?? '';
     final String task = widget.item['subKey'] ?? '';
     final String doneText = widget.item['subTitleKey'] ?? '';
@@ -59,7 +59,7 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
     final int progress = ((widget.item['progress'] ?? 0) as int).clamp(0, target);
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 40),
+      padding: EdgeInsets.fromLTRB(16, 12, 16, 16 + MediaQuery.of(context).viewPadding.bottom),
       decoration: BoxDecoration(
         color: unlocked ? AppPalette.bg(Color(0xFF81D4FA)).withValues(alpha: 0.1) : AppPalette.bg(Color(0xFFB0BEC5)).withValues(alpha: 0.1), borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         border: Border.all(width: 1, color: unlocked ? AppPalette.border(Color(0xFFB3E5FC)).withValues(alpha: 0.2) : AppPalette.border(Color(0xFFCFD8DC)).withValues(alpha: 0.2)),
@@ -89,8 +89,7 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
                       Positioned(
                         right: 8, bottom: 8,
                         child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(color: AppPalette.bg(Colors.white), shape: BoxShape.circle, boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.grey).withValues(alpha: 0.3), blurRadius: 8)]),
+                          padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), shape: BoxShape.circle, boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.grey).withValues(alpha: 0.3), blurRadius: 8)]),
                           child: Icon(Icons.lock, size: 20, color: AppPalette.fg(Colors.grey[700]!)),
                         ),
                       ),
@@ -113,14 +112,12 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: 16),
                 _messageCard(
-                  icon: Image.asset('web/icons/info_yellow.png', width: 28, height: 28, color: AppPalette.fg(Colors.orange)),
+                  icon: Image.asset('web/icons/info_yellow.webp', width: 28, height: 28, color: AppPalette.fg(Colors.orange)),
                   title: loc.translate('important'), body: loc.translate('important_sub'),
                   tint: const Color(0xFFFFCC80), border: const Color(0xFFFFC107), iconBg: const Color(0xFFFFF176), iconBorder: Colors.yellow,
                 ),
-                const SizedBox(height: 16),
-                _button(text: loc.translate('great'), onPressed: () => Navigator.pop(context), bg: const Color(0xFF90CAF9), shadow: const Color(0xFF0D47A1)),
-                const SizedBox(height: 10),
-                _button(text: loc.translate('share_achievement'), icon: Icons.share, onPressed: _handleShare, bg: const Color(0xFFEEEEEE), shadow: const Color(0xFF212121)),
+                const SizedBox(height: 16), _button(text: loc.translate('great'), onPressed: () => Navigator.pop(context), bg: const Color(0xFF90CAF9), shadow: const Color(0xFF0D47A1)),
+                const SizedBox(height: 10), _button(text: loc.translate('share_achievement'), icon: Icons.share, onPressed: _handleShare, bg: const Color(0xFFEEEEEE), shadow: const Color(0xFF212121)),
               ] else ...[
                 _statusChip(icon: Icons.lock, text: loc.translate('locked'), bg: Colors.grey, fg: Colors.grey[800]!),
                 const SizedBox(height: 16),
@@ -131,14 +128,12 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
                   tint: const Color(0xFF90CAF9), border: const Color(0xFF42A5F5), iconBg: const Color(0xFFBBDEFB), iconBorder: const Color(0xFF64B5F6),
                   footer: _progressBar(progress, target),
                 ),
-                const SizedBox(height: 24),
-                _button(text: loc.translate('keep_going'), onPressed: () => Navigator.pop(context), bg: const Color(0xFFEEEEEE), shadow: const Color(0xFF212121)),
+                const SizedBox(height: 24), _button(text: loc.translate('keep_going'), onPressed: () => Navigator.pop(context), bg: const Color(0xFFEEEEEE), shadow: const Color(0xFF212121)),
               ],
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
+            ]
+          )
+        )
+      )
     );
   }
 
@@ -178,15 +173,15 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
                   children: [
                     Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 4),
-                    Text(body, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 14), maxLines: 3, overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-              ),
-            ],
+                    Text(body, style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 14), maxLines: 3, overflow: TextOverflow.ellipsis)
+                  ]
+                )
+              )
+            ]
           ),
-          if (footer != null) ...[const SizedBox(height: 14), footer],
-        ],
-      ),
+          if (footer != null) ...[const SizedBox(height: 14), footer]
+        ]
+      )
     );
   }
 
@@ -199,13 +194,13 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
             child: TweenAnimationBuilder<double>(
               tween: Tween(begin: 0, end: target > 0 ? progress / target : 0),
               duration: const Duration(milliseconds: 900), curve: Curves.easeOutCubic,
-              builder: (_, value, _) => LinearProgressIndicator(value: value, minHeight: 10, backgroundColor: AppPalette.bg(const Color(0xFFD6E4F0)), valueColor: AlwaysStoppedAnimation(AppPalette.fg(const Color(0xFF1E88E5)))),
-            ),
-          ),
+              builder: (_, value, _) => LinearProgressIndicator(value: value, minHeight: 10, backgroundColor: AppPalette.bg(const Color(0xFFD6E4F0)), valueColor: AlwaysStoppedAnimation(AppPalette.fg(const Color(0xFF1E88E5))))
+            )
+          )
         ),
         const SizedBox(width: 12),
-        Text('$progress/$target', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppPalette.fg(const Color(0xFF1565C0)))),
-      ],
+        Text('$progress/$target', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppPalette.fg(const Color(0xFF1565C0))))
+      ]
     );
   }
 
@@ -222,10 +217,10 @@ class _AwardsInfoState extends State<AwardsInfo> with SingleTickerProviderStateM
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[Icon(icon, color: AppPalette.fg(Colors.white), size: 22), const SizedBox(width: 8)],
-            Text(text, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white))),
-          ],
-        ),
-      ),
+            Text(text, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white)))
+          ]
+        )
+      )
     );
   }
 }

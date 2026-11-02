@@ -56,8 +56,6 @@ class OnboardingAnswers {
     try {
       await UzslApi.updateOnboarding(profile);
       await prefs.setBool(_syncedKey, true);
-    } on ApiException catch (e) {
-      debugPrint('Onboarding answers not sent: $e');
-    }
+    } on ApiException catch (e) { debugPrint('Onboarding answers not sent: $e'); }
   }
 }

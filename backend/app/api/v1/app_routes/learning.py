@@ -149,7 +149,7 @@ async def get_lesson(lesson_id: int, db: DB, user: OptionalUser) -> LessonDetail
     for e in lesson.exercises:
         options = [
             OptionOut.model_validate(o).model_copy(update={"sign_video": first_video(signs.get(o.sign_id))})
-            for o in e.options
+            for o in (sorted(e.options, key=lambda o: (o.position is None, o.position or 0, o.id)) if e.type == "learn" else e.options)
         ]
         if e.type in ("order", "matching"):
             random.shuffle(options)

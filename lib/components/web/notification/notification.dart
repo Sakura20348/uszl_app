@@ -34,12 +34,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
     List<AppNotification> items = [];
     // Not logged in (or the session ended): nothing to show
     if (await UzslApi.isLoggedIn()) {
-      try {
-        items = await UzslApi.notifications();
-      } on ApiException catch (e) {
-        items = _items;
-        if (mounted && e.status != 401) showApiError(context, e, onRetry: _handleRefresh);
-      }
+      try { items = await UzslApi.notifications(); }
+      on ApiException catch (e) { items = _items; if (mounted && e.status != 401) showApiError(context, e, onRetry: _handleRefresh); }
     }
     if (!mounted) return;
     setState(() { _items = items; _isLoading = false; });
@@ -52,10 +48,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  Future<void> _handleRefresh() async {
-    setState(() => _isLoading = true);
-    await _initData();
-  }
+  Future<void> _handleRefresh() async { setState(() => _isLoading = true); await _initData(); }
 
   Future<void> _markAllRead() async {
     if (_items.every((n) => n.isRead)) return;
@@ -63,35 +56,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
       await UzslApi.markAllRead();
       if (mounted) setState(() { for (final n in _items) { n.isRead = true; } });
       NotificationCenter.refresh(alert: false);
-    } on ApiException catch (e) {
-      if (mounted) showApiError(context, e, onRetry: _markAllRead);
-    }
+    } on ApiException catch (e) { if (mounted) showApiError(context, e, onRetry: _markAllRead); }
   }
 
   Future<void> _openNotification(AppNotification item) async {
-    // A reply from the team opens the conversation (Profile → Help)
-    final Widget page = item.type == 'support' ? const SupportChat() : NotificationModal(notification: item);
-
-    await showModalBottomSheet(
-      context: context,
-      enableDrag: true,
-      isDismissible: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        expand: false, initialChildSize: 0.5, minChildSize: 0.3, maxChildSize: 0.9,
-        builder: (context, controller) => ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+    if (item.type == 'support') {
+      // A reply from the team opens the conversation (Profile → Help), a full page
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => const SupportChat()));
+    } else {
+      // The sheet is as tall as the notification, scrolling only past 90% of the screen
+      await showModalBottomSheet(
+        context: context, enableDrag: true, isDismissible: true, isScrollControlled: true, backgroundColor: Colors.transparent,
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
+        builder: (context) => ClipRRect(
+          borderRadius: BorderRadius.circular(24),
           child: Container(
             decoration: BoxDecoration(
-              color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.vertical(top: Radius.circular(24)), border: Border.all(width: 1, color: AppPalette.border(Colors.white)),
+              color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFB3E5FC)).withValues(alpha: 0.2)),
               boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.9), blurRadius: 15)]
             ),
-            child: SingleChildScrollView(controller: controller, child: page),
+            child: SingleChildScrollView(child: NotificationModal(notification: item)),
           ),
         ),
-      ),
-    );
+      );
+    }
 
     if (!mounted || item.isRead) return;
     setState(() => item.isRead = true);
@@ -108,8 +96,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: _handleRefresh, notificationPredicate: (ScrollNotification notification) {return notification.depth == 0;},
@@ -120,20 +107,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 // ===== top bar: back + mark-all-read =====
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _circleButton(Icons.arrow_back, () => Navigator.pop(context)),
-                      _circleButton(Icons.done_all, _markAllRead),
-                    ],
-                  ),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [_circleButton(Icons.arrow_back, () => Navigator.pop(context)), _circleButton(Icons.done_all, _markAllRead)])
                 ),
-                Expanded( child: _isLoading ? const Center(child: CircularProgressIndicator()) : ( _items.isEmpty ? _emptyState(loc) : _listState(loc) )),
-              ],
-            ),
+                Expanded( child: _isLoading ? const Center(child: CircularProgressIndicator()) : ( _items.isEmpty ? _emptyState(loc) : _listState(loc) ))
+              ]
+            )
           )
-        ),
-      ),
+        )
+      )
     );
   }
 
@@ -142,8 +123,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(16)),
-        child: Icon(icon, color: AppPalette.fg(Color(0xFF334155)), size: 22),
-      ),
+        child: Icon(icon, color: AppPalette.fg(Color(0xFF334155)), size: 22)
+      )
     );
   }
 
@@ -152,14 +133,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
-        const SizedBox(height: 80),
-        Image.asset('web/images/not_notification.png', height: 260),
-        const SizedBox(height: 24),
-        Text(
-          loc.translate('notif_empty_title'), textAlign: TextAlign.center, style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A))),
-        ),
-        const SizedBox(height: 10),
-        Text(loc.translate('notif_empty_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.grey[600]!))),
+        const SizedBox(height: 80), Image.asset('web/images/not_notification.webp', height: 260), const SizedBox(height: 24),
+        Text(loc.translate('notif_empty_title'), textAlign: TextAlign.center, style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
+        const SizedBox(height: 10), Text(loc.translate('notif_empty_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.grey[600]!))),
       ],
     );
   }
@@ -167,17 +143,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
   // ===== Image 2: list state =====
   Widget _listState(AppLocalizations loc) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10), physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       children: [
-        const SizedBox(height: 8),
-        Text(loc.translate('notifications'), style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
-        const SizedBox(height: 8),
-        Text(loc.translate('notifications_sub'), style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.grey[600]!))),
-        const SizedBox(height: 16),
-        ..._items.map(_notifCard),
-        const SizedBox(height: 20),
-      ],
+        const SizedBox(height: 8), Text(loc.translate('notifications'), style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF0F172A)))),
+        const SizedBox(height: 8), Text(loc.translate('notifications_sub'), style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.grey[600]!))),
+        const SizedBox(height: 16), ..._items.map(_notifCard), const SizedBox(height: 20)
+      ]
     );
   }
 
@@ -188,8 +159,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _openNotification(item),      // open, then mark read on return
+          borderRadius: BorderRadius.circular(16), onTap: () => _openNotification(item),      // open, then mark read on return
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -200,32 +170,28 @@ class _NotificationScreenState extends State<NotificationScreen> {
               children: [
                 Container(
                   height: 60, width: 60,
-                  decoration: BoxDecoration(
-                    color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.7), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(child: Image.asset(item.type == 'achievement' ? 'web/images/fire.png' : 'web/icons/code.png', width: 30, height: 30)),
+                  decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.7), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(16)),
+                  child: Center(child: Image.asset(item.type == 'achievement' ? 'web/images/fire.webp' : 'web/icons/code.webp', width: 30, height: 30)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppPalette.fg(Color(0xFF0F172A)))),
-                      const SizedBox(height: 4),
-                      Text(item.body, style: TextStyle(fontSize: 14, color: AppPalette.fg(Colors.grey[600]!)), maxLines: 2, overflow: TextOverflow.ellipsis),
-                      const SizedBox(height: 4),
+                      Text(item.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppPalette.fg(Color(0xFF0F172A)))), const SizedBox(height: 4),
+                      Text(item.body, style: TextStyle(fontSize: 14, color: AppPalette.fg(Colors.grey[600]!)), maxLines: 2, overflow: TextOverflow.ellipsis), const SizedBox(height: 4),
                       Text(formatNotificationTime(item.createdAt), style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[500]!))),
                     ],
                   ),
                 ),
                 const SizedBox(width: 8),
                 if (unread)
-                  Container(height: 10, width: 10, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFEF4444)), shape: BoxShape.circle)),
-              ],
-            ),
-          ),
-        ),
-      ),
+                  Container(height: 10, width: 10, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFEF4444)), shape: BoxShape.circle))
+              ]
+            )
+          )
+        )
+      )
     );
   }
 

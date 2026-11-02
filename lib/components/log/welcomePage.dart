@@ -19,7 +19,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    const String ImagePath = 'web/images/uzbek_sign_language.png';
+    const String ImagePath = 'web/images/uzbek_sign_language.webp';
 
     return Scaffold(
       body: Container(

@@ -15,15 +15,7 @@ class GradientCircularProgress extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size(size, size),
-      painter: _GradientCircularPainter(
-        progress: progress,
-        strokeWidth: strokeWidth,
-      ),
-    );
-  }
+  Widget build(BuildContext context) { return CustomPaint(size: Size(size, size), painter: _GradientCircularPainter(progress: progress, strokeWidth: strokeWidth)); }
 }
 
 class _GradientCircularPainter extends CustomPainter {
@@ -39,7 +31,7 @@ class _GradientCircularPainter extends CustomPainter {
 
     // 1) Draw the light grey background track ring
     final trackPaint = Paint()
-      ..color = AppPalette.auto(Colors.blue).withOpacity(0.12)
+      ..color = AppPalette.auto(Colors.blue).withValues(alpha: 0.12)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth;
 
@@ -67,7 +59,5 @@ class _GradientCircularPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _GradientCircularPainter oldDelegate) {
-    return oldDelegate.progress != progress;
-  }
+  bool shouldRepaint(covariant _GradientCircularPainter oldDelegate) { return oldDelegate.progress != progress; }
 }

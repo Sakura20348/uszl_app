@@ -121,11 +121,18 @@ class AdminReportOut(Schema):
     status: str
     created_at: datetime
     exercise_type: str
+    # Uzbek, then the Russian and English texts (null = not translated)
     exercise_prompt: str | None
+    exercise_prompt_ru: str | None = None
+    exercise_prompt_en: str | None = None
     lesson_id: int
     lesson_title: str
+    lesson_title_ru: str | None = None
+    lesson_title_en: str | None = None
     course_id: int
     course_title: str
+    course_title_ru: str | None = None
+    course_title_en: str | None = None
     user_id: int | None
     user_name: str | None
 
@@ -177,3 +184,15 @@ class PopularLesson(Schema):
     learners: int
     # Average best score (0-100) of those who completed it
     average_accuracy: int | None
+
+
+class LessonLearner(Schema):
+    """A learner who completed a lesson (Popular lessons on the dashboard)."""
+
+    user_id: int
+    name: str
+    phone: str
+    avatar: MediaPath = None
+    # Best score (0-100)
+    accuracy: int
+    completed_at: datetime | None

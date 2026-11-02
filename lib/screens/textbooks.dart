@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:signlang/components/uiTextBooks/group/introduction/introductionLessons.dart';
 import 'package:signlang/services/notification_center.dart';
 import 'package:signlang/components/uiTextBooks/apiTextbooks/api_textbooks.dart';
 import 'package:signlang/services/app_loading.dart';
@@ -11,7 +12,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:signlang/components/profile/group/personal/personalInformation.dart';
 import 'package:signlang/components/uiTextBooks/group/allLessons.dart';
 import 'package:signlang/components/uiTextBooks/group/alphabetLessons/alphabetLessons.dart';
-import 'package:signlang/components/uiTextBooks/group/familyLessons/familyLessons.dart';
 import 'package:signlang/components/uiTextBooks/group/foodLessons/foodLessons.dart';
 import 'package:signlang/components/uiTextBooks/group/numberLessons/numberLessons.dart';
 import 'package:signlang/components/uiTextBooks/nameTextbooks/buildLessonsTextbooks.dart';
@@ -49,6 +49,7 @@ class _TextbooksState extends State<Textbooks>{
     for (int i = 0; i < items.length; i++) {
       final item = items[i];
       final id = item['id'];
+      if (item['course'] != null || item['serverProgress'] == true) { totalLearned += item['learned'] as int; totalAll += item['total'] as int; continue; }
       // int learned = _learnedOverrides[id] ?? int.tryParse('${item['learned']}') ?? 0;
       int learned = _learnedOverrides[id] ?? (LessonProgress.instance.learnedOf(id) > 0 ? LessonProgress.instance.learnedOf(id) : int.tryParse('${item['learned']}') ?? 0);
       int total = int.tryParse('${item['total']}') ?? 0;
@@ -63,6 +64,9 @@ class _TextbooksState extends State<Textbooks>{
     super.initState(); _initData(); _initializeProfileData(); _loadProfileImage(); _loadUserName();
     _unreadCount = NotificationCenter.unread.value;
     NotificationCenter.unread.addListener(_onUnreadChanged);
+    // the cards are the dashboard's textbooks: deleted ones disappear, new ones appear
+    ServerTextbooks.courses.addListener(_onTextbooks);
+    ServerTextbooks.sync();
     _loadUnread();
   }
 
@@ -87,10 +91,8 @@ class _TextbooksState extends State<Textbooks>{
 
     bool passed(int k) { final p = totalOf(k) > 0 && learnedOf(k) >= totalOf(k); return p; }
 
-    if (passed(i)) return LessonStatus.passed;
-    if (i == 0) return LessonStatus.opened;
-    if (passed(i - 1)) return LessonStatus.opened; // prev passed -> unlock next
-    return LessonStatus.locked;
+    // in order: a card opens when the previous one is passed (prev passed -> unlock next)
+    return ServerTextbooks.statusAt(items, i, passed);
   }
 
 // =======================================================================
@@ -101,7 +103,7 @@ class _TextbooksState extends State<Textbooks>{
     setState(() { _profileImage = path != null ? File(path) : null; _isLoading = false; });
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await Future.wait([_initializeData(), ServerTextbooks.sync()]); }
   Future<void> _loadProfileImage() async { final path = await ImageStorage.load(); if (mounted) { setState(() => _profileImage = (path != null && path.isNotEmpty) ? File(path) : null); } }
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
   Future<void> _initializeProfileData() async {
@@ -116,7 +118,9 @@ class _TextbooksState extends State<Textbooks>{
   void _onUnreadChanged() { if (mounted) setState(() => _unreadCount = NotificationCenter.unread.value); }
 
   @override
-  void dispose() { NotificationCenter.unread.removeListener(_onUnreadChanged); super.dispose(); }
+  void dispose() { NotificationCenter.unread.removeListener(_onUnreadChanged); ServerTextbooks.courses.removeListener(_onTextbooks); super.dispose(); }
+
+  void _onTextbooks() { if (mounted) setState(() {}); }
 
 // ================================ Button ==================================
 // --- ACCOUNT ---
@@ -130,19 +134,18 @@ class _TextbooksState extends State<Textbooks>{
     if (_statusFor(i) == LessonStatus.locked) return;
     final items = LessonsTextbooksData(context: context).lessonsTextbooksItems;
     final id = items[i]['id'];
+    // a dashboard textbook: its lessons come from the server
+    if (await openTextbookCard(context, items[i]) || !mounted) return;
 
     Widget? page;
     switch (id) {
       case '0': page = const AlphabetLessons(); break;
       case '1': page = const NumberLessons(); break;
-      case '2': page = const FamilyLessons(); break;
+      case '2': page = const IntroductionLessons(); break;
       case '3': page = const FoodLessons(); break;
     }
 
     if (page == null) {
-      // no screens in the app for this textbook: its lessons come from the dashboard
-      final slug = builtInTextbookSlugs[id];
-      if (slug != null && await openServerTextbook(context, slug)) { if (mounted) setState(() {}); return; }
       if (mounted) showRedSnackBar(context, AppLocalizations.of(context)!.translate('section_unavailable'));
       return;
     }
@@ -157,10 +160,10 @@ class _TextbooksState extends State<Textbooks>{
     final lessonsTextbooksData = LessonsTextbooksData(context: context);
     final allItems = lessonsTextbooksData.storesByLessonsTextbooks['0'] ?? [];
     final lessonsTextbooksItems = allItems.take(4).toList();
-    const String ImagePathNumber = 'web/icons/numbers.png'; const String ImagePathInfo = 'web/icons/info.png';
+    const String ImagePathNumber = 'web/icons/numbers.webp'; const String ImagePathInfo = 'web/icons/info.webp';
     final Color isColor = _unreadCount > 0 ? Colors.yellow.withValues(alpha: 0.7) : const Color(0xFF94A3B8);
-    final Color isColors = _unreadCount > 0 ? const Color(0xFFE3F2FD).withValues(alpha:  Theme.of(context).brightness == Brightness.dark ? 0.15 : 0.6) : AppColors.of(context).card;
-    final Color isShadow = _unreadCount > 0 ? const Color(0xFF42A5F5).withValues(alpha: 0.9) : const Color(0xFFE3F2FD).withValues(alpha: 0.2);
+    final Color isColors = _unreadCount > 0 ? AppPalette.season(const Color(0xFFE3F2FD)).withValues(alpha: Theme.of(context).brightness == Brightness.dark ? 0.15 : 0.6) : AppColors.of(context).card;
+    final Color isShadow = _unreadCount > 0 ? AppPalette.season(const Color(0xFF42A5F5)).withValues(alpha: 0.9) : AppPalette.season(const Color(0xFFE3F2FD)).withValues(alpha: 0.2);
     final IconData isIcon = _unreadCount > 0 ? Icons.notifications_active : Icons.notifications;
     final c = AppColors.of(context);
 
@@ -231,14 +234,11 @@ class _TextbooksState extends State<Textbooks>{
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(16), onTap: _handleNotification,
-                                      child: Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [Center(child: Icon(isIcon, color: isColor, size: 26)), if (_unreadCount > 0) Positioned(left: -6, bottom: -6, child: PulseDot(count: _unreadCount))],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                      child: Stack(clipBehavior: Clip.none, children: [Center(child: Icon(isIcon, color: isColor, size: 26)), if (_unreadCount > 0) Positioned(left: -6, bottom: -6, child: PulseDot(count: _unreadCount))])
+                                    )
+                                  )
+                                )
+                              ]
                             ),
                             const SizedBox(height: 16),
                             // ===== 2) text =====
@@ -271,12 +271,11 @@ class _TextbooksState extends State<Textbooks>{
                                       GestureDetector(
                                         onTap: (){},
                                         child: Container(
-                                          padding: const EdgeInsets.all(2),
-                                          decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(18)),
-                                          child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: 24, color: c.accent.withValues(alpha: 0.9))),
-                                        ),
+                                          padding: const EdgeInsets.all(2), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(18)),
+                                          child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: 24, color: c.accent.withValues(alpha: 0.9)))
+                                        )
                                       )
-                                    ],
+                                    ]
                                   ),
                                   const SizedBox(height: 16),
                                   Row(
@@ -286,7 +285,8 @@ class _TextbooksState extends State<Textbooks>{
                                           height: 10,
                                           child: LinearProgressIndicator(
                                             value: _overallProgress, backgroundColor: c.isDark ? c.track : const Color(0xFFE0F7FA).withValues(alpha: 0.9),
-                                            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)), borderRadius: BorderRadius.circular(5)),
+                                            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)), borderRadius: BorderRadius.circular(5)
+                                          )
                                         )
                                       ),
                                       const SizedBox(width: 14),
@@ -298,15 +298,15 @@ class _TextbooksState extends State<Textbooks>{
                                     children: [
                                       Image.asset(ImagePathInfo, width: 16, height: 16), const SizedBox(width: 10),
                                       Text(AppLocalizations.of(context)!.translate('numbers_left'), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14, color: c.text))
-                                    ],
+                                    ]
                                   )
-                                ],
-                              ),
+                                ]
+                              )
                             ),
                             const SizedBox(height: 12)
-                          ],
-                        ),
-                      ),
+                          ]
+                        )
+                      )
                     ),
                     // ======= 3 =======
                     SliverToBoxAdapter(
@@ -340,31 +340,26 @@ class _TextbooksState extends State<Textbooks>{
                               children: List.generate(lessonsTextbooksItems.length, (i) {
                                 final lesson = Map<String, dynamic>.from(lessonsTextbooksItems[i]);
                                 final id = lesson['id'];
-                                if (_learnedOverrides.containsKey(id)) { lesson['learned'] = _learnedOverrides[id]; }
+                                if (_learnedOverrides.containsKey(id) && lesson['serverProgress'] != true) { lesson['learned'] = _learnedOverrides[id]; }
                                 lesson['status'] = _statusFor(i);
 
                                 return GestureDetector(
                                   onTap: _statusFor(i) == LessonStatus.locked ? null : () => _openLesson(i),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
-                                    child: BuildLessonsTextbooks.buildLessonTextbooks(context, lesson),
-                                  ),
+                                  child: Padding(padding: const EdgeInsets.only(bottom: 16), child: BuildLessonsTextbooks.buildLessonTextbooks(context, lesson))
                                 );
-                              }),
-                            ),
-                            // ===== 3) textbooks made in the dashboard ======
-                            const ApiTextbookList(),
-                          ],
-                        ),
+                              })
+                            )
+                          ]
+                        )
                       )
                     )
                   ]
-                ],
+                ]
               )
             )
-          ),
-        ),
-      ),
+          )
+        )
+      )
     );
   }
 }

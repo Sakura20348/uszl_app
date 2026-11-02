@@ -208,28 +208,31 @@ class _GestureToTextState extends State<GestureToText> with WidgetsBindingObserv
         width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient)),
         child: SafeArea(
           bottom: false,
-          child: Column(
+          child: RefreshIndicator(
+            onRefresh: () async { if (_camera == null) await _initCamera(); }, notificationPredicate: (ScrollNotification notification) {return notification.depth == 0;},
+            child: Column(
             children: [
-              // ===== 1) header =====
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
-                    ),
-                    Expanded(child: Text(loc.translate('gesture_text'), textAlign: TextAlign.center, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text))),
-                    const SizedBox(width: 48),
-                  ],
-                ),
-              ),
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 16 + MediaQuery.of(context).viewPadding.bottom),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // ===== 1) header =====
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 16),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined)),
+                            ),
+                            Expanded(child: Text(loc.translate('gesture_text'), textAlign: TextAlign.center, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text))),
+                            const SizedBox(width: 48),
+                          ],
+                        ),
+                      ),
                       // ===== 2) duration =====
                       Text(loc.translate('gt_duration'), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: c.text)),
                       const SizedBox(height: 8), _durationChips(), const SizedBox(height: 12),
@@ -252,7 +255,7 @@ class _GestureToTextState extends State<GestureToText> with WidgetsBindingObserv
                 ),
               ),
             ],
-          ),
+          )),
         ),
       ),
     );
@@ -269,7 +272,8 @@ class _GestureToTextState extends State<GestureToText> with WidgetsBindingObserv
               child: Container(
                 height: 40, alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: _seconds == s ? AppPalette.bg(_blue).withValues(alpha: 0.7) : AppPalette.bg(Colors.white).withValues(alpha: 0.6), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppPalette.border(Colors.white)),
+                  color: _seconds == s ? AppPalette.bg(_blue).withValues(alpha: 0.7) : AppPalette.bg(Colors.white).withValues(alpha: 0.6), borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppPalette.border(Colors.white)),
                 ),
                 child: Text('${s}s', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: _seconds == s ? Colors.white : AppPalette.fg(const Color(0xFF475569)))),
               ),
@@ -521,9 +525,7 @@ class _GestureToTextState extends State<GestureToText> with WidgetsBindingObserv
               Text('A', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: c.text)),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(loc.translate('gt_font_weight'), style: TextStyle(fontSize: 13, color: c.text)),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4), Text(loc.translate('gt_font_weight'), style: TextStyle(fontSize: 13, color: c.text)), const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(

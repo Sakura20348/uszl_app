@@ -22,7 +22,7 @@ class FeelingLessons extends StatefulWidget{
 
 class _FeelingLessonsState extends State<FeelingLessons> {
   bool _isLoading = true;
-  static const String _id = '4';
+  static const String _id = '';
   late int _learned;
 
   // total comes from the textbook data (alphabet → 'total': 30), same source BuildLessonsTextbooks uses
@@ -53,7 +53,7 @@ class _FeelingLessonsState extends State<FeelingLessons> {
 
 // =======================================================================
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
   // =======================================================================

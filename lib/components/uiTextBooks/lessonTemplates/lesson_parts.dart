@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +28,7 @@ class LessonRadio extends StatelessWidget {
   const LessonRadio({super.key, required this.color, required this.filled});
 
   @override
-  Widget build(BuildContext context) => Container(
-    height: 22, width: 22,
-    decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: color, width: filled ? 6 : 2)),
-  );
+  Widget build(BuildContext context) => Container(height: 22, width: 22, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: color, width: filled ? 6 : 2)));
 }
 
 // ======================== top bar ========================
@@ -37,7 +37,7 @@ class LessonTopBar extends StatelessWidget {
   final int index;
   final int total;
   final VoidCallback onClose;
-  final VoidCallback? onSave; // null = bookmark disabled
+  final VoidCallback? onSave;
   final bool saved;
 
   const LessonTopBar({super.key, required this.index, required this.total, required this.onClose, required this.onSave, required this.saved});
@@ -50,8 +50,7 @@ class LessonTopBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
-              onTap: onClose,
-              child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.close)),
+              onTap: onClose, child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.close)),
             ),
             GestureDetector(
               onTap: onSave,
@@ -63,10 +62,17 @@ class LessonTopBar extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 20),
-        Text('${index + 1}/$total', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[700]!))),
-        const SizedBox(height: 4),
-        LessonStepBar(current: index, total: total),
-      ],
+        // the number slides in from the right, like the exercise
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 350), switchInCurve: Curves.easeOutCubic, switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            final bool incoming = child.key == ValueKey(index);
+            return FadeTransition(opacity: animation, child: SlideTransition(position: Tween(begin: Offset(incoming ? 0.6 : -0.6, 0), end: Offset.zero).animate(animation), child: child));
+          },
+          child: Text('${index + 1}/$total', key: ValueKey(index), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: AppPalette.fg(Colors.grey[700]!))),
+        ),
+        const SizedBox(height: 4), LessonStepBar(current: index, total: total)
+      ]
     );
   }
 }
@@ -83,25 +89,30 @@ class LessonStepBar extends StatelessWidget {
     final int segments = total.clamp(1, _maxSegments);
     // which segment stands for the current exercise
     final int active = total <= _maxSegments ? current : (current * segments / total).floor().clamp(0, segments - 1);
-    return Row(
-      children: List.generate(segments, (i) {
-        final bool isActive = i == active;
-        final bool done = i < active;
-        return Expanded(
-          flex: isActive ? 3 : 2,
-          child: Padding(
-            padding: EdgeInsets.only(right: i == segments - 1 ? 0 : 4),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250), height: isActive ? 15 : 10,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(isActive ? 10 : 5), border: Border.all(width: 1, color: AppPalette.border(Colors.blue).withValues(alpha: 0.5)),
-                color: isActive ? AppPalette.bg(lessonBlue) : (done ? AppPalette.bg(lessonBlue).withValues(alpha: 0.45) : AppPalette.bg(const Color(0xFFE1F5FE)).withValues(alpha: 0.9)),
-              ),
-            ),
-          ),
-        );
-      }),
-    );
+    // widths are animated (a flex change would jump): the current step is 3 units wide, the others 2
+    return LayoutBuilder(builder: (context, box) {
+      const double gap = 4;
+      final double unit = (box.maxWidth - gap * (segments - 1)) / (segments * 2 + 1);
+      return SizedBox(
+        height: 15,
+        child: Row(
+          children: List.generate(segments, (i) {
+            final bool isActive = i == active;
+            final bool done = i < active;
+            return Padding(
+              padding: EdgeInsets.only(right: i == segments - 1 ? 0 : gap),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 380), curve: Curves.easeOutCubic, width: unit * (isActive ? 3 : 2), height: isActive ? 15 : 10,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(isActive ? 10 : 5), border: Border.all(width: 1, color: AppPalette.border(Colors.blue).withValues(alpha: 0.5)),
+                  color: isActive ? AppPalette.bg(lessonBlue) : (done ? AppPalette.bg(lessonBlue).withValues(alpha: 0.45) : AppPalette.bg(const Color(0xFFE1F5FE)).withValues(alpha: 0.9))
+                )
+              )
+            );
+          })
+        )
+      );
+    });
   }
 }
 
@@ -111,7 +122,9 @@ class LessonVideoBox extends StatefulWidget {
   final String? url;
   final double? height;
   final bool showActions;
-  const LessonVideoBox({super.key, required this.url, this.height, this.showActions = true});
+  /// For a video that moves on screen (carousel): a native view can leave the page around it frozen or black
+  final bool texture;
+  const LessonVideoBox({super.key, required this.url, this.height, this.showActions = true, this.texture = false});
 
   @override
   State<LessonVideoBox> createState() => _LessonVideoBoxState();
@@ -120,11 +133,14 @@ class LessonVideoBox extends StatefulWidget {
 class _LessonVideoBoxState extends State<LessonVideoBox> {
   VideoPlayerController? _controller;
   bool _failed = false;
+  /// Set with [_failed]: the phone has no network (else the video itself didn't load)
+  bool _offline = false;
   double _speed = 1.0;
 
   @override
-  void initState() {
-    super.initState();
+  void initState() { super.initState(); _load(); }
+
+  void _load() {
     final url = widget.url;
     if (url == null) return;
     // muted sign videos, often several at once: mixWithOthers so they don't take audio focus from each other
@@ -132,12 +148,15 @@ class _LessonVideoBoxState extends State<LessonVideoBox> {
     final options = VideoPlayerOptions(mixWithOthers: true);
     // a native video view: with the default texture view some phones (Impeller / Vulkan) keep showing
     // only the first frame, especially with several videos on screen
-    const view = VideoViewType.platformView;
+    final view = widget.texture ? VideoViewType.textureView : VideoViewType.platformView;
     final controller = url.startsWith('http')
       ? VideoPlayerController.networkUrl(Uri.parse(url), videoPlayerOptions: options, viewType: view)
       : VideoPlayerController.asset(url, videoPlayerOptions: options, viewType: view);
     _controller = controller;
-    controller.initialize().then((_) async {
+    // a playback error after loading (e.g. a format the phone can't decode) also counts as failed
+    controller.addListener(() { if (controller.value.hasError && !_failed) _fail(controller, controller.value.errorDescription); });
+    // a stalled connection never finishes loading: give up after a while instead of spinning forever
+    controller.initialize().timeout(const Duration(seconds: 20)).then((_) async {
       await controller.setLooping(true);
       await controller.setVolume(0);
       await controller.play();
@@ -149,19 +168,28 @@ class _LessonVideoBoxState extends State<LessonVideoBox> {
           debugPrint('SIGN VIDEO ${url.split('/').last}: playing=${v.isPlaying} position=${v.position.inMilliseconds}ms / ${v.duration.inMilliseconds}ms error=${v.errorDescription}');
         });
       }
-    }).catchError((Object e) {
-      debugPrint('Lesson video not loaded: $e');
-      if (mounted) setState(() => _failed = true);
-    });
+    }).catchError((Object e) { _fail(controller, e); });
+  }
+
+  Future<void> _fail(VideoPlayerController controller, Object? error) async {
+    if (controller != _controller) return;
+    debugPrint('Lesson video not loaded: $error');
+    _failed = true;
+    final results = await Connectivity().checkConnectivity();
+    if (mounted && controller == _controller) setState(() => _offline = results.isEmpty || results.every((r) => r == ConnectivityResult.none));
+  }
+
+  void _retry() {
+    final old = _controller;
+    _failed = false; _offline = false;
+    setState(_load);
+    old?.dispose();
   }
 
   @override
   void dispose() { _controller?.dispose(); super.dispose(); }
 
-  void _setSpeed(double speed) {
-    setState(() => _speed = speed);
-    _controller?.setPlaybackSpeed(speed);
-  }
+  void _setSpeed(double speed) { setState(() => _speed = speed); _controller?.setPlaybackSpeed(speed); }
 
   Future<void> _fullScreen() async {
     final controller = _controller;
@@ -190,9 +218,10 @@ class _LessonVideoBoxState extends State<LessonVideoBox> {
     final bool ready = controller != null && controller.value.isInitialized;
     // small tiles (no buttons): the video fills exactly the space it is given, like a picture
     final bool tile = !widget.showActions;
-    final Widget video = ready
-        ? FittedBox(fit: BoxFit.contain, child: SizedBox(width: controller.value.size.width, height: controller.value.size.height, child: VideoPlayer(controller)))
-        : Center(child: (_failed || widget.url == null) ? Icon(Icons.videocam_off, color: AppPalette.fg(Colors.grey)) : const SizedBox(width: 26, height: 26, child: CircularProgressIndicator(strokeWidth: 2.5)));
+    final Widget video = ready && !_failed
+      ? FittedBox(fit: BoxFit.contain, child: SizedBox(width: controller.value.size.width, height: controller.value.size.height, child: VideoPlayer(controller)))
+      : widget.url == null ? Center(child: Icon(Icons.videocam_off, color: AppPalette.fg(Colors.grey)))
+      : _failed ? _failedView(loc, tile) : const Center(child: SizedBox(width: 26, height: 26, child: CircularProgressIndicator(strokeWidth: 2.5)));
     // the whole sign stays visible (hands and face); the empty sides take the videos' own light background
     if (tile) return Container(color: const Color(0xFFF0F0F0), child: SizedBox.expand(child: video));
     final double maxHeight = widget.height ?? MediaQuery.of(context).size.height * 0.4;
@@ -203,13 +232,7 @@ class _LessonVideoBoxState extends State<LessonVideoBox> {
         // the box takes the video's own shape, so the video fills it with no empty strips
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: maxHeight),
-          child: AspectRatio(
-            aspectRatio: aspect,
-            child: Container(
-              decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFF0F0F0)), borderRadius: BorderRadius.circular(24)), clipBehavior: Clip.antiAlias,
-              child: video,
-            ),
-          ),
+          child: AspectRatio(aspectRatio: aspect, child: Container(decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFF0F0F0)), borderRadius: BorderRadius.circular(24)), clipBehavior: Clip.antiAlias, child: video)),
         ),
         if (widget.showActions) ...[
           const SizedBox(height: 10),
@@ -217,14 +240,30 @@ class _LessonVideoBoxState extends State<LessonVideoBox> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(child: _action(Icons.refresh, loc.translate('again'), ready ? () => controller.seekTo(Duration.zero) : null)),
-              const SizedBox(width: 8),
-              Expanded(child: _speedButton()),
-              const SizedBox(width: 8),
-              Expanded(child: _action(Icons.call_made, loc.translate('corner'), ready ? _fullScreen : null)),
-            ],
-          ),
-        ],
-      ],
+              const SizedBox(width: 8), Expanded(child: _speedButton()), const SizedBox(width: 8),
+              Expanded(child: _action(Icons.call_made, loc.translate('corner'), ready ? _fullScreen : null))
+            ]
+          )
+        ]
+      ]
+    );
+  }
+
+  /// "No internet" / "Couldn't load the video" and "Tap to retry"; small tiles only show the icon
+  Widget _failedView(AppLocalizations loc, bool tile) {
+    final Color grey = AppPalette.fg(Colors.grey[600]!);
+    final Widget icon = Icon(_offline ? Icons.wifi_off_rounded : Icons.videocam_off, color: grey, size: tile ? 24 : 34);
+    return GestureDetector(
+      onTap: _retry, behavior: HitTestBehavior.opaque,
+      child: Center(child: tile ? icon : Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          icon, const SizedBox(height: 8),
+          Text(loc.translate(_offline ? 'no_internet' : 'video_load_failed'), textAlign: TextAlign.center, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: grey)),
+          const SizedBox(height: 4),
+          Text(loc.translate('tap_to_retry'), style: TextStyle(fontSize: 14, color: AppPalette.fg(const Color(0xFF42A5F5)))),
+        ]),
+      )),
     );
   }
 
@@ -268,6 +307,18 @@ class _LessonVideoBoxState extends State<LessonVideoBox> {
   );
 }
 
+// ======================== route ========================
+/// Opens a lesson screen with a soft fade and a short rise instead of the platform slide.
+Route<T> lessonRoute<T>(Widget page) => PageRouteBuilder<T>(
+  transitionDuration: const Duration(milliseconds: 380),
+  reverseTransitionDuration: const Duration(milliseconds: 300),
+  pageBuilder: (_, _, _) => page,
+  transitionsBuilder: (_, animation, _, child) {
+    final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic);
+    return FadeTransition(opacity: curved, child: SlideTransition(position: Tween(begin: const Offset(0, 0.04), end: Offset.zero).animate(curved), child: child));
+  },
+);
+
 // ======================== feedback + button ========================
 /// Green / red banner shown after checking, above the button.
 class LessonFeedbackBanner extends StatelessWidget {
@@ -295,16 +346,10 @@ class LessonFeedbackBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(loc.translate(isCorrect ? 'answer_correct' : 'answer_wrong'), style: TextStyle(color: fg, fontSize: 15, fontWeight: FontWeight.w600)),
-                if (!isCorrect && correctAnswer?.isNotEmpty == true) ...[
-                  const SizedBox(height: 2),
-                  Text('${loc.translate('correct_answer')}: $correctAnswer', style: TextStyle(color: fg, fontSize: 13)),
-                ],
-                if (explanation?.isNotEmpty == true) ...[
-                  const SizedBox(height: 2),
-                  Text(explanation!, style: TextStyle(color: fg, fontSize: 13)),
-                ],
-              ],
-            ),
+                if (!isCorrect && correctAnswer?.isNotEmpty == true) ...[const SizedBox(height: 2), Text('${loc.translate('correct_answer')}: $correctAnswer', style: TextStyle(color: fg, fontSize: 13))],
+                if (explanation?.isNotEmpty == true) ...[const SizedBox(height: 2), Text(explanation!, style: TextStyle(color: fg, fontSize: 13))]
+              ]
+            )
           ),
           Icon(Icons.flag_outlined, color: fg, size: 18),
         ],
@@ -322,8 +367,10 @@ class LessonCheckButton extends StatelessWidget {
   final bool last;
   final VoidCallback onCheck;
   final VoidCallback onNext;
+  /// Replaces "Javobni tekshirish" (e.g. "Next" on "learn" slides)
+  final String? label;
 
-  const LessonCheckButton({super.key, required this.checked, required this.isCorrect, required this.canCheck, required this.busy, required this.last, required this.onCheck, required this.onNext});
+  const LessonCheckButton({super.key, required this.checked, required this.isCorrect, required this.canCheck, required this.busy, required this.last, required this.onCheck, required this.onNext, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -342,7 +389,7 @@ class LessonCheckButton extends StatelessWidget {
       fg = AppPalette.auto(Colors.white);
       shadow = AppPalette.auto(const Color(0xFFB71C1C)).withValues(alpha: 0.9);
     }
-    final String label = !checked ? loc.translate('check_answer_btn') : loc.translate(last ? 'continue' : 'next_question');
+    final String label = !checked ? (this.label ?? loc.translate('check_answer_btn')) : loc.translate(last ? 'continue' : 'next_question');
     return SizedBox(
       width: double.infinity, height: 56,
       child: ElevatedButton(
@@ -352,14 +399,14 @@ class LessonCheckButton extends StatelessWidget {
           side: BorderSide(width: 1, color: AppPalette.border(const Color(0xFF1A237E)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         ),
         child: busy
-            ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(lessonBlue)))
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: fg))),
-                  const SizedBox(width: 8), Icon(Icons.arrow_forward, size: 18, color: fg),
-                ],
-              ),
+          ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(lessonBlue)))
+          : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: fg))),
+              const SizedBox(width: 8), Icon(Icons.arrow_forward, size: 18, color: fg),
+            ],
+          ),
       ),
     );
   }
@@ -382,10 +429,10 @@ Future<bool> showQuitLessonDialog(BuildContext context) async {
             backgroundColor: AppPalette.bg(const Color(0xFFEF9A9A)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(const Color(0xFFB71C1C)).withValues(alpha: 0.9),
             side: BorderSide(width: 1, color: AppPalette.border(const Color(0xFFB71C1C)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
-          child: Text(loc.translate('quit'), style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.red[900]!), fontWeight: FontWeight.w600)),
-        ),
-      ],
-    ),
+          child: Text(loc.translate('quit'), style: TextStyle(fontSize: 16, color: AppPalette.fg(Colors.red[900]!), fontWeight: FontWeight.w600))
+        )
+      ]
+    )
   );
   return quit == true;
 }

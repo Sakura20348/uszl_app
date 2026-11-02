@@ -101,6 +101,9 @@ async def record_session(
         user_id=user.id, source=source, started_at=started_at, ended_at=ended_at, duration_seconds=max(seconds, 0)
     )
     db.add(session)
+    # Only finished lessons count for the daily goal, weekly study and streak; time in other tabs is just logged
+    if source != "lesson":
+        return session
     day = started_at.astimezone(user_tz(user)).date()
     # The row is created even for a short session, so the day counts for the streak
     await add_daily(db, user.id, day, minutes=round(seconds / 60))

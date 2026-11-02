@@ -27,9 +27,7 @@ class SavedAccount {
     return login == null || login == title ? '' : login;
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id, 'name': name, 'email': email, 'phone': phone, 'avatar': avatar, 'method': method.name, 'lastUsed': lastUsed.toIso8601String(),
-  };
+  Map<String, dynamic> toJson() => { 'id': id, 'name': name, 'email': email, 'phone': phone, 'avatar': avatar, 'method': method.name, 'lastUsed': lastUsed.toIso8601String() };
 
   factory SavedAccount.fromJson(Map<String, dynamic> j) => SavedAccount(
     id: j['id'] as int, name: j['name'] as String?, email: j['email'] as String?, phone: j['phone'] as String?, avatar: j['avatar'] as String?,

@@ -71,8 +71,7 @@ class PushService {
     await prefs.setBool(_askedKey, true);
     if (!_enabled) return false;
     final settings = await FirebaseMessaging.instance.requestPermission();
-    final allowed = settings.authorizationStatus == AuthorizationStatus.authorized ||
-        settings.authorizationStatus == AuthorizationStatus.provisional;
+    final allowed = settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional;
     if (allowed) await registerDevice();
     return allowed;
   }
@@ -86,11 +85,7 @@ class PushService {
   /// After login: asks for permission unless the user already answered in onboarding.
   static Future<void> afterLogin() async {
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_askedKey) ?? false) {
-      await registerDevice();
-    } else {
-      await requestPermission();
-    }
+    if (prefs.getBool(_askedKey) ?? false) { await registerDevice(); } else { await requestPermission(); }
   }
 
   /// Sends this phone's push token to the server, so pushes for the logged-in user reach it.
@@ -99,18 +94,14 @@ class PushService {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) await _sendToken(token);
-    } catch (e) {
-      debugPrint('Push token not available: $e');
-    }
+    } catch (e) { debugPrint('Push token not available: $e'); }
   }
 
   static Future<void> _sendToken(String token) async {
     if (!await UzslApi.isLoggedIn()) return;
     try {
       await UzslApi.registerDevice(token, Platform.isIOS ? 'ios' : 'android');
-    } on ApiException catch (e) {
-      debugPrint('Push token not saved: $e');
-    }
+    } on ApiException catch (e) { debugPrint('Push token not saved: $e'); }
   }
 
   /// On log out: this phone stops getting the user's pushes.
@@ -120,9 +111,7 @@ class PushService {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null && await UzslApi.isLoggedIn()) await UzslApi.removeDevice(token);
       await FirebaseMessaging.instance.deleteToken();
-    } catch (e) {
-      debugPrint('Push token not removed: $e');
-    }
+    } catch (e) { debugPrint('Push token not removed: $e'); }
   }
 
   // ======================== showing and opening ========================
@@ -141,10 +130,7 @@ class PushService {
 
   /// A notification that arrived while the app is open but not by push (found by [NotificationCenter]):
   /// shown with sound and a banner, once.
-  static Future<void> announce(AppNotification n) async {
-    if (!_shown.add('${n.id}')) return;
-    await _showLocal(n.id, n.title, n.body, '${n.id}');
-  }
+  static Future<void> announce(AppNotification n) async { if (!_shown.add('${n.id}')) return; await _showLocal(n.id, n.title, n.body, '${n.id}'); }
 
   static Future<void> _showLocal(int id, String? title, String? body, String? payload) async {
     try {
@@ -156,20 +142,13 @@ class PushService {
         ),
         payload: payload,
       );
-    } catch (e) {
-      debugPrint('Notification not shown: $e');
-    }
+    } catch (e) { debugPrint('Notification not shown: $e'); }
   }
 
   static void _open(String? notificationId) {
     if (notificationId == null) return;
-    if (!_mainReady) {
-      _pendingOpen = notificationId;
-      return;
-    }
-    AppSheets.navigatorKey.currentState?.push(
-      MaterialPageRoute(builder: (_) => NotificationScreen(openNotificationId: int.tryParse(notificationId))),
-    );
+    if (!_mainReady) { _pendingOpen = notificationId; return; }
+    AppSheets.navigatorKey.currentState?.push(MaterialPageRoute(builder: (_) => NotificationScreen(openNotificationId: int.tryParse(notificationId))));
   }
 
   /// Called by the main screen once it is shown: opens a notification tapped during startup.

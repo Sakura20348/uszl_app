@@ -13,8 +13,7 @@ class SavedAccountsScreen extends StatefulWidget {
   const SavedAccountsScreen({super.key});
 
   /// Where to go when nobody is logged in: this screen if some accounts are saved, else the language screen
-  static Future<Widget> startScreen() async =>
-      (await SavedAccounts.all()).isEmpty ? const LanguageChoose() : const SavedAccountsScreen();
+  static Future<Widget> startScreen() async => (await SavedAccounts.all()).isEmpty ? const LanguageChoose() : const SavedAccountsScreen();
 
   @override
   State<SavedAccountsScreen> createState() => _SavedAccountsScreenState();
@@ -27,10 +26,7 @@ class _SavedAccountsScreenState extends State<SavedAccountsScreen> {
   @override
   void initState() { super.initState(); _load(); }
 
-  Future<void> _load() async {
-    final accounts = await SavedAccounts.all();
-    if (mounted) setState(() => _accounts = accounts);
-  }
+  Future<void> _load() async { final accounts = await SavedAccounts.all(); if (mounted) setState(() => _accounts = accounts); }
 
   // "+998901234567" -> "+998 90 123 45 67", as the phone screen shows it
   static String? _maskedPhone(String? phone) {
@@ -69,11 +65,8 @@ class _SavedAccountsScreenState extends State<SavedAccountsScreen> {
     final left = await SavedAccounts.all();
     if (!mounted) return;
     // the last one removed: back to the usual start
-    if (left.isEmpty) {
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LanguageChoose()), (route) => false);
-    } else {
-      setState(() => _accounts = left);
-    }
+    if (left.isEmpty) { Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const LanguageChoose()), (route) => false); }
+    else { setState(() => _accounts = left); }
   }
 
   @override
@@ -82,47 +75,41 @@ class _SavedAccountsScreenState extends State<SavedAccountsScreen> {
     final accounts = _accounts;
     return Scaffold(
       body: Container(
-        width: double.infinity, height: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(const Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
+        width: double.infinity, height: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(const Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
         child: SafeArea(
           child: accounts == null
-              ? const SizedBox.shrink()
-              : ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
-                  children: [
-                    Center(child: Image.asset('web/images/uzbek_sign_language.png', height: 120)),
-                    const SizedBox(height: 20),
-                    Text(loc.translate('saved_accounts'), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 28)),
-                    const SizedBox(height: 4),
-                    Text(loc.translate('saved_accounts_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: AppPalette.fg(Colors.grey[600]!))),
-                    const SizedBox(height: 24),
-                    for (final a in accounts) _accountCard(a),
-                    const SizedBox(height: 8),
-                    // ===== another account =====
-                    SizedBox(
-                      width: double.infinity, height: 56,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmailAuth(startWithRegister: false))),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.15), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-                          shadowColor: AppPalette.shadow(const Color(0xFFBBDEFB)).withValues(alpha: 0.9),
-                          side: BorderSide(width: 1, color: AppPalette.border(const Color(0xFF1A237E)).withValues(alpha: 0.2)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                        ),
-                        child: Text(loc.translate('login_other_account'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.blue[900]!))),
-                      ),
+            ? const SizedBox.shrink()
+            : ListView(
+              padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
+              children: [
+                Center(child: Image.asset('web/images/uzbek_sign_language.webp', height: 120)), const SizedBox(height: 20),
+                Text(loc.translate('saved_accounts'), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 28)), const SizedBox(height: 4),
+                Text(loc.translate('saved_accounts_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: AppPalette.fg(Colors.grey[600]!))), const SizedBox(height: 24),
+                for (final a in accounts) _accountCard(a),
+                const SizedBox(height: 8),
+                // ===== another account =====
+                SizedBox(
+                  width: double.infinity, height: 56,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmailAuth(startWithRegister: false))),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.15), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(const Color(0xFFBBDEFB)).withValues(alpha: 0.9),
+                      side: BorderSide(width: 1, color: AppPalette.border(const Color(0xFF1A237E)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                     ),
-                    const SizedBox(height: 8),
-                    Center(
-                      child: TextButton(
-                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmailAuth())),
-                        child: Text(loc.translate('create_new_account'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppPalette.fg(Colors.blue))),
-                      ),
-                    ),
-                  ],
+                    child: Text(loc.translate('login_other_account'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.blue[900]!))),
+                  ),
                 ),
-        ),
-      ),
+                const SizedBox(height: 8),
+                Center(
+                  child: TextButton(
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmailAuth())),
+                    child: Text(loc.translate('create_new_account'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppPalette.fg(Colors.blue)))
+                  )
+                )
+              ]
+            )
+        )
+      )
     );
   }
 
@@ -153,11 +140,8 @@ class _SavedAccountsScreenState extends State<SavedAccountsScreen> {
             child: Row(children: [
               // photo, or the first letter of the name
               Container(
-                width: 52, height: 52, clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE3F2FD)), shape: BoxShape.circle, border: Border.all(width: 1, color: AppPalette.border(Colors.white))),
-                child: a.avatar != null
-                    ? Image.network(a.avatar!, fit: BoxFit.cover, errorBuilder: (_, _, _) => _initial(initial))
-                    : _initial(initial),
+                width: 52, height: 52, clipBehavior: Clip.antiAlias, decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE3F2FD)), shape: BoxShape.circle, border: Border.all(width: 1, color: AppPalette.border(Colors.white))),
+                child: a.avatar != null ? Image.network(a.avatar!, fit: BoxFit.cover, errorBuilder: (_, _, _) => _initial(initial)) : _initial(initial),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -166,26 +150,19 @@ class _SavedAccountsScreenState extends State<SavedAccountsScreen> {
                   if (sub.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Row(children: [
-                      Icon(icon, size: 15, color: AppPalette.fg(Colors.grey[600]!)),
-                      const SizedBox(width: 4),
-                      Expanded(child: Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: AppPalette.fg(Colors.grey[700]!)))),
-                    ]),
-                  ],
-                ]),
+                      Icon(icon, size: 15, color: AppPalette.fg(Colors.grey[600]!)), const SizedBox(width: 4),
+                      Expanded(child: Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: AppPalette.fg(Colors.grey[700]!))))
+                    ])
+                  ]
+                ])
               ),
-              IconButton(
-                onPressed: () => _remove(a),
-                tooltip: loc.translate('remove'),
-                icon: Icon(Icons.close_rounded, size: 20, color: AppPalette.fg(Colors.grey[600]!)),
-              ),
-            ]),
-          ),
-        ),
-      ),
+              IconButton(onPressed: () => _remove(a), tooltip: loc.translate('remove'), icon: Icon(Icons.close_rounded, size: 20, color: AppPalette.fg(Colors.grey[600]!)))
+            ])
+          )
+        )
+      )
     );
   }
 
-  Widget _initial(String letter) => Center(
-    child: Text(letter, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppPalette.fg(Colors.blue[800]!))),
-  );
+  Widget _initial(String letter) => Center(child: Text(letter, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppPalette.fg(Colors.blue[800]!))));
 }

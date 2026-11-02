@@ -50,11 +50,11 @@ class _FireStreakState extends State<FireStreak> with SingleTickerProviderStateM
     final bool hot = widget.hot;
 
     final List<Color> outer = hot
-        ? [AppPalette.bg(const Color(0xFFFFA726)), AppPalette.bg(const Color(0xFFFF5722)), AppPalette.bg(const Color(0xFFD84315))]
-        : [AppPalette.bg(const Color(0xFFBDBDBD)), AppPalette.bg(const Color(0xFF9E9E9E)), AppPalette.bg(const Color(0xFF757575))];
+      ? [AppPalette.bg(const Color(0xFFFFA726)), AppPalette.bg(const Color(0xFFFF5722)), AppPalette.bg(const Color(0xFFD84315))]
+      : [AppPalette.bg(const Color(0xFFBDBDBD)), AppPalette.bg(const Color(0xFF9E9E9E)), AppPalette.bg(const Color(0xFF757575))];
     final List<Color> inner = hot
-        ? [AppPalette.bg(const Color(0xFFFFF59D)), AppPalette.bg(const Color(0xFFFFCA28)), AppPalette.bg(const Color(0xFFFF9800))]
-        : [AppPalette.bg(const Color(0xFFEEEEEE)), AppPalette.bg(const Color(0xFFE0E0E0)), AppPalette.bg(const Color(0xFFBDBDBD))];
+      ? [AppPalette.bg(const Color(0xFFFFF59D)), AppPalette.bg(const Color(0xFFFFCA28)), AppPalette.bg(const Color(0xFFFF9800))]
+      : [AppPalette.bg(const Color(0xFFEEEEEE)), AppPalette.bg(const Color(0xFFE0E0E0)), AppPalette.bg(const Color(0xFFBDBDBD))];
 
     return RepaintBoundary(
       child: AnimatedBuilder(
@@ -80,18 +80,15 @@ class _FireStreakState extends State<FireStreak> with SingleTickerProviderStateM
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(color: AppPalette.shadow(const Color(0xFFFF6D00)).withValues(alpha: 0.45 + 0.1 * breathe), blurRadius: s * 0.35, spreadRadius: s * 0.04),
-                          BoxShadow(color: AppPalette.shadow(const Color(0xFFFFB300)).withValues(alpha: 0.25), blurRadius: s * 0.6, spreadRadius: s * 0.1),
-                        ],
-                      ),
-                    ),
+                          BoxShadow(color: AppPalette.shadow(const Color(0xFFFFB300)).withValues(alpha: 0.25), blurRadius: s * 0.6, spreadRadius: s * 0.1)
+                        ]
+                      )
+                    )
                   ),
                 // ===== 2) outer flame =====
                 _flame(width: s * 0.8, height: s * (0.96 + 0.03 * breathe), skew: 0.05 * sway, colors: outer),
                 // ===== 3) inner flame =====
-                Positioned(
-                  bottom: s * 0.04,
-                  child: _flame(width: s * 0.5, height: s * (0.6 + 0.04 * breathe), skew: -0.07 * sway, colors: inner),
-                ),
+                Positioned(bottom: s * 0.04, child: _flame(width: s * 0.5, height: s * (0.6 + 0.04 * breathe), skew: -0.07 * sway, colors: inner)),
                 // ===== 4) number =====
                 Positioned(
                   bottom: s * 0.1,
@@ -101,35 +98,28 @@ class _FireStreakState extends State<FireStreak> with SingleTickerProviderStateM
                       child: Text(
                         '${widget.streak}',
                         style: TextStyle(
-                          fontSize: s * 0.26,
-                          fontWeight: FontWeight.w900,
-                          color: hot ? AppPalette.fg(const Color(0xFFBF360C)) : AppPalette.fg(Colors.grey.shade700),
-                          shadows: [Shadow(color: Colors.white.withValues(alpha: 0.6), blurRadius: 4)],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                          fontSize: s * 0.26, fontWeight: FontWeight.w900, color: hot ? AppPalette.fg(const Color(0xFFBF360C)) : AppPalette.fg(Colors.grey.shade700),
+                          shadows: [Shadow(color: Colors.white.withValues(alpha: 0.6), blurRadius: 4)]
+                        )
+                      )
+                    )
+                  )
+                )
+              ]
+            )
           );
-        },
-      ),
+        }
+      )
     );
   }
 
   Widget _flame({required double width, required double height, required double skew, required List<Color> colors}) {
     return Transform(
-      alignment: Alignment.bottomCenter,
-      transform: Matrix4.skewX(skew),
+      alignment: Alignment.bottomCenter, transform: Matrix4.skewX(skew),
       child: ClipPath(
         clipper: _FlameClipper(),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 500),
-          width: width, height: height,
-          decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: colors)),
-        ),
-      ),
+        child: AnimatedContainer(duration: const Duration(milliseconds: 500), width: width, height: height, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: colors)))
+      )
     );
   }
 }

@@ -34,16 +34,12 @@ Future<void> main() async {
   // Firebase: email sign-in and push notifications (off if the Firebase config is missing)
   await FirebaseSetup.init();
   await PushService.init();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   final prefs = await SharedPreferences.getInstance();
   final int initialTab = prefs.getInt('tabIndex') ?? 0;
   final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   final String lang = prefs.getString('lang') ?? 'en';
-  runApp(MyApp(
-    initialTab: initialTab,
-    isLoggedIn: isLoggedIn,
-    lang: lang
-  ));
+  runApp(MyApp(initialTab: initialTab, isLoggedIn: isLoggedIn, lang: lang));
 }
 
 class MyApp extends StatefulWidget {
@@ -51,12 +47,7 @@ class MyApp extends StatefulWidget {
   final bool isLoggedIn;
   final String lang;
 
-  const MyApp({
-    super.key,
-    required this.initialTab,
-    required this.isLoggedIn,
-    required this.lang
-  });
+  const MyApp({ super.key, required this.initialTab, required this.isLoggedIn, required this.lang });
 
   static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
 
@@ -81,6 +72,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     ThemeService.instance.mode.addListener(_onThemeChanged);
+    ThemeService.instance.season.addListener(_onThemeChanged);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -88,6 +80,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     ThemeService.instance.mode.removeListener(_onThemeChanged);
+    ThemeService.instance.season.removeListener(_onThemeChanged);
     super.dispose();
   }
 
@@ -98,8 +91,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.resumed) {
       final leftAt = _leftAt;
       _leftAt = null;
+      ThemeService.instance.refreshSeason();
       // the Android screen may have been recreated while away: restore the system bars setting
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       if (leftAt != null && DateTime.now().difference(leftAt) >= _keepStateFor) _startFresh();
     }
   }
@@ -131,12 +125,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         Locale('uz', ''),
         Locale('ru', ''),
       ],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      localizationsDelegates: const [AppLocalizations.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       localeResolutionCallback: (locale, supportedLocales) {
         for (var supportedLocale in supportedLocales) { if (supportedLocale.languageCode == locale?.languageCode) { return supportedLocale; } }
         return supportedLocales.first;
@@ -150,10 +139,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       themeMode: ThemeService.instance.mode.value,
       // AppPalette colors switch instantly, so the theme must too.
       themeAnimationDuration: Duration.zero,
-      builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
-        value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
-        child: ConnectivityGate(child: child!),
-      ),
+      builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark, child: ConnectivityGate(child: child!)),
       home: SplashController(initialTab: widget.initialTab, isLoggedIn: widget.isLoggedIn),
     );
   }
@@ -165,11 +151,7 @@ class SplashController extends StatefulWidget {
   final int initialTab;
   final bool isLoggedIn;
 
-  const SplashController({
-    super.key,
-    required this.initialTab,
-    required this.isLoggedIn,
-  });
+  const SplashController({ super.key, required this.initialTab, required this.isLoggedIn });
 
   @override
   State<SplashController> createState() => _SplashControllerState();
@@ -225,9 +207,9 @@ class _MainWrapperState extends State<MainWrapper> {
     super.initState();
     _currentIndex = widget.initialTab;
     _setLoggedIn();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       // Open a notification tapped while the app was starting
       PushService.mainScreenReady();
     });

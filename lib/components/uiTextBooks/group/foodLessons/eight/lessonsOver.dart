@@ -47,7 +47,7 @@ class _LessonsOverFoodEightState extends State<LessonsOverFoodEight> {
   }
 
 // =======================================================================
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
@@ -77,8 +77,8 @@ class _LessonsOverFoodEightState extends State<LessonsOverFoodEight> {
 
   @override
   Widget build(BuildContext context){
-    const String ImagePath = 'web/images/well_done.png';
-    const String ImageReload = 'web/icons/reload.png';
+    const String ImagePath = 'web/images/well_done.webp';
+    const String ImageReload = 'web/icons/reload.webp';
     final AppLocalizations loc = AppLocalizations.of(context)!;
 
     final oneLessonsGreatData = OneLessonsGreatData(context: context);

@@ -116,9 +116,7 @@ class UzslApi {
       if (response.statusCode == 401 && auth) {
         if (await _refresh()) {
           response = await send();
-        } else {
-          await logout();
-        }
+        } else { await logout(); }
       }
     } on ApiException {
       rethrow;
@@ -169,8 +167,7 @@ class UzslApi {
 
   // ======================== push notification devices ========================
   /// Tells the server where to send push notifications for the logged-in user.
-  static Future<void> registerDevice(String token, String platform) =>
-      _request('POST', '/app/devices', body: {'token': token, 'platform': platform}, auth: true);
+  static Future<void> registerDevice(String token, String platform) => _request('POST', '/app/devices', body: {'token': token, 'platform': platform}, auth: true);
 
   /// Time spent in a part of the app outside lessons: dictionary, translator, dataset, other.
   static Future<void> reportSession(String source, DateTime startedAt, DateTime endedAt) async {
@@ -181,9 +178,7 @@ class UzslApi {
         'startedAt': startedAt.toUtc().toIso8601String(),
         'endedAt': endedAt.toUtc().toIso8601String(),
       });
-    } catch (e) {
-      debugPrint('Activity time not sent: $e');
-    }
+    } catch (e) { debugPrint('Activity time not sent: $e'); }
   }
 
   // ======================== support (Profile → Help) ========================
@@ -300,16 +295,13 @@ class UzslApi {
   static Future<Map<String, dynamic>> me() async => await _request('GET', '/auth/me', auth: true) as Map<String, dynamic>;
 
   /// Built-in lessons ("alp_0", ...) this account has completed
-  static Future<List<String>> completedBuiltinLessons() async =>
-      (await _request('GET', '/app/builtin-lessons/completed', auth: true) as List).cast<String>();
+  static Future<List<String>> completedBuiltinLessons() async => (await _request('GET', '/app/builtin-lessons/completed', auth: true) as List).cast<String>();
 
   // ======================== learning statistics ========================
-  static Future<ApiStats> stats() async =>
-      ApiStats.fromJson(await _request('GET', '/app/stats', auth: true) as Map<String, dynamic>);
+  static Future<ApiStats> stats() async => ApiStats.fromJson(await _request('GET', '/app/stats', auth: true) as Map<String, dynamic>);
 
   /// Minutes per day (bars) and the activity calendar, for 'week', 'month' or 'year'
-  static Future<ApiActivity> activity(String period) async =>
-      ApiActivity.fromJson(await _request('GET', '/app/activity', query: {'period': period}, auth: true) as Map<String, dynamic>);
+  static Future<ApiActivity> activity(String period) async => ApiActivity.fromJson(await _request('GET', '/app/activity', query: {'period': period}, auth: true) as Map<String, dynamic>);
 
   /// 5, 10, 15 or 20 minutes
   static Future<void> setDailyGoal(int minutes) => _request('PATCH', '/app/profile', body: {'dailyGoalMinutes': minutes}, auth: true);
@@ -389,8 +381,7 @@ class UzslApi {
 
   /// Result of a lesson played with the app's own screens ("alp_0", "num_3", ...).
   static Future<LessonResult> completeBuiltinLesson(String key, {required int correct, required int wrong, required int durationSeconds}) async {
-    final data = await _request('POST', '/app/builtin-lessons/$key/complete',
-        body: {'correct': correct, 'wrong': wrong, 'durationSeconds': durationSeconds}, auth: true);
+    final data = await _request('POST', '/app/builtin-lessons/$key/complete', body: {'correct': correct, 'wrong': wrong, 'durationSeconds': durationSeconds}, auth: true);
     return LessonResult.fromJson(data as Map<String, dynamic>);
   }
 }
@@ -470,22 +461,31 @@ class ApiCourse {
   final String? icon;
   final String unitLabel;
   final int lessonCount;
+  /// Number on the textbook card set in the dashboard; null = the number of lessons
+  final int? total;
   final int completedLessons;
   final String? subtitle;
   final String? description;
   final String? descriptionRu;
   final String? descriptionEn;
 
-  ApiCourse({required this.id, required this.title, this.titleRu, this.titleEn, required this.slug, this.icon, required this.unitLabel, required this.lessonCount, required this.completedLessons, this.subtitle, this.description,
+  ApiCourse({required this.id, required this.title, this.titleRu, this.titleEn, required this.slug, this.icon, required this.unitLabel, required this.lessonCount, this.total, required this.completedLessons, this.subtitle, this.description,
     this.descriptionRu, this.descriptionEn});
 
   factory ApiCourse.fromJson(Map<String, dynamic> j) => ApiCourse(
     id: j['id'] as int, title: j['title'] as String, titleRu: j['titleRu'] as String?, titleEn: j['titleEn'] as String?,
     slug: j['slug'] as String, icon: j['icon'] as String?, unitLabel: j['unitLabel'] as String? ?? '',
-    lessonCount: j['lessonCount'] as int? ?? 0, completedLessons: j['completedLessons'] as int? ?? 0,
+    lessonCount: j['lessonCount'] as int? ?? 0, total: j['total'] as int?, completedLessons: j['completedLessons'] as int? ?? 0,
     subtitle: j['subtitle'] as String?, description: j['description'] as String?,
     descriptionRu: j['descriptionRu'] as String?, descriptionEn: j['descriptionEn'] as String?,
   );
+
+  /// Same keys as the server sends, so the list can be kept on the phone for offline starts
+  Map<String, dynamic> toJson() => {
+    'id': id, 'title': title, 'titleRu': titleRu, 'titleEn': titleEn, 'slug': slug, 'icon': icon, 'unitLabel': unitLabel,
+    'lessonCount': lessonCount, 'total': total, 'completedLessons': completedLessons, 'subtitle': subtitle, 'description': description,
+    'descriptionRu': descriptionRu, 'descriptionEn': descriptionEn,
+  };
 
   /// Title in the app language; Uzbek when there is no translation
   String titleFor(String lang) => _pick(title, titleRu, titleEn, lang);
@@ -533,18 +533,21 @@ class ApiOption {
   final String? text;
   final String? image;
   final String? signVideo;
+  /// "learn" slides only: the text under the slide's title
+  final String? description;
 
-  ApiOption({required this.id, this.text, this.image, this.signVideo});
+  ApiOption({required this.id, this.text, this.image, this.signVideo, this.description});
 
   factory ApiOption.fromJson(Map<String, dynamic> j, {String lang = 'uz'}) => ApiOption(
     id: j['id'] as int, text: pickLang(j, 'text', lang), image: UzslApi.mediaUrl(j['image'] as String?), signVideo: UzslApi.mediaUrl(j['signVideo'] as String?),
+    description: pickLang(j, 'description', lang),
   );
 }
 
 /// One exercise; the correct answer is not included (the server checks answers)
 class ApiExercise {
   final int id;
-  /// chooseText | chooseImage | matching | order
+  /// chooseText | chooseImage | matching | order | learn
   final String type;
   final String? prompt;
   final String? signVideo;
@@ -668,6 +671,9 @@ class ApiCategory {
     icon: j['icon'] as String?,
   );
 
+  /// Same keys as the server sends, so the list can be kept on the phone for offline starts
+  Map<String, dynamic> toJson() => { 'id': id, 'slug': slug, 'name': name, 'nameRu': nameRu, 'nameEn': nameEn, 'signCount': signCount, 'unitLabel': unitLabel, 'icon': icon };
+
   String nameFor(String lang) => _pick(name, nameRu, nameEn, lang);
 }
 
@@ -694,6 +700,13 @@ class ApiSign {
 
   /// The word in the app's language (Uzbek is the sign's own word)
   String wordFor(String lang) => _pick(word, translationRu, translationEn, lang);
+
+  /// In the order they were added in the dashboard, but numbers by value (2 before 10)
+  static int compare(ApiSign a, ApiSign b) {
+    final na = num.tryParse(a.word), nb = num.tryParse(b.word);
+    if (na != null && nb != null) return na.compareTo(nb);
+    return a.id.compareTo(b.id);
+  }
 
   /// Syllables in [lang]; null when that language has none
   String? ownTranscription(String lang) {

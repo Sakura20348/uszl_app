@@ -34,10 +34,7 @@ class ErrorSheet extends StatefulWidget {
     BuildContext context, { required ErrorSheet sheet })
   {
     return showModalBottomSheet(
-      context: context, constraints: const BoxConstraints(maxWidth: 560),
-      isDismissible: false,
-      isScrollControlled: true,
-      backgroundColor: AppPalette.bg(Color(0xFFEDEDED)),
+      context: context, constraints: const BoxConstraints(maxWidth: 560), isDismissible: false, isScrollControlled: true, backgroundColor: AppPalette.bg(Color(0xFFEDEDED)),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
       builder: (_) => sheet,
     );
@@ -62,10 +59,7 @@ class _ErrorSheetState extends State<ErrorSheet> with SingleTickerProviderStateM
   }
 
   @override
-  void dispose() {
-    _animController.dispose();
-    super.dispose();
-  }
+  void dispose() { _animController.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -113,16 +107,15 @@ class _ErrorSheetState extends State<ErrorSheet> with SingleTickerProviderStateM
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppPalette.bg(Color(0xFFECEFF1)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.grey), elevation: 6,
-                    shadowColor: AppPalette.shadow(Color(0xFF263238)).withValues(alpha: 0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF263238)).withValues(alpha: 0.2)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    backgroundColor: AppPalette.bg(Color(0xFFECEFF1)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.grey), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF263238)).withValues(alpha: 0.9),
+                    side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF263238)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
-                  child: Text(loc.translate('close'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white))),
-                ),
-              ),
-            ],
-          ),
-        ),
+                  child: Text(loc.translate('close'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white)))
+                )
+              )
+            ]
+          )
+        )
       )
     );
   }

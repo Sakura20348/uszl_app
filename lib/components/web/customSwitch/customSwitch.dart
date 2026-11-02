@@ -17,8 +17,7 @@ class CustomSwitch extends StatefulWidget {
   State<CustomSwitch> createState() => _CustomSwitchState();
 }
 
-class _CustomSwitchState extends State<CustomSwitch>
-    with SingleTickerProviderStateMixin {
+class _CustomSwitchState extends State<CustomSwitch> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -63,8 +62,7 @@ class _CustomSwitchState extends State<CustomSwitch>
           );
 
           return Container(
-            width: trackWidth, height: trackHeight,
-            decoration: BoxDecoration(gradient: trackGradient, borderRadius: BorderRadius.circular(trackHeight)),
+            width: trackWidth, height: trackHeight, decoration: BoxDecoration(gradient: trackGradient, borderRadius: BorderRadius.circular(trackHeight)),
             child: Stack(
               children: [
                 Positioned(
@@ -75,14 +73,14 @@ class _CustomSwitchState extends State<CustomSwitch>
                       shape: BoxShape.circle, boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withOpacity(0.30), blurRadius: 7, offset: const Offset(0, 6))],
                       gradient: RadialGradient(center: Alignment(-0.4, -0.5), radius: 0.9, colors: [AppPalette.bg(Colors.white), AppPalette.bg(Color(0xFFDEDEDE))]),
                     ),
-                    child: CustomPaint(painter: _FacePainter(t: t)),
-                  ),
-                ),
-              ],
-            ),
+                    child: CustomPaint(painter: _FacePainter(t: t))
+                  )
+                )
+              ]
+            )
           );
-        },
-      ),
+        }
+      )
     );
   }
 }

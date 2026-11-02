@@ -39,8 +39,7 @@ class _PersonalInformationState extends State<PersonalInformation>{
 
   bool get isChanged {
     final currentImagePath = _profileImage?.path ?? '';
-    return nameController.text.trim() != _initialName.trim() || lastNameController.text.trim() != _initialLastName.trim() ||
-      currentImagePath.trim() != _initialProfileImage.trim() || _phoneNumber.trim() != _initialPhone.trim();
+    return nameController.text.trim() != _initialName.trim() || lastNameController.text.trim() != _initialLastName.trim() || currentImagePath.trim() != _initialProfileImage.trim() || _phoneNumber.trim() != _initialPhone.trim();
   }
 
 // =======================================================================
@@ -72,7 +71,7 @@ class _PersonalInformationState extends State<PersonalInformation>{
     setState(() { _isLoading = false; });
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
 
   Future<void> _loadUserData() async {
     final savedName = await NameStorage.load();
@@ -176,9 +175,9 @@ class _PersonalInformationState extends State<PersonalInformation>{
   @override
   Widget build(BuildContext context) {
     final String name = nameController.text; final String lastName = lastNameController.text;
-    const String ImageInitial = 'web/icons/initial.png'; const String ImageCode = 'web/icons/code.png'; const String ImageEdit = 'web/icons/edit.png';
+    const String ImageInitial = 'web/icons/initial.webp'; const String ImageCode = 'web/icons/code.webp'; const String ImageEdit = 'web/icons/edit.webp';
     const int level = 2;
-    const ImageDelete = 'web/icons/trash.png';
+    const ImageDelete = 'web/icons/trash.webp';
 
     final allProfileItem = AllProfileData(
       context: context,
@@ -190,8 +189,7 @@ class _PersonalInformationState extends State<PersonalInformation>{
 
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: _handleRefresh, notificationPredicate: (ScrollNotification notification) {return notification.depth == 0;},
@@ -222,25 +220,23 @@ class _PersonalInformationState extends State<PersonalInformation>{
                                   child: ElevatedButton(
                                     onPressed: () async {
                                       final success = await _saveData();
-                                      if (success && context.mounted) {
-                                        Navigator.pop(context, true);
-                                      } else if (context.mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update profile'))); }
+                                      if (success && context.mounted) { Navigator.pop(context, true); } else if (context.mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update profile'))); }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppPalette.bg(Color(0xFFC8E6C9)).withOpacity(0.4), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-                                      shadowColor: AppPalette.shadow(Color(0xFF1B5E20)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF1B5E20)).withOpacity(0.2)),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                      backgroundColor: AppPalette.bg(Color(0xFFC8E6C9)).withValues(alpha: 0.4), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF1B5E20)).withValues(alpha: 0.9),
+                                      side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF1B5E20)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                                     ),
-                                    child: Text(AppLocalizations.of(context)!.translate('save'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                                  ),
-                                ),
-                            ],
+                                    child: Text(AppLocalizations.of(context)!.translate('save'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600))
+                                  )
+                                )
+                            ]
                           ),
                           const SizedBox(height: 20),
                           Container(
                             width: double.infinity, padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppPalette.bg(Colors.white).withOpacity(0.4), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withOpacity(0.9), blurRadius: 15)]
+                              color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(24),
+                              boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.9), blurRadius: 15)]
                             ),
                             child: Center(
                               child: Column(
@@ -249,7 +245,7 @@ class _PersonalInformationState extends State<PersonalInformation>{
                                     children: [
                                       Container(
                                         width: 96, height: 96,
-                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: AppPalette.bg(Colors.grey).withOpacity(0.3), border: Border.all(width: 1, color: AppPalette.border(Colors.white))),
+                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: AppPalette.bg(Colors.grey).withValues(alpha: 0.3), border: Border.all(width: 1, color: AppPalette.border(Colors.white))),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(30),
                                           child: _profileImage != null && _profileImage!.path.isNotEmpty ? Image.file(_profileImage!, width: 96, height: 96, fit: BoxFit.cover) : Center(child: Icon(Icons.person_outline, color: AppPalette.fg(Colors.white54), size: 40)),
@@ -267,43 +263,39 @@ class _PersonalInformationState extends State<PersonalInformation>{
                                       )
                                     ],
                                   ),
-                                  const SizedBox(height: 10),
-                                  Text('$name $lastName', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 10), Text('$name $lastName', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600)), const SizedBox(height: 10),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.fromLTRB(8, 2, 8, 2), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFC5E1A5)).withOpacity(0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFF1F8E9)))),
+                                        padding: const EdgeInsets.fromLTRB(8, 2, 8, 2), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFC5E1A5)).withValues(alpha: 0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFF1F8E9)))),
                                         child: Row(
                                           children: [
-                                            Image.asset(ImageInitial, width: 16, height: 16, color: AppPalette.fg(Color(0xFF1B5E20)).withOpacity(0.8)),
-                                            const SizedBox(width: 4),
-                                            Text(AppLocalizations.of(context)!.translate('initial'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppPalette.fg(Color(0xFF1B5E20)).withOpacity(0.8)))
+                                            Image.asset(ImageInitial, width: 16, height: 16, color: AppPalette.fg(Color(0xFF1B5E20)).withValues(alpha: 0.8)), const SizedBox(width: 4),
+                                            Text(AppLocalizations.of(context)!.translate('initial'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppPalette.fg(Color(0xFF1B5E20)).withValues(alpha: 0.8)))
                                           ],
                                         ),
                                       ),
                                       const SizedBox(width: 6),
                                       Container(
                                         padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-                                        decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFFFF59D)).withOpacity(0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFFFFDE7)))),
+                                        decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFFFF59D)).withValues(alpha: 0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFFFFDE7)))),
                                         child: Row(
                                           children: [
-                                            Image.asset(ImageCode, width: 16, height: 16, color: AppPalette.fg(Color(0xFFF57F17)).withOpacity(0.9)),
-                                            const SizedBox(),
-                                            Text('$level ${AppLocalizations.of(context)!.translate('level')}', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppPalette.fg(Color(0xFFF57F17)).withOpacity(0.9)))
-                                          ],
-                                        ),
+                                            Image.asset(ImageCode, width: 16, height: 16, color: AppPalette.fg(Color(0xFFF57F17)).withValues(alpha: 0.9)), const SizedBox(),
+                                            Text('$level ${AppLocalizations.of(context)!.translate('level')}', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: AppPalette.fg(Color(0xFFF57F17)).withValues(alpha: 0.9)))
+                                          ]
+                                        )
                                       )
-                                    ],
+                                    ]
                                   )
-                                ],
-                              ),
-                            ),
+                                ]
+                              )
+                            )
                           )
-                        ],
-                      ),
-                    ),
+                        ]
+                      )
+                    )
                   ),
                   SliverToBoxAdapter(
                     child: Container(
@@ -311,15 +303,9 @@ class _PersonalInformationState extends State<PersonalInformation>{
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(AppLocalizations.of(context)!.translate('profile'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24))
-                          ),
+                          Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(AppLocalizations.of(context)!.translate('profile'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24))),
                           const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(children: List.generate(allProfileItem.length, (index) => _buildAllProfile(allProfileItem[index]))),
-                          ),
+                          Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Column(children: List.generate(allProfileItem.length, (index) => _buildAllProfile(allProfileItem[index])))),
                           const SizedBox(height: 8),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -328,31 +314,29 @@ class _PersonalInformationState extends State<PersonalInformation>{
                               child: ElevatedButton(
                                 onPressed: _showDeleteAccount,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppPalette.bg(Color(0xFFFFCDD2)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-                                  shadowColor: AppPalette.shadow(Color(0xFFB71C1C)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFFB71C1C)).withOpacity(0.2)),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                  backgroundColor: AppPalette.bg(Color(0xFFFFCDD2)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFFB71C1C)).withValues(alpha: 0.9),
+                                  side: BorderSide(width: 1, color: AppPalette.border(Color(0xFFB71C1C)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(ImageDelete, width: 24, height: 24,),
-                                    const SizedBox(width: 4),
-                                    Text(AppLocalizations.of(context)!.translate('delete_account'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                                  ],
+                                    Image.asset(ImageDelete, width: 24, height: 24), const SizedBox(width: 4),
+                                    Text(AppLocalizations.of(context)!.translate('delete_account'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600))
+                                  ]
                                 )
-                              ),
-                            ),
+                              )
+                            )
                           )
-                        ],
-                      ),
+                        ]
+                      )
                     )
                   )
                 ]
-              ],
+              ]
             )
           )
-        ),
-      ),
+        )
+      )
     );
   }
 
@@ -368,14 +352,14 @@ class _PersonalInformationState extends State<PersonalInformation>{
       child: Container(
         padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 18),
         decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white).withOpacity(0.4), border: Border.all(width: 1, color: AppPalette.border(Colors.white)),
-          borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF29B6F6)).withOpacity(0.9), blurRadius: 15)],
+          color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(24),
+          boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF29B6F6)).withValues(alpha: 0.9), blurRadius: 15)],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
+              decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
               child: Image.asset(item['image'], width: 22, height: 22, color: AppPalette.fg(Colors.blue[600]!), errorBuilder: (_, __, ___) => Icon(Icons.account_circle_outlined, size: 40, color: AppPalette.fg(Colors.blue))),
             ),
             const SizedBox(width: 12),
@@ -391,13 +375,12 @@ class _PersonalInformationState extends State<PersonalInformation>{
             const SizedBox(width: 8),
             // trailing chevron (optional, like your other rows)
             Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), shape: BoxShape.circle),
-              child: Icon(Icons.keyboard_arrow_right_outlined, size: 22, color: AppPalette.fg(Color(0xFF0D47A1)).withOpacity(0.9)),
-            ),
-          ],
-        ),
-      ),
+              padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), shape: BoxShape.circle),
+              child: Icon(Icons.keyboard_arrow_right_outlined, size: 22, color: AppPalette.fg(Color(0xFF0D47A1)).withValues(alpha: 0.9))
+            )
+          ]
+        )
+      )
     );
   }
 }

@@ -73,12 +73,11 @@ class _TodayState extends State<Today> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final c = AppColors.of(context);
-    const String imageDay = 'web/images/to_day.png';
+    const String imageDay = 'web/images/to_day.webp';
 
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient)),
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient)),
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(
@@ -88,10 +87,8 @@ class _TodayState extends State<Today> with SingleTickerProviderStateMixin {
                 child: IntrinsicHeight(
                   child: Column(
                     children: [
-                      const SizedBox(height: 16),
                       // ===== 1) image =====
-                      _reveal(0.0, Image.asset(imageDay, height: 200)),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16), _reveal(0.0, Image.asset(imageDay, height: 200)), const SizedBox(height: 8),
                       // ===== 2) streak =====
                       _reveal(0.15, Column(
                         children: [
@@ -116,11 +113,8 @@ class _TodayState extends State<Today> with SingleTickerProviderStateMixin {
                           ],
                         ],
                       )),
-                      const SizedBox(height: 24),
                       // ===== 4) week =====
-                      _reveal(0.45, _weekCard(loc, c)),
-                      const Spacer(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 24), _reveal(0.45, _weekCard(loc, c)), const SizedBox(height: 24),
                       // ===== 5) buttons =====
                       _reveal(0.6, Column(
                         children: [
@@ -137,11 +131,10 @@ class _TodayState extends State<Today> with SingleTickerProviderStateMixin {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(loc.translate('continue'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppPalette.fg(Colors.blue[900]!))),
-                                  const SizedBox(width: 10),
-                                  Icon(Icons.arrow_forward_outlined, color: AppPalette.fg(Colors.blue[900]!), size: 16),
-                                ],
-                              ),
-                            ),
+                                  const SizedBox(width: 10), Icon(Icons.arrow_forward_outlined, color: AppPalette.fg(Colors.blue[900]!), size: 16)
+                                ]
+                              )
+                            )
                           ),
                           const SizedBox(height: 10),
                           SizedBox(
@@ -151,33 +144,29 @@ class _TodayState extends State<Today> with SingleTickerProviderStateMixin {
                               icon: Icon(Icons.share, size: 18, color: AppPalette.fg(const Color(0xFF334155))),
                               label: Text(loc.translate('great_sub_title'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppPalette.fg(const Color(0xFF334155)))),
                               style: OutlinedButton.styleFrom(
-                                backgroundColor: AppPalette.bg(const Color(0xFF424242)).withValues(alpha: 0.06),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                side: BorderSide(width: 1, color: AppPalette.border(const Color(0xFF212121)).withValues(alpha: 0.2)),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+                                backgroundColor: AppPalette.bg(const Color(0xFF424242)).withValues(alpha: 0.06), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                side: BorderSide(width: 1, color: AppPalette.border(const Color(0xFF212121)).withValues(alpha: 0.2))
+                              )
+                            )
+                          )
+                        ]
+                      ))
+                    ]
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
     );
   }
 
   Widget _weekCard(AppLocalizations loc, AppColors c) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+      width: double.infinity, padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
       decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: c.cardBorder),
+        color: c.surface, borderRadius: BorderRadius.circular(24), border: Border.all(color: c.cardBorder),
         boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.grey).withValues(alpha: 0.15), blurRadius: 16, offset: const Offset(0, 4))],
       ),
       child: Column(
@@ -189,32 +178,27 @@ class _TodayState extends State<Today> with SingleTickerProviderStateMixin {
             children: List.generate(7, (index) {
               final int weekday = index + 1;
               return Expanded(child: _dayCell(loc.translate('day_short_$weekday'), done: _completedDays.contains(weekday), isToday: weekday == _todayWeekday, c: c));
-            }),
-          ),
-        ],
-      ),
+            })
+          )
+        ]
+      )
     );
   }
 
   Widget _dayCell(String label, {required bool done, required bool isToday, required AppColors c}) {
     return Column(
       children: [
-        Text(label, style: TextStyle(fontSize: 13, fontWeight: isToday ? FontWeight.w800 : FontWeight.w500, color: isToday ? AppPalette.fg(_blue) : c.subText)),
-        const SizedBox(height: 8),
+        Text(label, style: TextStyle(fontSize: 13, fontWeight: isToday ? FontWeight.w800 : FontWeight.w500, color: isToday ? AppPalette.fg(_blue) : c.subText)), const SizedBox(height: 8),
         AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOut,
-          height: 36, width: 36,
+          duration: const Duration(milliseconds: 400), curve: Curves.easeOut, height: 36, width: 36,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: done ? LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppPalette.bg(_blueLight), AppPalette.bg(_blue)]) : null,
-            color: done ? null : c.track.withValues(alpha: 0.5),
-            border: isToday && !done ? Border.all(color: AppPalette.border(_blueLight), width: 2) : null,
+            shape: BoxShape.circle, gradient: done ? LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppPalette.bg(_blueLight), AppPalette.bg(_blue)]) : null,
+            color: done ? null : c.track.withValues(alpha: 0.5), border: isToday && !done ? Border.all(color: AppPalette.border(_blueLight), width: 2) : null,
             boxShadow: done ? [BoxShadow(color: AppPalette.shadow(_blueLight).withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(0, 3))] : null,
           ),
-          child: done ? const Icon(Icons.check_rounded, color: Colors.white, size: 20) : null,
-        ),
-      ],
+          child: done ? const Icon(Icons.check_rounded, color: Colors.white, size: 20) : null
+        )
+      ]
     );
   }
 }
@@ -239,12 +223,7 @@ class StreakManager {
     if (!days.contains(todayStr)) { days.add(todayStr); await prefs.setStringList(_kCompletedDays, days); }
 
     if (lastStr == todayStr) return StreakResult(count, false);
-    if (lastStr != null) {
-      final diff = today.difference(DateTime.parse(lastStr)).inDays;
-      count = diff == 1 ? count + 1 : 1;
-    } else {
-      count = 1;
-    }
+    if (lastStr != null) { final diff = today.difference(DateTime.parse(lastStr)).inDays; count = diff == 1 ? count + 1 : 1; } else { count = 1; }
     await prefs.setInt(_kCount, count);
     await prefs.setString(_kLastDate, todayStr);
     return StreakResult(count, true);

@@ -2,19 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:signlang/components/uiTextBooks/apiTextbooks/api_textbooks.dart';
 import 'package:signlang/services/app_loading.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:signlang/components/uiTextBooks/group/familyLessons/five/pageFive.dart';
-import 'package:signlang/components/uiTextBooks/group/familyLessons/four/pageFour.dart';
-import 'package:signlang/components/uiTextBooks/group/familyLessons/seven/pageSeven.dart';
-import 'package:signlang/components/uiTextBooks/group/familyLessons/six/pageSix.dart';
-import 'package:signlang/components/uiTextBooks/group/familyLessons/three/pageThree.dart';
-import 'package:signlang/components/uiTextBooks/group/familyLessons/two/pageTwo.dart';
 
+import '../../../../api/api_errors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../screens/textbooks.dart';
 import '../../nameTextbooks/buildLessonsTextbooks.dart';
 import '../../nameTextbooks/nameTextbooks.dart';
 import '../../skeleton/skeleton.dart';
-import 'one/pageOne.dart';
 
 import 'package:signlang/services/theme_service.dart';
 import 'package:signlang/services/builtin_lesson_player.dart';
@@ -27,7 +21,7 @@ class FamilyLessons extends StatefulWidget{
 
 class _FamilyLessonsState extends State<FamilyLessons> {
   bool _isLoading = true;
-  static const String _id = '2';
+  static const String _id = '';
   late int _learned;
 
   // total comes from the textbook data (alphabet → 'total': 30), same source BuildLessonsTextbooks uses
@@ -58,7 +52,7 @@ class _FamilyLessonsState extends State<FamilyLessons> {
 
 // =======================================================================
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) {setState(() {_isLoading = false;});} }
-  Future<void> _handleRefresh() async { setState(() {_isLoading = true;}); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initializeData() async { final results = await Future.wait([ AppLoading.ready() ]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
 // =======================================================================
@@ -66,28 +60,17 @@ class _FamilyLessonsState extends State<FamilyLessons> {
 
   void _startLessons(int i) async {
     if (_statusFor(i) == LessonStatus.locked) return;
-    final items = FamilyLessonsData(context: context).famLessonsItem;
+    final items = NumbersLessonsData(context: context).numLessonsItem;
     final id = items[i]['id'];
     // Exercises made in the dashboard are played from the server
     if (await BuiltinLessonPlayer.play(context, id)) {
       if (mounted) setState(() => _recomputeLearned());
       return;
     }
-    Widget? page;
-    switch (id) {
-      case 'fam_0': page = const FamAndChildren(); break;
-      case 'fam_1': page = const ChildAndBoy(); break;
-      case 'fam_2': page = const GirlAndCousin(); break;
-      case 'fam_3': page = const NieceAndSpouse(); break;
-      case 'fam_4': page = const DivorceAndPoor(); break;
-      case 'fam_5': page = const ToRespectAndTall(); break;
-      case 'fam_6': page = const LittleAndToDie(); break;
-    }
-    if (page == null) return;
-
-    LessonProgress.instance.resetStats();
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => page!));
-    if (mounted) setState(() => _recomputeLearned());
+    // The numbers lessons only exist in the dashboard now (like the alphabet ones):
+    // they need the internet and a logged-in account
+    if (!mounted) return;
+    showGreySnackBar(context, AppLocalizations.of(context)!.translate('lesson_needs_online'));
   }
 
   void _recomputeLearned() {

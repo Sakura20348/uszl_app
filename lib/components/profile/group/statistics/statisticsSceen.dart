@@ -18,7 +18,6 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
   bool _isLoading = true;
   int _selectedTab = 0;
   late UserStatistics _stats;
-  // From the server (null = offline or logged out: this phone's own numbers are shown)
   ApiStats? _server;
   int _weeks = 1;
 
@@ -36,16 +35,12 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
       try {
         final results = await Future.wait([UzslApi.stats(), UzslApi.activity(_periods[_selectedTab])]);
         stats = _fromServer(results[0] as ApiStats, results[1] as ApiActivity);
-      } on ApiException catch (e) {
-        debugPrint('Statistics from the server not loaded: $e');
-        _server = null;
-      }
+      } on ApiException catch (e) { debugPrint('Statistics from the server not loaded: $e'); _server = null; }
     }
     if (!mounted) return;
     setState(() { _stats = stats; _isLoading = false; });
   }
 
-  // The server's numbers in the shape the cards and charts use
   UserStatistics _fromServer(ApiStats s, ApiActivity a) {
     _server = s;
     _weeks = a.weeks;
@@ -62,12 +57,10 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
       currentDailyMinutes: s.todayMinutes,
       weeklyStudyStatus: s.weekDays,
       dailyMinutesHistory: a.bars,
-      // Minutes per time slot and weekday, row by row (8 x 7)
       activityHeatmap: [for (final row in a.heatmap) for (final m in row) m.toDouble()],
     );
   }
 
-  // Offline / logged out: this phone's own calendar for the chosen tab
   UserStatistics _withLocalCalendar(UserStatistics s) {
     final calendar = StatisticsService.instance.activityCalendar(_periods[_selectedTab]);
     _weeks = calendar.weeks;
@@ -77,19 +70,13 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
   Future<void> _selectTab(int index) async {
     setState(() => _selectedTab = index);
     final server = _server;
-    if (server == null) {
-      setState(() => _stats = _withLocalCalendar(_stats));
-      return;
-    }
+    if (server == null) { setState(() => _stats = _withLocalCalendar(_stats)); return; }
     try {
       final activity = await UzslApi.activity(_periods[index]);
       if (mounted && _selectedTab == index) setState(() => _stats = _fromServer(server, activity));
-    } on ApiException catch (e) {
-      debugPrint('Activity not loaded: $e');
-    }
+    } on ApiException catch (e) { debugPrint('Activity not loaded: $e'); }
   }
 
-  // Bar labels: weekdays, weeks of the month, or months, in the app language
   List<String> _barLabels(AppLocalizations loc, int count) {
     final lang = Localizations.localeOf(context).languageCode;
     const weekdays = {
@@ -107,15 +94,14 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
     return weekdays[lang] ?? weekdays['en']!;
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: _handleRefresh, notificationPredicate: (ScrollNotification notification) {return notification.depth == 0;},
@@ -132,11 +118,8 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
                           padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                           child: GestureDetector(
                             onTap: () => Navigator.pop(context),
-                            child: Container(
-                              padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)),
-                              child: const Icon(Icons.arrow_back_outlined),
-                            ),
-                          ),
+                            child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined))
+                          )
                         ),
                         const SizedBox(height: 18),
                         Padding(
@@ -146,40 +129,30 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
                             children: [
                               Text(loc.translate('development_details'), style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600)),
                               Text(loc.translate('development_details_sub'), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15, color: AppPalette.fg(Colors.grey[700]!)))
-                            ],
-                          ),
+                            ]
+                          )
                         ),
-                        const SizedBox(height: 18),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: _isTabs(loc),
-                        ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 18), Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _isTabs(loc)), const SizedBox(height: 18),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
                             children: [
-                              _statGrid(loc),
-                              const SizedBox(height: 16),
-                              _dailyGoalCard(loc),
-                              const SizedBox(height: 16),
-                              _weeklyLearningCard(loc),
-                              const SizedBox(height: 16),
-                              _dailyMinutesChart(loc),
-                              const SizedBox(height: 16),
-                              _activityCalendar(loc),
-                              const SizedBox(height: 30),
-                            ],
-                          ),
+                              _statGrid(loc), const SizedBox(height: 16),
+                              _dailyGoalCard(loc), const SizedBox(height: 16),
+                              _weeklyLearningCard(loc), const SizedBox(height: 16),
+                              _dailyMinutesChart(loc), const SizedBox(height: 16),
+                              _activityCalendar(loc), const SizedBox(height: 30)
+                            ]
+                          )
                         )
-                      ],
-                    ),
+                      ]
+                    )
                   )
-              ],
+              ]
             )
           )
-        ),
-      ),
+        )
+      )
     );
   }
 
@@ -190,15 +163,15 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
         _buildStatCard(
           title: loc.translate('completed_lessons'),
           value: '${_stats.completedLessons}',
-          image: 'web/icons/book_open.png',
-          progress: (_stats.completedLessons / 100).clamp(0.0, 1.0), // Assuming 100 is a milestone
+          image: 'web/icons/book_open.webp',
+          progress: (_stats.completedLessons / 100).clamp(0.0, 1.0),
           subValue: '+${_stats.lessonsIncrement}',
           subLabel: loc.translate('today_result'),
         ),
         _buildStatCard(
           title: loc.translate('accuracy'),
           value: '${(_stats.accuracy * 100).toInt()}%',
-          image: 'web/icons/bullseye.png',
+          image: 'web/icons/bullseye.webp',
           progress: _stats.accuracy,
           subValue: '+${(_stats.accuracyIncrement * 100).toInt()}%',
           subLabel: loc.translate('today_result'),
@@ -206,7 +179,7 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
         _buildStatCard(
           title: loc.translate('weekly_streak'),
           value: '${_stats.weeklyStreak} ${loc.translate('days').toLowerCase()}',
-          image: 'web/icons/calendar_alt.png',
+          image: 'web/icons/calendar_alt.webp',
           progress: (_stats.weeklyStreak / 7).clamp(0.0, 1.0),
           subLabel: loc.translate('overall_result'),
           badge: _stats.weeklyStreak >= _stats.streakRecord && _stats.weeklyStreak > 0 ? loc.translate('record') : null,
@@ -214,8 +187,8 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
         _buildStatCard(
           title: loc.translate('collected_points'),
           value: '${_stats.collectedPoints} xp',
-          image: 'web/icons/bolt_alt.png',
-          progress: (_stats.collectedPoints / 5000).clamp(0.0, 1.0), // Assuming 5000 is a milestone
+          image: 'web/icons/bolt_alt.webp',
+          progress: (_stats.collectedPoints / 5000).clamp(0.0, 1.0),
           subValue: '+${_stats.pointsIncrement}',
           subLabel: loc.translate('today_result'),
         ),
@@ -235,9 +208,8 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppPalette.bg(Colors.white).withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppPalette.border(Colors.white), width: 1), boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withOpacity(0.7), blurRadius: 10, offset: Offset(0, 4))]
+        color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppPalette.border(Colors.white), width: 1),
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withValues(alpha: 0.7), blurRadius: 10, offset: Offset(0, 4))]
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,12 +221,10 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
               Image.asset(image, width: 20, height: 20, color: AppPalette.fg(Colors.blue[800]!))
             ],
           ),
-          const SizedBox(height: 4),
-          Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.blue[900]!))),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4), Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.blue[900]!))), const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(value: progress, backgroundColor: AppPalette.bg(Colors.blue[50]!), valueColor: AlwaysStoppedAnimation<Color>(AppPalette.fg(Color(0xFF1A237E)).withOpacity(0.8)), minHeight: 6),
+            child: LinearProgressIndicator(value: progress, backgroundColor: AppPalette.bg(Colors.blue[50]!), valueColor: AlwaysStoppedAnimation<Color>(AppPalette.fg(Color(0xFF1A237E)).withValues(alpha: 0.8)), minHeight: 6),
           ),
           const Spacer(),
           Row(
@@ -266,12 +236,12 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
               else if (badge != null)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: AppPalette.bg(Colors.orange[100]!), borderRadius: BorderRadius.circular(8)),
-                  child: Text(badge, style: TextStyle(fontSize: 9, color: AppPalette.fg(Colors.orange[900]!), fontWeight: FontWeight.w600)),
-                ),
-            ],
+                  child: Text(badge, style: TextStyle(fontSize: 9, color: AppPalette.fg(Colors.orange[900]!), fontWeight: FontWeight.w600))
+                )
+            ]
           )
-        ],
-      ),
+        ]
+      )
     );
   }
 
@@ -284,7 +254,7 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppPalette.border(Colors.white), width: 1),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withOpacity(0.9), blurRadius: 10, offset: Offset(0, 6))]
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withValues(alpha: 0.9), blurRadius: 10, offset: Offset(0, 6))]
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,39 +265,36 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
               Text(loc.translate('daily_goal'), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppPalette.fg(Color(0xFF1A237E)))),
               Container(
                 padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
-                decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
-                    Icon(Icons.access_time, size: 16, color: AppPalette.fg(Colors.blue[700]!)),
-                    const SizedBox(width: 4),
-                    Text('${_stats.dailyGoalMinutes} ${loc.translate('minute')}', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.blue[800]!), fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-            ],
+                    Icon(Icons.access_time, size: 16, color: AppPalette.fg(Colors.blue[700]!)), const SizedBox(width: 4),
+                    Text('${_stats.dailyGoalMinutes} ${loc.translate('minute')}', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.blue[800]!), fontWeight: FontWeight.w600))
+                  ]
+                )
+              )
+            ]
           ),
           const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: goalProgress, backgroundColor: AppPalette.bg(Color(0xFFE3F2FD)), valueColor: AlwaysStoppedAnimation<Color>(AppPalette.fg(Color(0xFF1A237E)).withOpacity(0.8)), minHeight: 12,
-            ),
+            child: LinearProgressIndicator(value: goalProgress, backgroundColor: AppPalette.bg(Color(0xFFE3F2FD)), valueColor: AlwaysStoppedAnimation<Color>(AppPalette.fg(Color(0xFF1A237E)).withValues(alpha: 0.8)), minHeight: 12)
           ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('$displayMinutes/${_stats.dailyGoalMinutes} ${loc.translate('minute')}', style: TextStyle(fontSize: 15, color: AppPalette.fg(Colors.grey[800]!), fontWeight: FontWeight.w400)),
-              Text('$percentage%', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF1A237E)))),
-            ],
+              Text('$percentage%', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF1A237E))))
+            ]
           )
-        ],
-      ),
+        ]
+      )
     );
   }
 
   Widget _weeklyLearningCard(AppLocalizations loc) {
-    final days = _barLabels(loc, 7); // in the app language
+    final days = _barLabels(loc, 7);
     final completedDays = _stats.weeklyStudyStatus;
     final studyDaysCount = completedDays.where((day) => day).length;
 
@@ -335,7 +302,7 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppPalette.border(Colors.white), width: 1),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withOpacity(0.9), blurRadius: 10, offset: Offset(0, 4))]
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withValues(alpha: 0.9), blurRadius: 10, offset: Offset(0, 4))]
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,20 +313,17 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
               Text(loc.translate('weekly_study'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
               Container(
                 padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
-                decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_month, size: 15, color: AppPalette.fg(Colors.blue[700]!)),
-                    const SizedBox(width: 4),
+                    Icon(Icons.calendar_month, size: 15, color: AppPalette.fg(Colors.blue[700]!)), const SizedBox(width: 4),
                     Text('$studyDaysCount/7 ${loc.translate('days').toLowerCase()}', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.blue[700]!), fontWeight: FontWeight.w600)),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Divider(height: 1, color: AppPalette.border(Colors.grey[700]!)),
-          const SizedBox(height: 10),
+          const SizedBox(height: 10), Divider(height: 1, color: AppPalette.border(Colors.grey[700]!)), const SizedBox(height: 10),
           Text('$studyDaysCount ${loc.translate('days').toLowerCase()}', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.blue[900]!))),
           const SizedBox(height: 16),
           Row(
@@ -372,41 +336,33 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
                   const SizedBox(height: 8),
                   Container(
                     width: 36, height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: AppPalette.bg(Colors.white), border: Border.all(color: isCompleted ? AppPalette.border(Color(0xFF1A237E)) : AppPalette.border(Colors.grey[500]!), width: 2),
-                    ),
-                    child: isCompleted ? Icon(Icons.check, color: AppPalette.fg(Color(0xFF0D47A1)), size: 20) : null,
-                  ),
-                ],
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: AppPalette.bg(Colors.white), border: Border.all(color: isCompleted ? AppPalette.border(Color(0xFF1A237E)) : AppPalette.border(Colors.grey[500]!), width: 2)),
+                    child: isCompleted ? Icon(Icons.check, color: AppPalette.fg(Color(0xFF0D47A1)), size: 20) : null
+                  )
+                ]
               );
-            }),
+            })
           ),
-          const SizedBox(height: 10),
-          Divider(height: 1, color: AppPalette.border(Colors.grey[700]!)),
-          const SizedBox(height: 10),
+          const SizedBox(height: 10), Divider(height: 1, color: AppPalette.border(Colors.grey[700]!)), const SizedBox(height: 10),
           Row(
             children: [
-              Icon(Icons.history, size: 15, color: AppPalette.fg(Colors.grey[900]!)),
-              const SizedBox(width: 4),
+              Icon(Icons.history, size: 15, color: AppPalette.fg(Colors.grey[900]!)), const SizedBox(width: 4),
               Text('${_stats.weeklyStreak} ${loc.translate('day_goal').toLowerCase()} streak', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.grey[800]!))),
-              const Spacer(),
-              Icon(Icons.trending_up, size: 15, color: AppPalette.fg(Colors.grey[900]!)),
-              const SizedBox(width: 4),
-              Text('${loc.translate('best_result')}: ${_stats.streakRecord} ${loc.translate('days').toLowerCase()}', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.grey[800]!))),
-            ],
+              const Spacer(), Icon(Icons.trending_up, size: 15, color: AppPalette.fg(Colors.grey[900]!)), const SizedBox(width: 4),
+              Text('${loc.translate('best_result')}: ${_stats.streakRecord} ${loc.translate('days').toLowerCase()}', style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.grey[800]!)))
+            ]
           )
-        ],
-      ),
+        ]
+      )
     );
   }
 
   Widget _dailyMinutesChart(AppLocalizations loc) {
     final data = _stats.dailyMinutesHistory;
     final days = _barLabels(loc, data.length);
-    
-    // Find max value for scaling
+
     int maxValue = data.reduce((a, b) => a > b ? a : b);
-    if (maxValue < 60) maxValue = 60; // Minimum scale of 60 mins
+    if (maxValue < 60) maxValue = 60;
 
     double averageMinutes = data.reduce((a, b) => a + b) / data.length;
 
@@ -414,7 +370,7 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppPalette.border(Colors.white), width: 1),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withOpacity(0.9), blurRadius: 10, offset: Offset(0, 4))]
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.blue).withValues(alpha: 0.9), blurRadius: 10, offset: Offset(0, 4))]
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,16 +381,15 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
               Text(loc.translate('daily_minutes'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
               Container(
                 padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
-                decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
-                    Icon(Icons.access_time, size: 15, color: AppPalette.fg(Colors.blue[700]!)),
-                    const SizedBox(width: 4),
-                    Text('${averageMinutes.toStringAsFixed(1)} ${loc.translate('minute')}/${loc.translate('days').toLowerCase()}', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.blue[700]!), fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-            ],
+                    Icon(Icons.access_time, size: 15, color: AppPalette.fg(Colors.blue[700]!)), const SizedBox(width: 4),
+                    Text('${averageMinutes.toStringAsFixed(1)} ${loc.translate('minute')}/${loc.translate('days').toLowerCase()}', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.blue[700]!), fontWeight: FontWeight.w600))
+                  ]
+                )
+              )
+            ]
           ),
           const SizedBox(height: 20),
           SizedBox(
@@ -446,31 +401,21 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Container(
-                      width: 30, height: barHeight > 0 ? barHeight : 4, // Show a tiny bar even if 0
-                      decoration: BoxDecoration(color: AppPalette.bg(Colors.blue[900]!), borderRadius: BorderRadius.circular(8)),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(days[index], style: TextStyle(fontSize: 15, color: AppPalette.fg(Colors.grey[800]!))),
-                  ],
+                    Container(width: 30, height: barHeight > 0 ? barHeight : 4, decoration: BoxDecoration(color: AppPalette.bg(Colors.blue[900]!), borderRadius: BorderRadius.circular(8))),
+                    const SizedBox(height: 8), Text(days[index], style: TextStyle(fontSize: 15, color: AppPalette.fg(Colors.grey[800]!)))
+                  ]
                 );
-              }),
-            ),
+              })
+            )
           ),
-          const SizedBox(height: 10),
-          Divider(height: 1, color: AppPalette.border(Colors.grey[700]!)),
-          const SizedBox(height: 8),
-          Row( // need line vertical
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(6, (index) => Text('${((maxValue / 5) * (5 - index)).toInt()}', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!)))),
-          )
+          const SizedBox(height: 10), Divider(height: 1, color: AppPalette.border(Colors.grey[700]!)), const SizedBox(height: 8),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: List.generate(6, (index) => Text('${((maxValue / 5) * (5 - index)).toInt()}', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!)))))
         ],
       ),
     );
   }
 
   Widget _activityCalendar(AppLocalizations loc) {
-    // Minutes per time slot (rows) and weekday (columns, Monday first), from the server or this phone
     final cells = _stats.activityHeatmap;
     final double total = cells.fold(0.0, (sum, m) => sum + m);
     final double maxMinutes = cells.isEmpty ? 0 : cells.reduce((a, b) => a > b ? a : b);
@@ -480,10 +425,7 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
     const slotHours = StatisticsService.slotHours;
     const double cellHeight = 30, gap = 4, timeColumn = 46;
 
-    // empty: light; the busiest slot: dark blue
-    Color cellColor(double minutes) => minutes <= 0
-        ? AppPalette.bg(Colors.white).withValues(alpha: 0.45)
-        : AppPalette.bg(Colors.blue[900]!).withValues(alpha: 0.2 + 0.8 * (minutes / maxMinutes).clamp(0.0, 1.0));
+    Color cellColor(double minutes) => minutes <= 0 ? AppPalette.bg(Colors.white).withValues(alpha: 0.45) : AppPalette.bg(Colors.blue[900]!).withValues(alpha: 0.2 + 0.8 * (minutes / maxMinutes).clamp(0.0, 1.0));
 
     Widget weekdayRow(List<Widget> Function(int day) build) => Row(children: [
       const SizedBox(width: timeColumn),
@@ -508,16 +450,12 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
                 decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(10)),
                 child: Row(
                   children: [
-                    Icon(Icons.access_time, size: 15, color: AppPalette.fg(Colors.blue[700]!)),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${weeklyAverage.round()} $minute/${loc.translate('week').toLowerCase()}',
-                      style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.blue[700]!), fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                    Icon(Icons.access_time, size: 15, color: AppPalette.fg(Colors.blue[700]!)), const SizedBox(width: 4),
+                    Text('${weeklyAverage.round()} $minute/${loc.translate('week').toLowerCase()}', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.blue[700]!), fontWeight: FontWeight.w600))
+                  ]
+                )
+              )
+            ]
           ),
           const SizedBox(height: 16),
 
@@ -535,51 +473,31 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
                   Expanded(
                     child: Tooltip(
                       triggerMode: TooltipTriggerMode.tap,
-                      message: '${_barLabels(loc, 7)[d]} ${slotHours[row].toString().padLeft(2, '0')}:00 · '
-                          '${(row * 7 + d < cells.length ? cells[row * 7 + d] : 0).round()} $minute',
+                      message: '${_barLabels(loc, 7)[d]} ${slotHours[row].toString().padLeft(2, '0')}:00 · ' '${(row * 7 + d < cells.length ? cells[row * 7 + d] : 0).round()} $minute',
                       child: Container(
                         height: cellHeight,
                         decoration: BoxDecoration(
-                          color: cellColor(row * 7 + d < cells.length ? cells[row * 7 + d] : 0),
-                          borderRadius: BorderRadius.circular(6),
-                          // today's column is outlined
-                          border: d == today ? Border.all(color: AppPalette.fg(Colors.blue[700]!).withValues(alpha: 0.6), width: 1) : null,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ]),
+                          color: cellColor(row * 7 + d < cells.length ? cells[row * 7 + d] : 0), borderRadius: BorderRadius.circular(6),
+                          border: d == today ? Border.all(color: AppPalette.fg(Colors.blue[700]!).withValues(alpha: 0.6), width: 1) : null
+                        )
+                      )
+                    )
+                  )
+                ]
+              ])
             ),
           const SizedBox(height: 4),
-          // weekday names, each under its own column; today's in blue
-          weekdayRow((d) => [
-            Text(_barLabels(loc, 7)[d], style: TextStyle(
-              fontSize: 14,
-              fontWeight: d == today ? FontWeight.w700 : FontWeight.w400,
-              color: d == today ? AppPalette.fg(Colors.blue[700]!) : AppPalette.fg(Colors.grey[800]!),
-            )),
-          ]),
-
+          weekdayRow((d) => [Text(_barLabels(loc, 7)[d], style: TextStyle(fontSize: 14, fontWeight: d == today ? FontWeight.w700 : FontWeight.w400, color: d == today ? AppPalette.fg(Colors.blue[700]!) : AppPalette.fg(Colors.grey[800]!)))]),
           const SizedBox(height: 12),
-
-          // scale: from no learning to the busiest slot
           Row(
             children: [
-              Text('0', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!))),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Container(
-                  height: 6,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), gradient: LinearGradient(colors: [cellColor(0), cellColor(maxMinutes > 0 ? maxMinutes : 1)])),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text('${maxMinutes.round()} $minute', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!))),
-            ],
-          ),
-        ],
-      ),
+              Text('0', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!))), const SizedBox(width: 10),
+              Expanded(child: Container(height: 6, decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), gradient: LinearGradient(colors: [cellColor(0), cellColor(maxMinutes > 0 ? maxMinutes : 1)])))),
+              const SizedBox(width: 10), Text('${maxMinutes.round()} $minute', style: TextStyle(fontSize: 12, color: AppPalette.fg(Colors.grey[800]!)))
+            ]
+          )
+        ]
+      )
     );
   }
 
@@ -607,11 +525,8 @@ class _StatisticsSheenState extends State<StatisticsSheen> {
                   color: isActive ? AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.8) : Colors.transparent,
                   borderRadius: BorderRadius.circular(12), border: Border.all(width: isActive ? 1 : 0, color: isActive ? AppPalette.border(Colors.white) : Colors.transparent),
                 ),
-                child: Text(
-                  tabs[index]['titleKey']!, textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: isActive ? FontWeight.w700 : FontWeight.w500, color: isActive ? AppPalette.fg(Colors.black) : AppPalette.fg(Colors.grey[700]!)),
-                ),
-              ),
+                child: Text(tabs[index]['titleKey']!, textAlign: TextAlign.center, style: TextStyle(fontWeight: isActive ? FontWeight.w700 : FontWeight.w500, color: isActive ? AppPalette.fg(Colors.black) : AppPalette.fg(Colors.grey[700]!)))
+              )
             )
           );
         })

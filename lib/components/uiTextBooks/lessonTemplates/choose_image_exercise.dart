@@ -61,8 +61,7 @@ class _ChooseImageExerciseState extends State<ChooseImageExercise> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: highlighted ? accent : Colors.transparent, width: 2),
+          color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(20), border: Border.all(color: highlighted ? accent : Colors.transparent, width: 2),
           boxShadow: highlighted ? [BoxShadow(color: accent.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4))] : null,
         ),
         child: Stack(
@@ -73,9 +72,9 @@ class _ChooseImageExerciseState extends State<ChooseImageExercise> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: o.image != null
-                    ? Image.network(o.image!, fit: BoxFit.contain, errorBuilder: (_, _, _) => Icon(Icons.image_not_supported, size: 50, color: AppPalette.fg(Colors.grey)))
-                    : (o.signVideo != null ? LessonVideoBox(url: o.signVideo, showActions: false) : Icon(Icons.sign_language, size: 50, color: AppPalette.fg(Colors.blue))),
-              ),
+                  ? Image.network(o.image!, fit: BoxFit.contain, errorBuilder: (_, _, _) => Icon(Icons.image_not_supported, size: 50, color: AppPalette.fg(Colors.grey)))
+                  : (o.signVideo != null ? LessonVideoBox(url: o.signVideo, showActions: false) : Icon(Icons.sign_language, size: 50, color: AppPalette.fg(Colors.blue)))
+              )
             ),
             // --- label ---
             if (o.text?.isNotEmpty == true)
@@ -84,15 +83,14 @@ class _ChooseImageExerciseState extends State<ChooseImageExercise> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(color: AppPalette.bg(Colors.white).withValues(alpha: 0.85), borderRadius: BorderRadius.circular(16), border: Border.all(width: selected ? 0.5 : 0.1)),
-                  child: Text(o.text!, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: selected ? AppPalette.fg(const Color(0xFF1E293B)) : AppPalette.fg(Colors.grey))),
-                ),
+                  child: Text(o.text!, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: selected ? AppPalette.fg(const Color(0xFF1E293B)) : AppPalette.fg(Colors.grey)))
+                )
               ),
             // --- radio ---
-            Positioned(top: 2, right: 2, child: LessonRadio(color: highlighted ? accent : AppPalette.auto(Colors.black12), filled: highlighted)),
-          ],
-        ),
-      ),
+            Positioned(top: 2, right: 2, child: LessonRadio(color: highlighted ? accent : AppPalette.auto(Colors.black12), filled: highlighted))
+          ]
+        )
+      )
     );
   }
 }

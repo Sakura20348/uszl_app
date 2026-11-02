@@ -139,6 +139,7 @@ CREATE TABLE "courses" (
   "description" varchar(255),
   "icon" varchar(100),
   "unit_label" varchar(30) NOT NULL DEFAULT 'so'z',
+  "total" integer,
   "order" integer NOT NULL DEFAULT 0,
   "is_published" boolean NOT NULL DEFAULT true
 );

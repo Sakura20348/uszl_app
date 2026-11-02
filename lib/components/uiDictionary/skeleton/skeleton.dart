@@ -19,13 +19,13 @@ class DictionarySkeleton {
                     _box(height: 28, width: 90, radius: 10), const SizedBox(width: 8),
                     _box(height: 28, width: 90, radius: 10), const SizedBox(width: 8),
                     _box(height: 28, width: 90, radius: 10), const SizedBox(width: 8),
-                    _box(height: 28, width: 90, radius: 10),
-                  ],
-                ),
+                    _box(height: 28, width: 90, radius: 10)
+                  ]
+                )
               ),
-              const SizedBox(height: 16),
-            ],
-          ),
+              const SizedBox(height: 16)
+            ]
+          )
         ),
         const SizedBox(height: 24), _box(height: 510, width: double.infinity, radius: 24)
       ],
@@ -48,8 +48,8 @@ class DictionarySkeleton {
     return Container(
       height: height, width: width,
       decoration: BoxDecoration(
-        color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(radius),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 2))]
+        color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(radius),
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 2))]
       ),
     );
   }
@@ -106,8 +106,8 @@ class ResultLessonsSkeleton {
     return Container(
       height: height, width: width,
       decoration: BoxDecoration(
-        color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(radius),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 2))]
+        color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(radius),
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 2))]
       ),
     );
   }
@@ -120,10 +120,8 @@ class AllPhrasesSkeleton {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _box(height: 44, width: 44, radius: 10),
-          const SizedBox(height: 16),
-          _box(height: 30, width: 200, radius: 20),
-          const SizedBox(height: 16),
+          _box(height: 44, width: 44, radius: 10), const SizedBox(height: 16),
+          _box(height: 30, width: 200, radius: 20), const SizedBox(height: 16),
           ...List.generate(8, (i) => _item()),
         ],
       ),
@@ -133,9 +131,7 @@ class AllPhrasesSkeleton {
   static Widget _item(){
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        children: [_box(height: 65, width: double.infinity, radius: 20), const SizedBox(height: 16), _box(height: 65, width: double.infinity, radius: 20)],
-      ),
+      child: Column(children: [_box(height: 65, width: double.infinity, radius: 20), const SizedBox(height: 16), _box(height: 65, width: double.infinity, radius: 20)])
     );
   }
 
@@ -143,8 +139,8 @@ class AllPhrasesSkeleton {
     return Container(
       height: height, width: width,
       decoration: BoxDecoration(
-        color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(radius),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 2))]
+        color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(radius),
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 2))]
       ),
     );
   }

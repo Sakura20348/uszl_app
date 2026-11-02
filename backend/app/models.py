@@ -309,6 +309,8 @@ class Course(Base):
     description_en: Mapped[str | None] = mapped_column(String(255))
     icon: Mapped[str | None] = mapped_column(String(100))
     unit_label: Mapped[str] = mapped_column(String(30), default="so'z", server_default="so'z")
+    # Number shown on the app's card ("5 / 29"); null = the number of lessons
+    total: Mapped[int | None] = mapped_column(Integer)
     order: Mapped[int] = _int(0)
     is_published: Mapped[bool] = _flag(True)
 

@@ -59,7 +59,7 @@ class _NotificationProfileState extends State<NotificationProfile> {
     ];
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,8 @@ class _NotificationProfileState extends State<NotificationProfile> {
                                 child: Container(
                                   padding: const EdgeInsets.all(16), margin: EdgeInsets.only(bottom: (item['id'] == '0') ? 30 : 12),
                                   decoration: BoxDecoration(
-                                    color: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.3), borderRadius: BorderRadius.circular(24), border: Border.all(color: AppPalette.border(Colors.white), width: 1), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF90CAF9)).withOpacity(0.9), blurRadius: 15)]
+                                    color: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.3), borderRadius: BorderRadius.circular(24), border: Border.all(color: AppPalette.border(Colors.white), width: 1),
+                                    boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF90CAF9)).withValues(alpha: 0.9), blurRadius: 15)]
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -124,22 +125,22 @@ class _NotificationProfileState extends State<NotificationProfile> {
                                       const SizedBox(width: 12),
                                       Expanded(child: Text(item['titleKey'], style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600))),
                                       CustomSwitch(value: _values[id] ?? false, onChanged: (val) => _handleToggle(id, val))
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                    ]
+                                  )
+                                )
+                              )
                             );
-                          }).toList(),
+                          }).toList()
                         ),
                         const SizedBox(height: 40)
-                      ],
-                    ),
+                      ]
+                    )
                   )
-              ],
+              ]
             )
           )
-        ),
-      ),
+        )
+      )
     );
   }
 }
@@ -171,20 +172,13 @@ class _SlideOnReorderState extends State<_SlideOnReorder> with SingleTickerProvi
     final column = context.findAncestorRenderObjectOfType<RenderFlex>();
     if (box == null || column == null || !box.attached) return;
     final pos = box.localToGlobal(Offset.zero, ancestor: column);
-    if (_lastPos != null && pos != _lastPos) {
-      _from = _visualOffset + (_lastPos! - pos);
-      _controller.forward(from: 0);
-    }
+    if (_lastPos != null && pos != _lastPos) { _from = _visualOffset + (_lastPos! - pos); _controller.forward(from: 0); }
     _lastPos = pos;
   }
 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(_checkMoved);
-    return AnimatedBuilder(
-      animation: _curve,
-      builder: (context, child) => Transform.translate(offset: _visualOffset, child: child),
-      child: widget.child,
-    );
+    return AnimatedBuilder(animation: _curve, builder: (context, child) => Transform.translate(offset: _visualOffset, child: child), child: widget.child);
   }
 }

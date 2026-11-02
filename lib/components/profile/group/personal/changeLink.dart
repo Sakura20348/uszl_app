@@ -83,64 +83,51 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
     final loc = AppLocalizations.of(context)!;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       decoration: BoxDecoration(
-        color: AppPalette.bg(Color(0xFFF5F5F5)).withOpacity(0.1), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFECEFF1)).withOpacity(0.2)),
-        borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFFF5F5F5)).withOpacity(0.9), blurRadius: 15, offset: const Offset(0, -6))],
+        color: AppPalette.bg(Color(0xFF81D4FA)).withValues(alpha: 0.1), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFB3E5FC)).withValues(alpha: 0.2)),
+        borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF81D4FA)).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, -6))],
       ),
       child: FadeTransition(
         opacity: _fadeIn,
-        child: SlideTransition(
-          position: _slideUp,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: _isLoading ? _buildLoadingState(loc) : _showSuccess ? _buildSuccessState(loc) : _buildInitialState(loc),
-          ),
-        ),
+        child: SlideTransition(position: _slideUp, child: AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: _isLoading ? _buildLoadingState(loc) : _showSuccess ? _buildSuccessState(loc) : _buildInitialState(loc)))
       ),
     );
   }
 
   Widget _buildInitialState(AppLocalizations loc) {
-    const String ImageLink = 'web/icons/link.png';
-    const String ImageApple = 'web/icons/apple.png';
-    const String ImageGoogle = 'web/icons/google.png';
+    const String ImageLink = 'web/icons/link.webp';
+    const String ImageApple = 'web/icons/apple.webp';
+    const String ImageGoogle = 'web/icons/google.webp';
 
     return Column(
       key: const ValueKey('initial'),
       mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.9), borderRadius: BorderRadius.circular(2)))),
+        Center(child: Container(width: 70, height: 7, decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: AppPalette.bg(Color(0xFF00B8D4)).withValues(alpha: 0.9), border: Border.all(width: 0.5, color: AppPalette.border(Colors.white))))),
         const SizedBox(height: 20),
         Center(
           child: Container(
             padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(color: AppPalette.bg(Colors.black).withOpacity(0.05), border: Border.all(width: 1, color: AppPalette.border(Colors.white).withOpacity(0.9)), borderRadius: BorderRadius.circular(20)),
+            decoration: BoxDecoration(color: AppPalette.bg(Colors.black).withValues(alpha: 0.05), border: Border.all(width: 1, color: AppPalette.border(Colors.white).withValues(alpha: 0.9)), borderRadius: BorderRadius.circular(20)),
             child: Image.asset(ImageLink, width: 32, height: 32),
           ),
         ),
-        const SizedBox(height: 16),
-        Center(child: Text(loc.translate('linked_accounts'), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A))))),
-        const SizedBox(height: 8),
-        Center(
-          child: Text(loc.translate('linked_accounts_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFF0F172A)).withOpacity(0.7))),
-        ),
-        const SizedBox(height: 32),
-        _buildLinkOption(icon: ImageApple, name: 'Apple', isConnected: isAppleConnected, onTap: isAppleConnected ? null : () => _handleConnect('Apple')),
-        const SizedBox(height: 16),
-        _buildLinkOption(icon: ImageGoogle, name: 'Google', isConnected: isGoogleConnected, onTap: isGoogleConnected ? null : () => _handleConnect('Google')),
+        const SizedBox(height: 16), Center(child: Text(loc.translate('linked_accounts'), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A))))), const SizedBox(height: 8),
+        Center(child: Text(loc.translate('linked_accounts_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFF0F172A)).withValues(alpha: 0.7)))),
+        const SizedBox(height: 32), _buildLinkOption(icon: ImageApple, name: 'Apple', isConnected: isAppleConnected, onTap: isAppleConnected ? null : () => _handleConnect('Apple')),
+        const SizedBox(height: 16), _buildLinkOption(icon: ImageGoogle, name: 'Google', isConnected: isGoogleConnected, onTap: isGoogleConnected ? null : () => _handleConnect('Google')),
         const SizedBox(height: 32),
         SizedBox(
           width: double.infinity, height: 56,
           child: ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-              shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withOpacity(0.2)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withValues(alpha: 0.9),
+              side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             ),
-            child: Text(loc.translate('save'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-          ),
+            child: Text(loc.translate('save'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
+          )
         ),
         const SizedBox(height: 12),
         SizedBox(
@@ -148,15 +135,13 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
           child: ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-              shadowColor: AppPalette.shadow(Color(0xFF212121)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withOpacity(0.2)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF212121)).withValues(alpha: 0.9),
+              side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             ),
-            child: Text(loc.translate('cancel'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-          ),
-        ),
-        const SizedBox(height: 40),
-      ],
+            child: Text(loc.translate('cancel'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600))
+          )
+        )
+      ]
     );
   }
 
@@ -165,42 +150,36 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
       key: const ValueKey('loading'),
       mainAxisSize: MainAxisSize.min,
       children: [
-        Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.9), borderRadius: BorderRadius.circular(2)))),
-        const SizedBox(height: 40),
-        CircularProgressIndicator(strokeWidth: 5, valueColor: AlwaysStoppedAnimation<Color>(AppPalette.fg(Color(0xFF4A7FD0)))),
-        const SizedBox(height: 32),
-        Text(loc.translate('connecting_title'), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A)))),
+        Center(child: Container(width: 70, height: 7, decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: AppPalette.bg(Color(0xFF00B8D4)).withValues(alpha: 0.9), border: Border.all(width: 0.5, color: AppPalette.border(Colors.white))))),
+        const SizedBox(height: 40), CircularProgressIndicator(strokeWidth: 5, valueColor: AlwaysStoppedAnimation<Color>(AppPalette.fg(Color(0xFF4A7FD0)))),
+        const SizedBox(height: 32), Text(loc.translate('connecting_title'), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A)))),
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(loc.translate('linked_accounts_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFF0F172A)).withOpacity(0.7))),
+          child: Text(loc.translate('linked_accounts_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFF0F172A)).withValues(alpha: 0.7)))
         ),
-        const SizedBox(height: 60),
-      ],
+        const SizedBox(height: 60)
+      ]
     );
   }
 
   Widget _buildSuccessState(AppLocalizations loc) {
-    const String ImagePass = 'web/images/pass.png';
+    const String ImagePass = 'web/images/pass.webp';
 
     return Column(
       key: const ValueKey('success'),
       mainAxisSize: MainAxisSize.min,
       children: [
-        Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.9), borderRadius: BorderRadius.circular(2)))),
-        const SizedBox(height: 20),
-        Center(child: Image.asset(ImagePass, height: 96, width: 96)),
-        const SizedBox(height: 24),
-        Text(
-          loc.translate('account_connected'), textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A))),
-        ),
+        Center(child: Container(width: 70, height: 7, decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: AppPalette.bg(Color(0xFF00B8D4)).withValues(alpha: 0.9), border: Border.all(width: 0.5, color: AppPalette.border(Colors.white))))),
+        const SizedBox(height: 20), Center(child: Image.asset(ImagePass, height: 96, width: 96)),
+        const SizedBox(height: 24), Text(loc.translate('account_connected'), textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A)))),
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFF0F172A)).withOpacity(0.7)),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppPalette.fg(Color(0xFF0F172A)).withValues(alpha: 0.7)),
               children: [
                 TextSpan(text: loc.translate('account_connected_sub').split('%s')[0]),
                 TextSpan(text: '($_connectedEmail)', style: TextStyle(color: AppPalette.fg(Color(0xFF4A7FD0)), fontWeight: FontWeight.w500)),
@@ -212,7 +191,7 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
         ),
         const SizedBox(height: 32),
         _buildLinkOption(
-          icon: _lastConnectedProvider == 'Apple' ? 'web/icons/apple.png' : 'web/icons/google.png',
+          icon: _lastConnectedProvider == 'Apple' ? 'web/icons/apple.webp' : 'web/icons/google.webp',
           name: _lastConnectedProvider,
           isConnected: true,
           onTap: null,
@@ -223,8 +202,8 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
           child: ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-              shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withOpacity(0.2)),
+              backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
+              shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withValues(alpha: 0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withValues(alpha: 0.2)),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             ),
             child: Text(loc.translate('save'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
@@ -236,15 +215,13 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
           child: ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-              shadowColor: AppPalette.shadow(Color(0xFF212121)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withOpacity(0.2)),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF212121)).withValues(alpha: 0.9),
+              side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             ),
-            child: Text(loc.translate('cancel'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-          ),
+            child: Text(loc.translate('cancel'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600))
+          )
         ),
-        const SizedBox(height: 40),
-      ],
+      ]
     );
   }
 
@@ -256,18 +233,20 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
   }) {
     final loc = AppLocalizations.of(context)!;
     final isColors = isConnected ? AppPalette.auto(Color(0xFF2E7D32)) : AppPalette.auto(Color(0xFFC62828));
-    final isColorIcon = isConnected ? AppPalette.auto(Color(0xFFC8E6C9)).withOpacity(0.8) : AppPalette.auto(Color(0xFFFFCDD2)).withOpacity(0.8);
+    final isColorIcon = isConnected ? AppPalette.auto(Color(0xFFC8E6C9)).withValues(alpha: 0.8) : AppPalette.auto(Color(0xFFFFCDD2)).withValues(alpha: 0.8);
     
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: AppPalette.bg(Colors.white).withOpacity(0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)]),
+        decoration: BoxDecoration(
+          color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)]
+        ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.8), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(14)),
+              decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.8), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(14)),
               child: Image.asset(icon, width: 24, height: 24, errorBuilder: (_, __, ___) => const Icon(Icons.link)),
             ),
             const SizedBox(width: 16),
@@ -275,31 +254,27 @@ class _ChangeLinkState extends State<ChangeLink> with SingleTickerProviderStateM
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
+                  Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)), const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(color: isColorIcon, borderRadius: BorderRadius.circular(10), border: Border.all(width: 1, color: AppPalette.border(Colors.white))),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: isColorIcon, borderRadius: BorderRadius.circular(10), border: Border.all(width: 1, color: AppPalette.border(Colors.white))),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(isConnected ? Icons.check_circle : Icons.cancel, size: 16, color: isColors),
-                        const SizedBox(width: 4),
-                        Text(loc.translate(isConnected ? 'connected' : 'disconnected'), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isColors)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                        Icon(isConnected ? Icons.check_circle : Icons.cancel, size: 16, color: isColors), const SizedBox(width: 4),
+                        Text(loc.translate(isConnected ? 'connected' : 'disconnected'), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isColors))
+                      ]
+                    )
+                  )
+                ]
+              )
             ),
             Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), shape: BoxShape.circle),
-              child: Icon(Icons.keyboard_arrow_right, color: AppPalette.fg(Colors.grey[900]!)),
+              padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), shape: BoxShape.circle),
+              child: Icon(Icons.keyboard_arrow_right, color: AppPalette.fg(Colors.grey[900]!))
             )
-          ],
-        ),
-      ),
+          ]
+        )
+      )
     );
   }
 }

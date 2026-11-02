@@ -56,72 +56,42 @@ class _WaveInputState extends State<WaveInput> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  onChanged: widget.onChanged,
-                  textCapitalization: TextCapitalization.none,
-                  style: const TextStyle(fontSize: 20),
-                  cursorColor: _accent,
+                  controller: _controller, focusNode: _focusNode, onChanged: widget.onChanged, textCapitalization: TextCapitalization.none,
+                  style: const TextStyle(fontSize: 20), cursorColor: _accent,
                   decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.fromLTRB(5, 10, 10, 10),
-                    border: InputBorder.none,
+                    isDense: true, contentPadding: EdgeInsets.fromLTRB(5, 10, 10, 10), border: InputBorder.none,
                     // static grey baseline (border-bottom: 1px #515151)
                     enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppPalette.border(Color(0xFF515151)), width: 1)),
                     focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppPalette.border(Color(0xFF515151)), width: 1)),
                   ),
                 ),
                 // ===== the wave bar (expands from center) =====
-                SizedBox(
-                  height: 2,
-                  width: _width,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.ease,
-                      height: 2,
-                      width: _isFocused ? _width : 0,
-                      color: _accent,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                SizedBox(height: 2, width: _width, child: Align(alignment: Alignment.center, child: AnimatedContainer(duration: const Duration(milliseconds: 200), curve: Curves.ease, height: 2, width: _isFocused ? _width : 0, color: _accent)))
+              ]
+            )
           ),
           // ===== the floating per-character label =====
           Positioned(
-            left: 5,
-            top: 24,
+            left: 5, top: 24,
             child: IgnorePointer(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(widget.label.length, (i) {
                   return AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.ease,
+                    duration: const Duration(milliseconds: 200), curve: Curves.ease,
                     // stagger each char like transition-delay: index * .05s
-                    transform: Matrix4.translationValues(
-                      0,
-                      floated ? -20 : 0,
-                      0,
-                    ),
+                    transform: Matrix4.translationValues(0, floated ? -20 : 0, 0),
                     child: AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.ease,
-                      style: TextStyle(
-                        fontSize: floated ? 14 : 18,
-                        color: floated ? _accent : AppPalette.fg(Color(0xFF999999)),
-                      ),
-                      child: Text(widget.label[i]),
-                    ),
+                      duration: const Duration(milliseconds: 200), curve: Curves.ease, style: TextStyle(fontSize: floated ? 14 : 18, color: floated ? _accent : AppPalette.fg(Color(0xFF999999))),
+                      child: Text(widget.label[i])
+                    )
                   );
-                }),
-              ),
-            ),
-          ),
-        ],
-      ),
+                })
+              )
+            )
+          )
+        ]
+      )
     );
   }
 }

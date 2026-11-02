@@ -61,15 +61,11 @@ class NotificationCenter with WidgetsBindingObserver {
       if (alert && previous != null) {
         final fresh = page.items.where((n) => n.id > previous).toList();
         if (fresh.isNotEmpty) HapticFeedback.mediumImpact();
-        for (final n in fresh.reversed) {
-          await PushService.announce(n);
-        }
+        for (final n in fresh.reversed) { await PushService.announce(n); }
       }
       if (newest != null && (previous == null || newest > previous)) _newestSeen = newest;
       _newestSeen ??= 0;
       unread.value = page.total;
-    } on ApiException catch (e) {
-      debugPrint('Unread notifications not updated: $e');
-    }
+    } on ApiException catch (e) { debugPrint('Unread notifications not updated: $e'); }
   }
 }

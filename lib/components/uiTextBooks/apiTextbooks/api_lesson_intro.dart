@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:signlang/api/uzsl_api.dart';
 import 'package:signlang/components/uiTextBooks/apiTextbooks/api_lesson_player.dart';
+import 'package:signlang/components/uiTextBooks/lessonTemplates/lesson_parts.dart';
 import 'package:signlang/l10n/app_localizations.dart';
 import 'package:signlang/services/theme_service.dart';
 
@@ -11,13 +12,11 @@ class ApiLessonIntro extends StatelessWidget {
   final ApiLesson lesson;
   /// The textbook's picture, used when the lesson has none
   final String fallbackImage;
-  const ApiLessonIntro({super.key, required this.lesson, this.fallbackImage = 'web/images/book_3d.png'});
+  const ApiLessonIntro({super.key, required this.lesson, this.fallbackImage = 'web/images/book_3d.webp'});
 
-  Future<void> _start(BuildContext context) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => ApiLessonPlayer(lessonId: lesson.id, title: lesson.titleFor(Localizations.localeOf(context).languageCode))));
-    // finished or quit: back to the lesson list
-    if (context.mounted) Navigator.pop(context);
-  }
+  // the player closes this page together with itself, so finishing or quitting goes straight back to the
+  // lesson list, and whoever opened this page waits until the lesson is really over (progress, unlocking)
+  void _start(BuildContext context) { Navigator.push(context, lessonRoute(ApiLessonPlayer(lessonId: lesson.id, title: lesson.titleFor(Localizations.localeOf(context).languageCode), intro: ModalRoute.of(context)))); }
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +33,7 @@ class ApiLessonIntro extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(const Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
+        width: double.infinity, decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(const Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
         child: SafeArea(
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -58,8 +56,8 @@ class ApiLessonIntro extends StatelessWidget {
                         width: double.infinity, height: 200, decoration: glass, clipBehavior: Clip.antiAlias,
                         child: Center(
                           child: thumb != null
-                              ? Image.network(thumb, height: 180, fit: BoxFit.contain, errorBuilder: (_, _, _) => Image.asset(fallbackImage, height: 171))
-                              : Image.asset(fallbackImage, height: 171, errorBuilder: (_, _, _) => Icon(Icons.menu_book_rounded, size: 90, color: AppPalette.fg(Colors.blue))),
+                            ? Image.network(thumb, height: 180, fit: BoxFit.contain, errorBuilder: (_, _, _) => Image.asset(fallbackImage, height: 171))
+                            : Image.asset(fallbackImage, height: 171, errorBuilder: (_, _, _) => Icon(Icons.menu_book_rounded, size: 90, color: AppPalette.fg(Colors.blue))),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -72,9 +70,9 @@ class ApiLessonIntro extends StatelessWidget {
                       Container(
                         width: double.infinity, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12), decoration: glass,
                         child: Row(children: [
-                          _stat('web/icons/time.png', loc.translate('duration'), '${lesson.durationMinutes} ${loc.translate('time_min')}'), _divider(),
-                          _stat('web/icons/level.png', loc.translate('level'), level), _divider(),
-                          _stat('web/icons/hand.png', loc.translate('gesture'), '${lesson.signCount > 0 ? lesson.signCount : lesson.exerciseCount} ${loc.translate('pieces')}'),
+                          _stat('web/icons/time.webp', loc.translate('duration'), '${lesson.durationMinutes} ${loc.translate('time_min')}'), _divider(),
+                          _stat('web/icons/level.webp', loc.translate('level'), level), _divider(),
+                          _stat('web/icons/hand.webp', loc.translate('gesture'), '${lesson.signCount > 0 ? lesson.signCount : lesson.exerciseCount} ${loc.translate('pieces')}'),
                         ]),
                       ),
                       const SizedBox(height: 18),
@@ -89,7 +87,7 @@ class ApiLessonIntro extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFFFF176)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.yellow)), borderRadius: BorderRadius.circular(15)),
-                            child: Image.asset('web/icons/info_yellow.png', width: 28, height: 28, color: AppPalette.fg(Colors.orange)),
+                            child: Image.asset('web/icons/info_yellow.webp', width: 28, height: 28, color: AppPalette.fg(Colors.orange)),
                           ),
                           const SizedBox(width: 12),
                           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -109,17 +107,17 @@ class ApiLessonIntro extends StatelessWidget {
                             backgroundColor: AppPalette.bg(const Color(0xFF4A7FD0)).withValues(alpha: 0.1), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(const Color(0xFFBBDEFB)).withValues(alpha: 0.9),
                             side: BorderSide(width: 1, color: AppPalette.border(const Color(0xFF1A237E)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                           ),
-                          child: Text(loc.translate('start_lesson'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.blue[900]!))),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                          child: Text(loc.translate('start_lesson'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.blue[900]!)))
+                        )
+                      )
+                    ]
+                  )
+                )
+              )
+            ]
+          )
+        )
+      )
     );
   }
 

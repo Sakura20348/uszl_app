@@ -41,7 +41,7 @@ class _NotificationState extends State<NotificationModal> with SingleTickerProvi
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     _animController.dispose();
     super.dispose();
   }
@@ -77,14 +77,18 @@ class _NotificationState extends State<NotificationModal> with SingleTickerProvi
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     final notification = widget.notification;
-    const String imageFire = 'web/images/fire.png';
-    const String imageMessage = 'web/icons/code.png';
+    const String imageFire = 'web/images/fire.webp';
+    const String imageMessage = 'web/icons/code.webp';
     return SafeArea(
       top: false,
       child: _isLoading
         ? Padding(
           padding: const EdgeInsets.all(16),
-          child: Shimmer.fromColors(baseColor: AppPalette.bg(Colors.grey[200]!), highlightColor: AppPalette.bg(Color(0xFF42A5F5)).withValues(alpha: 0.2), child: NotificationSkeleton.buildSkeleton()),
+          child: Shimmer.fromColors(
+            baseColor: AppPalette.bg(Colors.grey[200]!), highlightColor: AppPalette.bg(Color(0xFF42A5F5)).withValues(alpha: 0.2),
+            // about 34 characters fit on a body line
+            child: NotificationSkeleton.buildSkeleton(achievement: _isAchievement, bodyLines: notification.body.isEmpty ? 0 : (notification.body.length / 34).ceil().clamp(1, 8)),
+          ),
         )
         : Padding(
           padding: const EdgeInsets.all(16),
@@ -97,36 +101,29 @@ class _NotificationState extends State<NotificationModal> with SingleTickerProvi
                 children: [
                   Container(
                     width: 70, height: 7,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5), color: AppPalette.bg(Color(0xFF00B8D4)).withValues(alpha: 0.9), border: Border.all(width: 0.5, color: AppPalette.border(Colors.white)),
-                    ),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: AppPalette.bg(Color(0xFF00B8D4)).withValues(alpha: 0.9), border: Border.all(width: 0.5, color: AppPalette.border(Colors.white))),
                   ),
-                  const SizedBox(height: 25),
-                  _isAchievement ? Image.asset(imageFire, width: 142, height: 168) : Image.asset(imageMessage, width: 72, height: 72),
+                  const SizedBox(height: 25), _isAchievement ? Image.asset(imageFire, width: 142, height: 168) : Image.asset(imageMessage, width: 72, height: 72),
                   const SizedBox(height: 18),
                   if (_isAchievement) ...[
                     Text(loc.translate('new_achievement_opened'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppPalette.fg(Colors.grey[700]!))),
                     const SizedBox(height: 6),
                   ],
-                  Text(notification.title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 6),
+                  Text(notification.title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600)), const SizedBox(height: 6),
                   Text(_time(notification.createdAt), textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppPalette.fg(Colors.grey[600]!))),
-                  if (notification.body.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Text(notification.body, textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: AppPalette.fg(Colors.grey[700]!))),
-                  ],
+                  if (notification.body.isNotEmpty) ...[const SizedBox(height: 16), Text(notification.body, textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: AppPalette.fg(Colors.grey[700]!)))],
                   const SizedBox(height: 30),
                   if (_isAchievement) ...[
                     _button(loc.translate('see_achievement'), _handleNext),
                     const SizedBox(height: 12),
                     _button(loc.translate('see_achievement_sub'), () => Navigator.pop(context), primary: false),
                   ] else
-                    _button(loc.translate('close'), () => Navigator.pop(context)),
-                ],
-              ),
-            ),
-          ),
-        ),
+                    _button(loc.translate('close'), () => Navigator.pop(context))
+                ]
+              )
+            )
+          )
+        )
     );
   }
 }

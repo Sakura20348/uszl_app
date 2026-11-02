@@ -1,3 +1,4 @@
+import 'package:signlang/components/uiTextBooks/apiTextbooks/api_textbooks.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,15 +11,15 @@ class BuildLessonsTextbooks {
     final LessonStatus status = item['status'] as LessonStatus;
 
     final Color accent = switch (status) {
-      LessonStatus.passed => AppPalette.auto(Color(0xFF2E9E4F)),
-      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withOpacity(0.9),
+      LessonStatus.passed => AppPalette.auto(Color(0xFF1976D2)),
+      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withValues(alpha: 0.9),
       LessonStatus.locked => AppPalette.auto(Color(0xFFB0BEC5)),
     };
     
     final Color arrowAccent = switch (status) {
-      LessonStatus.passed => AppPalette.auto(Color(0xFF2E9E4F)),
-      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withOpacity(0.9),
-      LessonStatus.locked => AppPalette.auto(Color(0xFFB0BEC5)),
+      LessonStatus.passed => AppPalette.auto(Color(0xFF1976D2)),
+      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withValues(alpha: 0.9),
+      LessonStatus.locked => AppPalette.auto(Color(0xBAAF5757)),
     };
 
     final IconData iconAccent = switch (status) {
@@ -33,9 +34,7 @@ class BuildLessonsTextbooks {
     final c = AppColors.of(context);
 
     return Container(
-      decoration: BoxDecoration(
-        color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder), boxShadow: [BoxShadow(color: accent.withValues(alpha: c.isDark ? 0.3 : 0.9), blurRadius: 15)]
-      ),
+      decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder), boxShadow: [BoxShadow(color: accent.withValues(alpha: c.isDark ? 0.3 : 0.9), blurRadius: 15)]),
       child: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
@@ -53,11 +52,11 @@ class BuildLessonsTextbooks {
                           Text(AppLocalizations.of(context)!.translate(item['titleKey']), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: c.isDark ? c.text : AppPalette.fg(Color(0xFF1A1A2E)))),
                           Container(
                             padding: const EdgeInsets.all(2), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), shape: BoxShape.circle),
-                            child: Icon(iconAccent, size: 24, color: arrowAccent.withOpacity(0.9)),
+                            child: Icon(iconAccent, size: 24, color: arrowAccent.withValues(alpha: 0.9)),
                           ),
                         ],
                       ),
-                      Text('${item['total']} ${AppLocalizations.of(context)!.translate(item['subKey'])}', style: TextStyle(fontSize: 17, color: c.subText)),
+                      Text('${item['count'] ?? item['total']} ${AppLocalizations.of(context)!.translate(item['subKey'])}', style: TextStyle(fontSize: 17, color: c.subText)),
                       const SizedBox(height: 12),
                       Padding(
                         padding: const EdgeInsets.only(right: 110),
@@ -72,24 +71,18 @@ class BuildLessonsTextbooks {
                             children: [
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('$learned/$total', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text)),
-                                  _buildBadge(context, item['status']),
-                                ],
+                                children: [Text('$learned/$total', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.text)), _buildBadge(context, item['status'])],
                               ),
-                              const SizedBox(height: 4),
-                              Text(AppLocalizations.of(context)!.translate(item['letter']), style: TextStyle(color: AppPalette.fg(Colors.grey.shade500), fontSize: 14)),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 4), Text(AppLocalizations.of(context)!.translate(item['letter']), style: TextStyle(color: AppPalette.fg(Colors.grey.shade700), fontSize: 14)), const SizedBox(height: 4),
                               Row(
                                 children: [
                                   Expanded(
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: LinearProgressIndicator(value: progress, minHeight: 10, backgroundColor: AppPalette.bg(Color(0xFF42A5F5)).withOpacity(0.3), valueColor: AlwaysStoppedAnimation(AppPalette.fg(Color(0xFF4A7FE0)))),
-                                    ),
+                                      child: LinearProgressIndicator(value: progress, minHeight: 10, backgroundColor: AppPalette.bg(Color(0xFF42A5F5)).withValues(alpha: 0.3), valueColor: AlwaysStoppedAnimation(AppPalette.fg(Color(0xFF4A7FE0))))
+                                    )
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text("${(progress * 100).toInt()}%", style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16, color: AppPalette.fg(Colors.grey)))
+                                  const SizedBox(width: 8), Text("${(progress * 100).toInt()}%", style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16, color: AppPalette.fg(Colors.grey)))
                                 ]
                               )
                             ]
@@ -106,8 +99,8 @@ class BuildLessonsTextbooks {
             // Textbooks from the dashboard: cover uploaded to the server, the book picture if it can't load
             ? Image.network(item['imageUrl'], width: (item['imageWidth'] ?? 115).toDouble(), errorBuilder: (_, _, _) => Image.asset(item['image'], width: (item['imageWidth'] ?? 115).toDouble()))
             : Image.asset(item['image'], width: (item['imageWidth'] ?? 115).toDouble()))
-        ],
-      ),
+        ]
+      )
     );
   }
 
@@ -124,13 +117,7 @@ class BuildLessonsTextbooks {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: fg), const SizedBox(width: 4),
-          Text(AppLocalizations.of(context)!.translate(key), style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 12)),
-        ],
-      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 13, color: fg), const SizedBox(width: 4), Text(AppLocalizations.of(context)!.translate(key), style: TextStyle(color: fg, fontWeight: FontWeight.w600, fontSize: 12))])
     );
   }
 }
@@ -139,14 +126,14 @@ class BuildAllLessons {
   static Widget buildAllLessons(BuildContext context, Map<String, dynamic> item){
     final LessonStatus status = item['status'] as LessonStatus;
     final Color accent = switch (status) {
-      LessonStatus.passed => AppPalette.auto(Color(0xFF2E9E4F)),
-      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withOpacity(0.9),
+      LessonStatus.passed => AppPalette.auto(Color(0xFF1976D2)),
+      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withValues(alpha: 0.9),
       LessonStatus.locked => AppPalette.auto(Color(0xFFB0BEC5)),
     };
 
     final Color arrowAccent = switch (status) {
-      LessonStatus.passed => AppPalette.auto(Color(0xFF2E9E4F)),
-      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withOpacity(0.9),
+      LessonStatus.passed => AppPalette.auto(Color(0xFF1976D2)),
+      LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withValues(alpha: 0.9),
       LessonStatus.locked => AppPalette.auto(Color(0xFFB0BEC5)),
     };
 
@@ -161,9 +148,7 @@ class BuildAllLessons {
     return Container(
       clipBehavior: Clip.antiAlias,
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder), boxShadow: [BoxShadow(color: accent.withValues(alpha: c.isDark ? 0.3 : 0.9), blurRadius: 15)]
-      ),
+      decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder), boxShadow: [BoxShadow(color: accent.withValues(alpha: c.isDark ? 0.3 : 0.9), blurRadius: 15)]),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -171,11 +156,17 @@ class BuildAllLessons {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
-                  // 'imageUrl': a lesson picture from the dashboard
-                  child: item['imageUrl'] != null
-                    ? Image.network(item['imageUrl'], width: 60, height: 60, fit: BoxFit.cover, errorBuilder: (c, e, s) => Image.asset(item['image'] ?? '', width: 60, height: 60, errorBuilder: (c, e, s) => const Icon(Icons.store, size: 30)))
-                    : Image.asset(item['image'], width: 60, height: 60, fit: BoxFit.scaleDown, errorBuilder: (c, e, s) => const Icon(Icons.store, size: 30)),
+                  width: 64, height: 64, alignment: Alignment.center, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
+                  // a lesson picture from the dashboard: 'imageUrl', or by id for the app's own lessons
+                  child: ValueListenableBuilder<Map<String, String>>(
+                    valueListenable: ServerTextbooks.lessonImages,
+                    builder: (context, images, _) {
+                      final String? url = item['imageUrl'] ?? images[item['id']];
+                      return url != null
+                        ? Image.network(url, width: 56, height: 56, fit: BoxFit.contain, errorBuilder: (c, e, s) => Image.asset(item['image'] ?? '', width: 56, height: 56, errorBuilder: (c, e, s) => const Icon(Icons.store, size: 30)))
+                        : Image.asset(item['image'], width: 56, height: 56, fit: BoxFit.scaleDown, errorBuilder: (c, e, s) => const Icon(Icons.store, size: 30));
+                    },
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -190,23 +181,23 @@ class BuildAllLessons {
                           Image.asset(item['imageTime'], width: 16, height: 16), const SizedBox(width: 6),
                           Flexible(child: Text(item['time'], maxLines: 1, overflow: TextOverflow.ellipsis)), const SizedBox(width: 8),
                           Image.asset(item['imageHand'], width: 16, height: 16, color: AppPalette.fg(Color(0x80020B14))), const SizedBox(width: 6),
-                          Flexible(child: Text(item['click'], maxLines: 1, overflow: TextOverflow.ellipsis)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                          Flexible(child: Text(item['click'], maxLines: 1, overflow: TextOverflow.ellipsis))
+                        ]
+                      )
+                    ]
+                  )
+                )
+              ]
+            )
           ),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
-            child: Center(child: Icon(iconAccent, size: 24, color: arrowAccent.withValues(alpha: 0.9))),
-          ),
-        ],
-      ),
+            child: Center(child: Icon(iconAccent, size: 24, color: arrowAccent.withValues(alpha: 0.9)))
+          )
+        ]
+      )
     );
   }
 
@@ -223,13 +214,7 @@ class BuildAllLessons {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: fg), const SizedBox(width: 4),
-          Text(AppLocalizations.of(context)!.translate(key), style: TextStyle(color: fg, fontWeight: FontWeight.w700, fontSize: 12)),
-        ],
-      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 13, color: fg), const SizedBox(width: 4), Text(AppLocalizations.of(context)!.translate(key), style: TextStyle(color: fg, fontWeight: FontWeight.w700, fontSize: 12))])
     );
   }
 }
@@ -238,13 +223,13 @@ class BuildTranslation {
   static Widget buildTrans(BuildContext context, Map<String, dynamic> item){
     final LessonStatus status = item['status'] as LessonStatus;
     final Color accent = switch (status) {
-      LessonStatus.passed => AppPalette.auto(Color(0xFF2E9E4F)),
+      LessonStatus.passed => AppPalette.auto(Color(0xFF1976D2)),
       LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withValues(alpha: 0.9),
       LessonStatus.locked => AppPalette.auto(Color(0xFFB0BEC5)),
     };
 
     final Color arrowAccent = switch (status) {
-      LessonStatus.passed => AppPalette.auto(Color(0xFF2E9E4F)),
+      LessonStatus.passed => AppPalette.auto(Color(0xFF1976D2)),
       LessonStatus.opened => AppPalette.auto(Color(0xFF42A5F5)).withValues(alpha: 0.9),
       LessonStatus.locked => AppPalette.auto(Color(0xFFB0BEC5)),
     };
@@ -312,8 +297,7 @@ class BuildTranslation {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: fg),
-          const SizedBox(width: 4),
+          Icon(icon, size: 13, color: fg), const SizedBox(width: 4),
           Text(AppLocalizations.of(context)!.translate(key), style: TextStyle(color: fg, fontWeight: FontWeight.w700, fontSize: 12)),
         ],
       ),

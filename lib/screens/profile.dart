@@ -102,16 +102,16 @@ class _ProfileState extends State<Profile> {
     final loc = AppLocalizations.of(context)!;
     final current = _stats.dailyGoalMinutes;
     final picked = await showModalBottomSheet<int>(
-      context: context,
-      backgroundColor: Colors.transparent,
+      context: context, backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16), decoration: BoxDecoration(
+          color: AppPalette.bg(const Color(0xFF81D4FA)).withValues(alpha: 0.1), borderRadius: const BorderRadius.vertical(top: Radius.circular(24)), border: Border.all(width: 1, color: AppPalette.border(const Color(0xFFB3E5FC)).withValues(alpha: 0.2)),
+          boxShadow: [BoxShadow(color: AppPalette.shadow(const Color(0xFF81D4FA)).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, -6))],
+        ),
         child: SafeArea(
           top: false,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Center(child: Container(width: 60, height: 6, decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFF00B8D4)).withValues(alpha: 0.9), borderRadius: BorderRadius.circular(5)))),
               const SizedBox(height: 18),
@@ -126,23 +126,23 @@ class _ProfileState extends State<Profile> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       decoration: BoxDecoration(
-                        color: AppPalette.bg(minutes == current ? const Color(0xFFE3F2FD) : Colors.white), borderRadius: BorderRadius.circular(18),
-                        border: Border.all(width: 2, color: AppPalette.border(minutes == current ? const Color(0xFF4A7FD0) : const Color(0xFFE3F2FD))),
+                        color: minutes == current ? AppPalette.bg(const Color(0xFFE3F2FD)) : AppPalette.bg(Colors.white).withValues(alpha: 0.5), borderRadius: BorderRadius.circular(18),
+                        border: Border.all(width: 2, color: AppPalette.border(minutes == current ? const Color(0xFF4A7FD0) : Colors.white)),
                       ),
                       child: Row(
                         children: [
                           Text('$minutes ${loc.translate('minute')}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
                           const Spacer(),
-                          if (minutes == current) Icon(Icons.check_circle, color: AppPalette.fg(const Color(0xFF4A7FD0))),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
+                          if (minutes == current) Icon(Icons.check_circle, color: AppPalette.fg(const Color(0xFF4A7FD0)))
+                        ]
+                      )
+                    )
+                  )
+                )
+            ]
+          )
+        )
+      )
     );
     if (picked == null || picked == current) return;
     await StatisticsService.instance.setDailyGoal(picked);
@@ -151,7 +151,7 @@ class _ProfileState extends State<Profile> {
     await _loadServerStats();
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
 
   Future<void> _initData() async {
     await achievementsData.init();
@@ -188,6 +188,55 @@ class _ProfileState extends State<Profile> {
 
   void onDictionaryCardsTap(int index) { setState(() => selectedSetting = index); }
 
+  // Season colors: follow the date, or keep one season
+  void _showSeasonPicker() {
+    final loc = AppLocalizations.of(context)!;
+    final current = ThemeService.instance.seasonChoice.value;
+    const swatches = {AppSeason.spring: Color(0xFF34C46F), AppSeason.summer: Color(0xFFEDB21F), AppSeason.autumn: Color(0xFFE0752D), AppSeason.winter: Color(0xFF42A5F5)};
+    Widget option(AppSeason? season, String title, Color swatch) => Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () { Navigator.pop(context); ThemeService.instance.setSeason(season); },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(color: season == current ? AppPalette.bg(const Color(0xFFE3F2FD)) : AppPalette.bg(Colors.white).withValues(alpha: 0.5), borderRadius: BorderRadius.circular(18), border: Border.all(width: 2, color: AppPalette.border(season == current ? const Color(0xFF4A7FD0) : Colors.white))),
+          child: Row(
+            children: [
+              Container(width: 26, height: 26, decoration: BoxDecoration(color: swatch, shape: BoxShape.circle)),
+              const SizedBox(width: 12),
+              Expanded(child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600))),
+              if (season == current) Icon(Icons.check_circle, color: AppPalette.fg(const Color(0xFF4A7FD0))),
+            ],
+          ),
+        ),
+      ),
+    );
+    showModalBottomSheet<void>(
+      context: context, backgroundColor: Colors.transparent, isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16), decoration: BoxDecoration(
+          color: AppPalette.bg(const Color(0xFF81D4FA)).withValues(alpha: 0.1), borderRadius: const BorderRadius.vertical(top: Radius.circular(24)), border: Border.all(width: 1, color: AppPalette.border(const Color(0xFFB3E5FC)).withValues(alpha: 0.2)),
+          boxShadow: [BoxShadow(color: AppPalette.shadow(const Color(0xFF81D4FA)).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, -6))],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(child: Container(width: 60, height: 6, decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFF00B8D4)).withValues(alpha: 0.9), borderRadius: BorderRadius.circular(3)))),
+              const SizedBox(height: 18),
+              Text(loc.translate('season_colors'), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 14),
+              option(null, loc.translate('season_auto'), swatches[ThemeService.seasonOf(DateTime.now())]!),
+              for (final s in AppSeason.values) option(s, loc.translate('season_${s.name}'), swatches[s]!),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showLanguagePicker() async {
     final picked = await showModalBottomSheet<int>(
       context: context, backgroundColor: Colors.transparent, isScrollControlled: true,
@@ -213,7 +262,7 @@ class _ProfileState extends State<Profile> {
     final int sun = _stats.currentDailyMinutes.clamp(0, goal);
     final int weekDays = _stats.weeklyStudyStatus.where((e) => e).length;
 
-    const String ImageInitial = 'web/icons/initial.png'; const String ImageCode = 'web/icons/code.png';
+    const String ImageInitial = 'web/icons/initial.webp'; const String ImageCode = 'web/icons/code.webp';
     late final categoryId = selectedSetting >= 0 ? selectedSetting.toString() : '0';
     late final settingItems = allSettingData.storesByAllSettings[categoryId] ?? [];
 
@@ -223,7 +272,7 @@ class _ProfileState extends State<Profile> {
     );
     Widget arrow({double size = 20}) => Container(
       padding: const EdgeInsets.all(2), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(18)),
-      child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: size, color: c.accent.withOpacity(0.9))),
+      child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: size, color: c.accent.withValues(alpha: 0.9))),
     );
 
     return Scaffold(
@@ -259,8 +308,7 @@ class _ProfileState extends State<Profile> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                width: double.infinity, padding: EdgeInsets.all(isTablet ? 20 : 16),
-                                decoration: glass(),
+                                width: double.infinity, padding: EdgeInsets.all(isTablet ? 20 : 16), decoration: glass(),
                                 child: Row(
                                   children: [
                                     Stack(
@@ -268,7 +316,7 @@ class _ProfileState extends State<Profile> {
                                         GestureDetector(
                                           onTap: _handleProfile,
                                           child: Container(
-                                            width: isTablet ? 72 : 58, height: isTablet ? 72 : 58, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black.withOpacity(0.3), border: Border.all(width: 1, color: c.cardBorder)),
+                                            width: isTablet ? 72 : 58, height: isTablet ? 72 : 58, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black.withValues(alpha: 0.3), border: Border.all(width: 1, color: c.cardBorder)),
                                             child: ClipOval(
                                               child: _profileImage != null && _profileImage!.path.isNotEmpty ? Image.file(_profileImage!, fit: BoxFit.cover) : const Center(child: Icon(Icons.person_outline, color: Colors.white, size: 24)),
                                             ),
@@ -278,7 +326,7 @@ class _ProfileState extends State<Profile> {
                                           bottom: 0, right: 0,
                                           child: Container(
                                             width: 21, height: 21, padding: const EdgeInsets.all(2), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
-                                            child: Image.asset('web/icons/edit.png'),
+                                            child: Image.asset('web/icons/edit.webp'),
                                           )
                                         )
                                       ],
@@ -294,31 +342,32 @@ class _ProfileState extends State<Profile> {
                                             spacing: 6, runSpacing: 6,
                                             children: [
                                               Container(
-                                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2), decoration: BoxDecoration(color: Color(0xFFC5E1A5).withOpacity(c.isDark ? 0.2 : 0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: c.isDark ? Colors.white12 : Color(0xFFF1F8E9))),
+                                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                                                decoration: BoxDecoration(color: Color(0xFFC5E1A5).withValues(alpha: c.isDark ? 0.2 : 0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: c.isDark ? Colors.white12 : Color(0xFFF1F8E9))),
                                                 child: Row(
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
-                                                    Image.asset(ImageInitial, width: 16, height: 16, color: c.isDark ? const Color(0xFFAED581) : Color(0xFF1B5E20).withOpacity(0.8)),
+                                                    Image.asset(ImageInitial, width: 16, height: 16, color: c.isDark ? const Color(0xFFAED581) : Color(0xFF1B5E20).withValues(alpha: 0.8)),
                                                     const SizedBox(width: 4),
-                                                    Text(AppLocalizations.of(context)!.translate('initial'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: c.isDark ? const Color(0xFFAED581) : Color(0xFF1B5E20).withOpacity(0.8)))
+                                                    Text(AppLocalizations.of(context)!.translate('initial'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: c.isDark ? const Color(0xFFAED581) : Color(0xFF1B5E20).withValues(alpha: 0.8)))
                                                   ],
                                                 ),
                                               ),
                                               Container(
-                                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2), decoration: BoxDecoration(color: Color(0xFFFFF59D).withOpacity(c.isDark ? 0.15 : 0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: c.isDark ? Colors.white12 : Color(0xFFFFFDE7))),
+                                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                                                decoration: BoxDecoration(color: Color(0xFFFFF59D).withValues(alpha: c.isDark ? 0.15 : 0.5), borderRadius: BorderRadius.circular(12), border: Border.all(width: 1, color: c.isDark ? Colors.white12 : Color(0xFFFFFDE7))),
                                                 child: Row(
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
-                                                    Image.asset(ImageCode, width: 16, height: 16, color: c.isDark ? const Color(0xFFFFD54F) : Color(0xFFF57F17).withOpacity(0.9)),
-                                                    const SizedBox(width: 4),
-                                                    Text('$level ${AppLocalizations.of(context)!.translate('level')}', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: c.isDark ? const Color(0xFFFFD54F) : Color(0xFFF57F17).withOpacity(0.9)))
-                                                  ],
-                                                ),
+                                                    Image.asset(ImageCode, width: 16, height: 16, color: c.isDark ? const Color(0xFFFFD54F) : Color(0xFFF57F17).withValues(alpha: 0.9)), const SizedBox(width: 4),
+                                                    Text('$level ${AppLocalizations.of(context)!.translate('level')}', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: c.isDark ? const Color(0xFFFFD54F) : Color(0xFFF57F17).withValues(alpha: 0.9)))
+                                                  ]
+                                                )
                                               )
-                                            ],
+                                            ]
                                           )
-                                        ],
-                                      ),
+                                        ]
+                                      )
                                     ),
                                     const SizedBox(width: 8),
                                     // dark and light
@@ -335,17 +384,15 @@ class _ProfileState extends State<Profile> {
                                       child: GestureDetector(
                                         onTap: _handleDailyGoal,
                                         child: Container(
-                                          padding: const EdgeInsets.all(14),
-                                          decoration: glass(),
+                                          padding: const EdgeInsets.all(14), decoration: glass(),
                                           child: Column(
                                             children: [
                                               Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Flexible(child: Text(AppLocalizations.of(context)!.translate('daily_goal'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: c.text))),
-                                                  const SizedBox(width: 2),
-                                                  arrow(),
-                                                ],
+                                                  const SizedBox(width: 2), arrow()
+                                                ]
                                               ),
                                               const SizedBox(height: 10),
                                               Row(
@@ -357,38 +404,33 @@ class _ProfileState extends State<Profile> {
                                                       children: [
                                                         FittedBox(fit: BoxFit.scaleDown, child: Text('$sun/$goal', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24, color: c.accent))),
                                                         Text(AppLocalizations.of(context)!.translate('minute'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: c.subText))
-                                                      ],
-                                                    ),
+                                                      ]
+                                                    )
                                                   ),
                                                   SizedBox(
                                                     width: 40, height: 40,
-                                                    child: CircularProgressIndicator(value: goal > 0 ? (sun / goal).clamp(0.0, 1.0) : 0.0, strokeWidth: 7, backgroundColor: c.track, valueColor: AlwaysStoppedAnimation(c.accent), strokeCap: StrokeCap.round),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                                    child: CircularProgressIndicator(value: goal > 0 ? (sun / goal).clamp(0.0, 1.0) : 0.0, strokeWidth: 7, backgroundColor: c.track, valueColor: AlwaysStoppedAnimation(c.accent), strokeCap: StrokeCap.round)
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        )
                                       )
                                     ),
                                     SizedBox(width: isTablet ? 18 : 12),
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap:  ()  =>
-                                        {
-                                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Today(viewOnly: true)))
-                                        },
+                                        onTap:  ()  => { Navigator.push(context, MaterialPageRoute(builder: (_) => const Today(viewOnly: true))) },
                                         child: Container(
-                                          padding: const EdgeInsets.all(14),
-                                          decoration: glass(),
+                                          padding: const EdgeInsets.all(14), decoration: glass(),
                                           child: Column(
                                             children: [
                                               Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Flexible(child: Text(AppLocalizations.of(context)!.translate('weekly_study'), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: c.text))),
-                                                  const SizedBox(width: 2),
-                                                  arrow(),
+                                                  const SizedBox(width: 2), arrow(),
                                                 ],
                                               ),
                                               const SizedBox(height: 10),
@@ -409,23 +451,23 @@ class _ProfileState extends State<Profile> {
                                                     children: List.generate(7, (i) {
                                                       final bool filled = _stats.weeklyStudyStatus[i];
                                                       return Container(
-                                                        width: 6, height: 34, margin: const EdgeInsets.symmetric(horizontal: 1.5), decoration: BoxDecoration(color: filled ? c.accent : Colors.grey.withOpacity(0.3), borderRadius: BorderRadius.circular(4)),
+                                                        width: 6, height: 34, margin: const EdgeInsets.symmetric(horizontal: 1.5), decoration: BoxDecoration(color: filled ? c.accent : Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(4))
                                                       );
-                                                    }),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                                    })
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        )
                                       )
                                     )
-                                  ],
-                                ),
+                                  ]
+                                )
                               )
-                            ],
-                          ),
-                        )),
+                            ]
+                          )
+                        ))
                       ),
                       // ======= 3 =======
                       SliverToBoxAdapter(
@@ -444,23 +486,19 @@ class _ProfileState extends State<Profile> {
                                     GestureDetector(
                                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllAchievements())),
                                       child: Container(
-                                        padding: const EdgeInsets.fromLTRB(8, 4, 4, 4),
-                                        decoration: glass(offset: const Offset(0, 6)),
+                                        padding: const EdgeInsets.fromLTRB(8, 4, 4, 4), decoration: glass(offset: const Offset(0, 6)),
                                         child: Row(
                                           children: [
                                             Text(AppLocalizations.of(context)!.translate('all_achievements'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: c.text)),
-                                            const SizedBox(width: 2),
-                                            Icon(Icons.keyboard_arrow_right_outlined, size: 20, color: c.text)
-                                          ],
-                                        ),
-                                      ),
+                                            const SizedBox(width: 2), Icon(Icons.keyboard_arrow_right_outlined, size: 20, color: c.text)
+                                          ]
+                                        )
+                                      )
                                     )
-                                  ],
-                                ),
+                                  ]
+                                )
                               ),
-                              const SizedBox(height: 20),
-                              _allAchievements(c, isTablet, hPad),
-                              const SizedBox(height: 18),
+                              const SizedBox(height: 20), _allAchievements(c, isTablet, hPad), const SizedBox(height: 18),
                               Padding(padding: EdgeInsets.symmetric(horizontal: hPad), child: Text(AppLocalizations.of(context)!.translate('general_settings'), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: c.text))),
                               const SizedBox(height: 18),
                               Padding(
@@ -471,12 +509,9 @@ class _ProfileState extends State<Profile> {
                                     final int cols = isTablet ? 2 : 1;
                                     const double gap = 18;
                                     final double itemWidth = (box.maxWidth - gap * (cols - 1)) / cols;
-                                    return Wrap(
-                                      spacing: gap,
-                                      children: List.generate(settingItems.length, (index) => SizedBox(width: itemWidth, child: _allSettings(settingItems[index], categoryId, c))),
-                                    );
-                                  },
-                                ),
+                                    return Wrap(spacing: gap, children: List.generate(settingItems.length, (index) => SizedBox(width: itemWidth, child: _allSettings(settingItems[index], categoryId, c))));
+                                  }
+                                )
                               ),
                               const SizedBox(height: 18),
                               Padding(
@@ -486,112 +521,94 @@ class _ProfileState extends State<Profile> {
                                   child: ElevatedButton(
                                     onPressed: _showLogOutDelete,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFFFFCDD2).withValues(alpha: 0.2), foregroundColor: c.isDark ? const Color(0xFFEF9A9A) : Colors.white, elevation: 6,
-                                      shadowColor: const Color(0xFFB71C1C).withOpacity(c.isDark ? 0.4 : 0.9), side: BorderSide(width: 1, color: Color(0xFFB71C1C).withOpacity(0.2)),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                      backgroundColor: const Color(0xFFFFCDD2).withValues(alpha: 0.2), foregroundColor: c.isDark ? const Color(0xFFEF9A9A) : Colors.white, elevation: 6, shadowColor: const Color(0xFFB71C1C).withValues(alpha: c.isDark ? 0.4 : 0.9),
+                                      side: BorderSide(width: 1, color: Color(0xFFB71C1C).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))
                                     ),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Image.asset('web/icons/door_open_alt.png', width: 24, height: 24,),
-                                        const SizedBox(width: 4),
+                                        Image.asset('web/icons/door_open_alt.webp', width: 24, height: 24,), const SizedBox(width: 4),
                                         Text(AppLocalizations.of(context)!.translate('log_out'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600))
-                                      ],
+                                      ]
                                     )
-                                  ),
-                                ),
+                                  )
+                                )
                               ),
                               const SizedBox(height: 12),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text('App version $_appVersion', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11, color: Colors.grey)),
-                                ),
-                              )
-                            ],
-                          )),
-                        ),
+                              SizedBox(width: double.infinity, child: Align(alignment: Alignment.center, child: Text('App version $_appVersion', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11, color: Colors.grey))))
+                            ]
+                          ))
+                        )
                       ),
                       // Fill any leftover height below the content with the surface color.
-                      SliverFillRemaining(hasScrollBody: false, child: ColoredBox(color: c.surface)),
+                      SliverFillRemaining(hasScrollBody: false, child: ColoredBox(color: c.surface))
                     ]
-                  ],
+                  ]
                 )
               );
             }
           )
-        ),
-      ),
+        )
+      )
     );
   }
 
   Widget _allAchievements(AppColors c, bool isTablet, double hPad) {
-    final achievementsItems = achievementsData.storesByAchievementsItems['0'] ?? [];
-    final allItems = achievementsItems.take(4).toList();
-    final double cardWidth = isTablet ? 170 : 140;
+    final achievementsItems = (achievementsData.storesByAchievementsItems['0'] ?? []).take(6).toList();
+    final double cardWidth = isTablet ? 140 : 120;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: isTablet ? 165 : 150,
+          height: isTablet ? 124 : 112,
           child: ListView.builder(
-            scrollDirection: Axis.horizontal, itemCount: allItems.length, padding: EdgeInsets.only(left: hPad, right: hPad - 12),
+            scrollDirection: Axis.horizontal, clipBehavior: Clip.none, itemCount: achievementsItems.length, padding: EdgeInsets.only(left: hPad, right: hPad - 12),
             itemBuilder: (_, index) {
-              final item = allItems[index];
+              final item = achievementsItems[index];
               final bool unlocked = item['unlocked'] ?? false;
               final List<double> matrix = [0.2126, 0.7152, 0.0722, 0, 0, 0.2126, 0.7152, 0.0722, 0, 0, 0.2126, 0.7152, 0.0722, 0, 0, 0,      0,      0,      0.6, 0,];
 
               return GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AllAchievements())),
                 child: Container(
-                  width: cardWidth, margin: const EdgeInsets.only(right: 12, bottom: 10), padding: const EdgeInsets.all(12),
+                  width: cardWidth, margin: const EdgeInsets.only(right: 12, bottom: 10), padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: unlocked ? (c.isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.5)) : Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(24),
-                    border: Border.all(width: 1, color: unlocked ? c.cardBorder : Colors.white.withOpacity(0.2)),
-                    boxShadow: unlocked ? [BoxShadow(color: const Color(0xFF42A5F5).withOpacity(c.isDark ? 0.2 : 0.5), blurRadius: 10, offset: const Offset(0, 6))] : null
+                    color: unlocked ? AppPalette.bg(Colors.white).withValues(alpha: 0.5) : AppPalette.bg(Colors.grey).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: unlocked ? AppPalette.border(Colors.white) : AppPalette.border(Colors.white).withValues(alpha: 0.2)),
+                    boxShadow: unlocked ? [BoxShadow(color: AppPalette.shadow(const Color(0xFF42A5F5)).withValues(alpha: 0.5), blurRadius: 15, offset: const Offset(0, 6))] : null
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ColorFiltered(
                         colorFilter: unlocked ? const ColorFilter.mode(Colors.transparent, BlendMode.multiply) : ColorFilter.matrix(matrix),
-                        child: Image.asset(item['image'] as String, height: 40, width: 40, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.stars, size: 40, color: Colors.grey)),
+                        child: Image.asset(item['image'] as String, height: 36, width: 36, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.stars, size: 36, color: Colors.grey)),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        item['titleKey'] as String, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: unlocked ? c.text : Colors.grey),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item['subKey'] as String, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w400, color: unlocked ? c.subText : Colors.grey.withOpacity(0.5)),
-                      ),
-                    ],
-                  ),
-                ),
+                      const SizedBox(height: 8),
+                      Text(item['titleKey'] as String, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: c.text)),
+                    ]
+                  )
+                )
               );
             }
-          ),
+          )
         )
-      ],
+      ]
     );
   }
 
   Widget _allSettings(Map<String, dynamic> item, String categoryId, AppColors c) {
     final Widget arrow = Container(
-      padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(18)),
-      child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: 24, color: c.accent.withOpacity(0.9))),
+      padding: const EdgeInsets.all(2), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(18)),
+      child: Center(child: Icon(Icons.keyboard_arrow_right_outlined, size: 24, color: c.accent.withValues(alpha: 0.9))),
     );
 
     return GestureDetector(
       onTap: () => _openNextPage(item),
       child: Container(
         padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 18),
-        decoration: BoxDecoration(color: c.card, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: c.isDark ? c.glow : const Color(0xFF29B6F6).withOpacity(0.9), blurRadius: 15)]),
+        decoration: BoxDecoration(color: c.card, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: c.isDark ? c.glow : AppPalette.season(const Color(0xFF29B6F6)).withValues(alpha: 0.9), blurRadius: 15)]),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -600,7 +617,9 @@ class _ProfileState extends State<Profile> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(18)),
-                    child: Image.asset(item['image'], width: 22, height: 22, color: c.isDark ? const Color(0xFF64B5F6) : Colors.blue[600]),
+                    child: item['icon'] != null
+                      ? Icon(item['icon'] as IconData, size: 22, color: AppPalette.season(c.isDark ? const Color(0xFF64B5F6) : Colors.blue[600]!))
+                      : Image.asset(item['image'], width: 22, height: 22, color: AppPalette.season(c.isDark ? const Color(0xFF64B5F6) : Colors.blue[600]!)),
                   ),
                   const SizedBox(width: 12),
                   Flexible(child: Text(item['titleKey'] ?? '', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17, color: c.text), maxLines: 1, overflow: TextOverflow.ellipsis)),
@@ -609,19 +628,12 @@ class _ProfileState extends State<Profile> {
             ),
             const SizedBox(width: 8),
             if (item['id'] == '2')
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(item['lang'], width: 24),
-                  const SizedBox(width: 8),
-                  arrow,
-                ],
-              )
+              Row(mainAxisSize: MainAxisSize.min, children: [Image.asset(item['lang'], width: 24), const SizedBox(width: 8), arrow])
             else
-              arrow,
-          ],
-        ),
-      ),
+              arrow
+          ]
+        )
+      )
     );
   }
 
@@ -629,9 +641,9 @@ class _ProfileState extends State<Profile> {
     // final id = item['id'];
     Widget? page;
 
-    if (item['id'] == '2') {
-      _showLanguagePicker();
-    } else {
+    if (item['id'] == '2') { _showLanguagePicker(); }
+    else if (item['id'] == '8') { _showSeasonPicker(); }
+    else {
       page = switch (item['id']) {
         '0' => const PersonalInformation(),
         '1' => const StatisticsSheen(),

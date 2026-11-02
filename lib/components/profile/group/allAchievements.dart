@@ -43,7 +43,7 @@ class _AllAchievementsState extends State<AllAchievements> {
     ));
   }
 
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
 
   Future<void> _handleInfo(int index, Map<String, dynamic> item) async {
     await showModalBottomSheet<void>(
@@ -110,7 +110,7 @@ class _AllAchievementsState extends State<AllAchievements> {
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 0.8),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, mainAxisExtent: 176),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           final items = achievementsData.achievementsItems;
@@ -124,7 +124,7 @@ class _AllAchievementsState extends State<AllAchievements> {
                           return GestureDetector(
                             onTap: () => _handleInfo(index, item),
                             child: Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 color: unlocked ? AppPalette.bg(Colors.white).withOpacity(0.5) : AppPalette.bg(Colors.grey).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: unlocked ? AppPalette.border(Colors.white) : AppPalette.border(Colors.white).withOpacity(0.2)),
@@ -139,17 +139,17 @@ class _AllAchievementsState extends State<AllAchievements> {
                                       item['image'] as String, height: 40, width: 40, fit: BoxFit.contain, errorBuilder: (_, __, ___) => Icon(Icons.stars, size: 40, color: AppPalette.fg(Colors.grey)),
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 6),
                                   Text(
                                     item['titleKey'] as String, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: unlocked ? AppPalette.fg(Color(0xFF0F172A)) : AppPalette.fg(Colors.grey)),
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: unlocked ? AppPalette.fg(Color(0xFF0F172A)) : AppPalette.fg(Colors.grey)),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     item['subKey'] as String, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis,
                                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: unlocked ? AppPalette.fg(Colors.grey[600]!) : AppPalette.fg(Colors.grey[600]!).withOpacity(0.8)),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 6),
                                   // status: "New!" / "Opened" once done, otherwise "Closed" with how far the person is
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

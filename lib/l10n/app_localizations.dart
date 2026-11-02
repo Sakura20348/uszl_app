@@ -31,8 +31,7 @@ class AppLocalizations {
   Map<String, String>? _phrasesByWord;
 
   // Same spelling for lookups: case, ё/е, the Uzbek apostrophes, spaces around "/"
-  static String _norm(String word) => word.trim().toLowerCase().replaceAll('ё', 'е')
-      .replaceAll(RegExp('[ʻʼ‘’`´]'), "'").replaceAll(RegExp(r'\s*/\s*'), '/').replaceAll(RegExp(r'\s+'), ' ');
+  static String _norm(String word) => word.trim().toLowerCase().replaceAll('ё', 'е').replaceAll(RegExp('[ʻʼ‘’`´]'), "'").replaceAll(RegExp(r'\s*/\s*'), '/').replaceAll(RegExp(r'\s+'), ' ');
 
   /// The pronunciation of [word] in this language, like the app's own word rows; null when unknown
   String? phrasesFor(String word) {
@@ -44,9 +43,7 @@ class AppLocalizations {
         if (title == null) continue;
         // "Брат (старший / младший)" is also found as "Брат"
         final bare = title.replaceAll(RegExp(r'\s*\(.*?\)'), '');
-        for (final w in {title, bare}) {
-          map.putIfAbsent(_norm(w), () => e.value);
-        }
+        for (final w in {title, bare}) { map.putIfAbsent(_norm(w), () => e.value); }
       }
       return map;
     }();

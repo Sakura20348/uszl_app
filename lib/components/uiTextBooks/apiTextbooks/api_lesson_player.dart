@@ -1,9 +1,14 @@
+import 'dart:async';
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:signlang/api/api_errors.dart';
 import 'package:signlang/api/uzsl_api.dart';
+import 'package:signlang/components/uiTextBooks/apiTextbooks/api_lesson_result.dart';
 import 'package:signlang/components/uiTextBooks/lessonTemplates/choose_image_exercise.dart';
 import 'package:signlang/components/uiTextBooks/lessonTemplates/choose_text_exercise.dart';
+import 'package:signlang/components/uiTextBooks/lessonTemplates/learn_exercise.dart';
 import 'package:signlang/components/uiTextBooks/lessonTemplates/lesson_parts.dart';
 import 'package:signlang/components/uiTextBooks/lessonTemplates/matching_exercise.dart';
 import 'package:signlang/components/uiTextBooks/lessonTemplates/order_exercise.dart';
@@ -16,14 +21,15 @@ import 'package:signlang/services/achievement_service.dart';
 import 'package:signlang/services/statistics_service.dart';
 import 'package:signlang/services/theme_service.dart';
 
-const Color _blue = Color(0xFF4A7FD0);
-
-/// Plays a lesson made in the dashboard's lesson builder, with the 4 exercise templates in
+/// Plays a lesson made in the dashboard's lesson builder, with the 5 exercise templates in
 /// lessonTemplates/. Answers are checked by the server; finishing saves progress, XP, streak and achievements.
 class ApiLessonPlayer extends StatefulWidget {
   final int lessonId;
   final String title;
-  const ApiLessonPlayer({super.key, required this.lessonId, required this.title});
+
+  /// The "About lesson" page under the player: closed together with it
+  final Route<dynamic>? intro;
+  const ApiLessonPlayer({super.key, required this.lessonId, required this.title, this.intro});
 
   @override
   State<ApiLessonPlayer> createState() => _ApiLessonPlayerState();
@@ -39,21 +45,32 @@ class _ApiLessonPlayerState extends State<ApiLessonPlayer> {
   // The server's verdict once "Check" was pressed
   AnswerResult? _result;
   bool _busy = false;
+  // a "Check" request is on its way (the button shows [_busy] only if it takes long)
+  bool _checking = false;
   bool _saved = false;
+  // the next exercise is sliding in: the button waits hidden until it has arrived
+  bool _switching = false;
+  Timer? _switchTimer;
+  // "learn" exercises: the slide shown in the carousel
+  final CarouselSliderController _slides = CarouselSliderController();
+  int _slide = 0;
+  final ScrollController _scroll = ScrollController();
+  // set after the last exercise: the result is shown in place of the exercises
+  LessonResult? _finished;
 
   // the texts come in the app language, which is read from the context
   bool _started = false;
   String get _lang => Localizations.localeOf(context).languageCode;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_started) { _started = true; _start(); }
-  }
+  void dispose() { _switchTimer?.cancel(); _scroll.dispose(); super.dispose(); }
+
+  @override
+  void didChangeDependencies() { super.didChangeDependencies(); if (!_started) { _started = true; _start(); } }
 
   Future<void> _start() async {
     LessonProgress.instance.resetStats();
-    setState(() { _failed = false; _lesson = null; _index = 0; _answer = null; _result = null; _saved = false; });
+    setState(() { _failed = false; _lesson = null; _finished = null; _index = 0; _answer = null; _result = null; _saved = false; _slide = 0; });
     try {
       final results = await Future.wait([UzslApi.lesson(widget.lessonId, lang: _lang), UzslApi.startAttempt(widget.lessonId)]);
       if (!mounted) return;
@@ -67,53 +84,66 @@ class _ApiLessonPlayerState extends State<ApiLessonPlayer> {
 
   Future<void> _check() async {
     final lesson = _lesson, answer = _answer, attemptId = _attemptId;
-    if (lesson == null || answer == null || attemptId == null || _busy) return;
-    setState(() => _busy = true);
+    if (lesson == null || answer == null || attemptId == null || _checking) return;
+    _checking = true;
+    // the spinner only when the server is slow: a quick answer shows the verdict without the button flashing
+    final spinner = Timer(const Duration(milliseconds: 400), () { if (mounted && _checking) setState(() => _busy = true); });
     try {
       final result = await UzslApi.answer(attemptId, lesson.exercises[_index].id, answer, lang: _lang);
       // local points / mistakes, like the app's own lessons (statistics, "perfect lesson" achievement)
       result.isCorrect ? LessonProgress.instance.addCorrect() : LessonProgress.instance.addWrong();
-      if (mounted) setState(() => _result = result);
+      if (mounted) setState(() { _result = result; _busy = false; });
     } on ApiException catch (e) {
-      if (mounted) showApiError(context, e, onRetry: _check);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+      if (mounted) { setState(() => _busy = false); showApiError(context, e, onRetry: _check); }
+    } finally { spinner.cancel(); _checking = false; }
   }
 
   Future<void> _next() async {
     final lesson = _lesson!;
     if (_index + 1 < lesson.exercises.length) {
-      setState(() { _index++; _answer = null; _result = null; _saved = false; });
+      setState(() { _index++; _answer = null; _result = null; _saved = false; _slide = 0; _switching = true; });
+      // same length as the exercise's slide-in
+      _switchTimer?.cancel();
+      _switchTimer = Timer(const Duration(milliseconds: 380), () { if (mounted) setState(() => _switching = false); });
+      // the next exercise starts at its top
+      if (_scroll.hasClients) _scroll.animateTo(0, duration: const Duration(milliseconds: 380), curve: Curves.easeOutCubic);
       return;
     }
     setState(() => _busy = true);
     try {
       final result = await UzslApi.finish(_attemptId!);
-      await StatisticsService.instance.addStudyTime(5);
-      await AchievementService.instance.recordLessonFinished(perfect: LessonProgress.instance.mistakes == 0 && LessonProgress.instance.imolar > 0);
-      if (!mounted) return;
-      final again = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => ApiLessonResultScreen(result: result)));
-      if (!mounted) return;
-      if (again == true) { _start(); return; }
-      // first lesson of the day: the streak screen, like the app's own lessons
-      if (!await StreakManager.alreadyShownToday()) {
-        await StreakManager.recordCompletion();
-        await StreakManager.markShownToday();
-        if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const Today()));
-      } else if (mounted) {
-        Navigator.pop(context);
-      }
+      if (mounted) setState(() => _finished = result);
+      // saved on the phone in the background: the result shows without waiting for them
+      unawaited(StatisticsService.instance.addStudyTime(5));
+      unawaited(AchievementService.instance.recordLessonFinished(perfect: LessonProgress.instance.mistakes == 0 && LessonProgress.instance.imolar > 0));
     } on ApiException catch (e) {
       if (mounted) showApiError(context, e, onRetry: _next);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+    } finally { if (mounted) setState(() => _busy = false); }
   }
 
-  Future<void> _confirmQuit() async {
-    if (await showQuitLessonDialog(context) && mounted) Navigator.pop(context);
+  // "Continue" on the result: the streak screen on the first lesson of the day, like the app's own lessons
+  Future<void> _leave() async {
+    if (!await StreakManager.alreadyShownToday()) {
+      await StreakManager.recordCompletion();
+      await StreakManager.markShownToday();
+      if (!mounted) return;
+      _removeIntro();
+      Navigator.pushReplacement(context, lessonRoute(const Today()));
+    } else if (mounted) { _close(); }
   }
+
+  // the intro goes without an animation, then the player slides away in one step
+  void _removeIntro() { final intro = widget.intro; if (intro != null && intro.isActive) Navigator.of(context).removeRoute(intro); }
+
+  void _close() { _removeIntro(); Navigator.pop(context); }
+
+  // "learn" slides aren't answered: the button walks through them, then goes on like "Next question"
+  void _learnNext(ApiExercise exercise) {
+    if (_slide + 1 < exercise.options.length) { _slides.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeOutCubic); }
+    else { _next(); }
+  }
+
+  Future<void> _confirmQuit() async { if (await showQuitLessonDialog(context) && mounted) _close(); }
 
   // ===== what the right answer was (for the red banner and the bookmark) =====
   String? _correctText(ApiExercise exercise, AnswerResult result) {
@@ -137,18 +167,22 @@ class _ApiLessonPlayerState extends State<ApiLessonPlayer> {
     final lesson = _lesson;
     return PopScope(
       canPop: lesson == null,
-      onPopInvokedWithResult: (didPop, _) { if (!didPop) _confirmQuit(); },
+      onPopInvokedWithResult: (didPop, _) { if (!didPop) _finished != null ? _close() : _confirmQuit(); },
       child: Scaffold(
         body: Container(
           width: double.infinity,
           decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(const Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
           child: SafeArea(
-            child: lesson == null
-                ? Center(child: _failed ? _loadFailed(loc) : BookLoader(label: loc.translate('loading')))
-                : _player(loc, lesson),
-          ),
-        ),
-      ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              switchInCurve: Curves.easeOutCubic, switchOutCurve: Curves.easeInCubic,
+              child: _finished != null ? ApiLessonResultView(key: const ValueKey('result'), result: _finished!, onContinue: _leave, onAgain: _start) : lesson == null
+                ? Center(key: const ValueKey('loading'), child: _failed ? _loadFailed(loc) : BookLoader(label: loc.translate('loading')))
+                : KeyedSubtree(key: const ValueKey('player'), child: _player(loc, lesson))
+            )
+          )
+        )
+      )
     );
   }
 
@@ -158,138 +192,87 @@ class _ApiLessonPlayerState extends State<ApiLessonPlayer> {
       Text(loc.translate('lesson_load_failed'), style: const TextStyle(fontSize: 17)),
       const SizedBox(height: 16),
       ElevatedButton(onPressed: _start, child: Text(loc.translate('try_again'))),
-      TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.translate('back'))),
+      TextButton(onPressed: _close, child: Text(loc.translate('back'))),
     ],
   );
 
   Widget _player(AppLocalizations loc, ApiLessonDetail lesson) {
     final exercise = lesson.exercises[_index];
     final result = _result;
-    final String question = exercise.prompt?.isNotEmpty == true
-        ? exercise.prompt!
-        : loc.translate(switch (exercise.type) { 'matching' => 'match_hint', 'order' => 'order_hint', _ => 'choose_right_answer' });
+    final String question = exercise.prompt?.isNotEmpty == true ? exercise.prompt! : loc.translate(switch (exercise.type) { 'matching' => 'match_hint', 'order' => 'order_hint', _ => 'choose_right_answer' });
     void onAnswer(Map<String, dynamic>? a) => setState(() => _answer = a);
     final Widget body = switch (exercise.type) {
       'chooseText' => ChooseTextExercise(exercise: exercise, result: result, question: question, onAnswer: onAnswer),
       'chooseImage' => ChooseImageExercise(exercise: exercise, result: result, question: question, onAnswer: onAnswer),
       'order' => OrderExercise(exercise: exercise, result: result, question: question, onAnswer: onAnswer),
       'matching' => MatchingExercise(exercise: exercise, result: result, question: question, onAnswer: onAnswer),
+      'learn' => LearnExercise(exercise: exercise, controller: _slides, onSlide: (i) => setState(() => _slide = i)),
       _ => const SizedBox.shrink(),
     };
+    final bool learn = exercise.type == 'learn';
+    final bool lastExercise = _index + 1 >= lesson.exercises.length;
     final bool canSave = result != null && (_correctText(exercise, result)?.isNotEmpty ?? false);
 
+    const side = EdgeInsets.symmetric(horizontal: 16);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
           // ===== 1) close · progress · bookmark =====
-          LessonTopBar(index: _index, total: lesson.exercises.length, onClose: _confirmQuit, onSave: canSave ? () => _save(exercise) : null, saved: _saved),
-          const SizedBox(height: 16),
-          // ===== 2) the exercise =====
+          Padding(padding: side, child: LessonTopBar(index: _index, total: lesson.exercises.length, onClose: _confirmQuit, onSave: canSave ? () => _save(exercise) : null, saved: _saved)),
+          const SizedBox(height: 8),
+          // ===== 2) the exercise, 3) the verdict sliding in over its bottom: the exercise area keeps its size, so
+          // its sign videos (native views, costly to move) stay where they are =====
           Expanded(
-            child: SingleChildScrollView(
-              // each exercise gets fresh state (selection, video)
-              child: KeyedSubtree(key: ValueKey(exercise.id), child: body),
-            ),
-          ),
-          // ===== 3) verdict + button =====
-          if (result != null) ...[
-            const SizedBox(height: 10),
-            LessonFeedbackBanner(isCorrect: result.isCorrect, correctAnswer: _correctText(exercise, result), explanation: result.explanation),
-          ],
-          const SizedBox(height: 12),
-          LessonCheckButton(
-            checked: result != null, isCorrect: result?.isCorrect, canCheck: _answer != null, busy: _busy,
-            last: _index + 1 >= lesson.exercises.length, onCheck: _check, onNext: _next,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ======================== result ========================
-/// Shown after the last exercise. Pops true for "Try again".
-class ApiLessonResultScreen extends StatelessWidget {
-  final LessonResult result;
-  const ApiLessonResultScreen({super.key, required this.result});
-
-  @override
-  Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
-    Widget stat(String label, String value) => Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(18)),
-        child: Column(children: [
-          Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 2),
-          Text(label, style: TextStyle(fontSize: 13, color: AppPalette.fg(Colors.grey[600]!))),
-        ]),
-      ),
-    );
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppPalette.bg(const Color(0xFFBBDEFB)), AppPalette.bg(Colors.white)])),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+            child: Stack(
               children: [
-                const Spacer(),
-                Image.asset('web/images/well_done.png', height: 200),
-                const SizedBox(height: 20),
-                Text(loc.translate(result.passed ? 'lessons_over' : 'wrong'), textAlign: TextAlign.center, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 20),
-                Row(children: [
-                  stat(loc.translate('correct_answer'), '${result.correct}/${result.total}'),
-                  const SizedBox(width: 10),
-                  stat('%', '${result.accuracy}%'),
-                  const SizedBox(width: 10),
-                  stat(loc.translate('points'), loc.translate('xp_earned').replaceAll('{n}', '${result.xpEarned}')),
-                ]),
-                for (final name in result.unlockedAchievements) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity, padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFFFFF8E1)), borderRadius: BorderRadius.circular(16)),
-                    child: Row(children: [
-                      Image.asset('web/images/fire.png', width: 28, height: 28),
-                      const SizedBox(width: 10),
-                      Expanded(child: Text(loc.translate('achievement_unlocked').replaceAll('{name}', name), style: const TextStyle(fontWeight: FontWeight.w600))),
-                    ]),
-                  ),
-                ],
-                const Spacer(),
-                SizedBox(
-                  width: double.infinity, height: 56,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppPalette.bg(Color(0xFF4A7FD0)).withValues(alpha: 0.1), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      shadowColor: AppPalette.shadow(Color(0xFFBBDEFB)).withValues(alpha: 0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF1A237E)).withValues(alpha: 0.2)),
-                    ),
-                    child: Text(loc.translate('continue'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  ),
+                Positioned.fill(
+                  child: SingleChildScrollView(
+                    controller: _scroll, padding: EdgeInsets.fromLTRB(16, 8, 16, result != null ? 140 : 8),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 380),
+                      switchInCurve: Curves.easeOutCubic, switchOutCurve: Curves.easeInCubic,
+                      layoutBuilder: (current, previous) => Stack(alignment: Alignment.topCenter, children: [...previous, ?current]),
+                      transitionBuilder: (child, animation) {
+                        final bool incoming = child.key == ValueKey(exercise.id);
+                        return SlideTransition(position: Tween(begin: Offset(incoming ? 0.35 : -0.35, 0), end: Offset.zero).animate(animation), child: FadeTransition(opacity: animation, child: child));
+                      },
+                      child: KeyedSubtree(key: ValueKey(exercise.id), child: body)
+                    )
+                  )
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity, height: 56,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: AppPalette.bg(Colors.grey).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Colors.grey).withValues(alpha: 0.9),
-                      side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF1A237E)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                    ),
-                    child: Text(loc.translate('try_again'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  ),
-                ),
-              ],
-            ),
+                if (result != null)
+                  Positioned(
+                    left: 16, right: 16, bottom: 2,
+                    child: TweenAnimationBuilder<double>(
+                      key: ValueKey(exercise.id), tween: Tween(begin: 0, end: 1), duration: const Duration(milliseconds: 250), curve: Curves.easeOutCubic,
+                      builder: (_, t, child) => Opacity(opacity: t, child: Transform.translate(offset: Offset(0, 24 * (1 - t)), child: child)),
+                      child: LessonFeedbackBanner(isCorrect: result.isCorrect, correctAnswer: _correctText(exercise, result), explanation: result.explanation)
+                    )
+                  )
+              ]
+            )
           ),
-        ),
-      ),
+          // ===== 4) button =====
+          const SizedBox(height: 4),
+          // gone at once on "Next question", then fades back in once the new exercise is in place
+          AnimatedOpacity(
+            opacity: _switching ? 0 : 1, duration: _switching ? Duration.zero : const Duration(milliseconds: 250), curve: Curves.easeOut,
+            child: IgnorePointer(
+              ignoring: _switching,
+              child: Padding(
+                padding: side,
+                child: learn
+                  ? LessonCheckButton(
+                    checked: false, isCorrect: null, canCheck: true, busy: _busy, last: lastExercise, onCheck: () => _learnNext(exercise), onNext: _next,
+                    label: loc.translate(_slide + 1 < exercise.options.length ? 'next' : (lastExercise ? 'continue' : 'next_question')),
+                  )
+                  : LessonCheckButton(checked: result != null, isCorrect: result?.isCorrect, canCheck: _answer != null, busy: _busy, last: lastExercise, onCheck: _check, onNext: _next)
+              )
+            )
+          )
+        ]
+      )
     );
   }
 }

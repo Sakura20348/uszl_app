@@ -1,5 +1,6 @@
 // nav.dart
 import 'package:flutter/material.dart';
+import 'package:signlang/services/theme_service.dart';
 
 class NavItem {
   final IconData icon;
@@ -22,12 +23,11 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color selectedColor = isDark ? const Color(0xFF90CAF9) : Colors.blue[700]!;
+    final Color selectedColor = AppPalette.season(isDark ? const Color(0xFF90CAF9) : Colors.blue[700]!);
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF161C24).withOpacity(0.92) : Colors.white.withOpacity(0.6), borderRadius: BorderRadius.circular(24),
-        border: Border.all(width: 1, color: isDark ? Colors.white12 : Color(0xFFE3F2FD)),
-        boxShadow: [BoxShadow(color: isDark ? Colors.black54 : Color(0xFFBBDEFB).withOpacity(0.9), blurRadius: 15, spreadRadius: 1)]
+        color: isDark ? const Color(0xFF161C24).withValues(alpha: 0.92) : Colors.white.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isDark ? Colors.white12 : AppPalette.season(Color(0xFFE3F2FD))),
+        boxShadow: [BoxShadow(color: isDark ? Colors.black54 : AppPalette.season(Color(0xFFBBDEFB)).withValues(alpha: 0.9), blurRadius: 15, spreadRadius: 1)]
       ),
       child: SafeArea(
         top: false,
@@ -45,24 +45,23 @@ class CustomBottomNav extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 10), padding: const EdgeInsets.symmetric(vertical: 8), margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
-                      color: selected ? const Color(0xFFBBDEFB).withOpacity(0.1) : Colors.transparent, borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(color: selected ? Color(0xFF90CAF9).withOpacity(isDark ? 0.25 : 0.9) : Colors.transparent, blurRadius: 15)]
+                      color: selected ? AppPalette.season(const Color(0xFFBBDEFB)).withValues(alpha: 0.1) : Colors.transparent, borderRadius: BorderRadius.circular(20),
+                      boxShadow: [BoxShadow(color: selected ? AppPalette.season(Color(0xFF90CAF9)).withValues(alpha:  isDark ? 0.25 : 0.9) : Colors.transparent, blurRadius: 15)]
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(item.icon, size: 26, color: selected ? selectedColor : Colors.grey),
-                        const SizedBox(height: 4),
+                        Icon(item.icon, size: 26, color: selected ? selectedColor : Colors.grey), const SizedBox(height: 4),
                         Text(item.label, style: TextStyle(fontSize: 13, fontWeight: selected ? FontWeight.w600 : FontWeight.w400, color: selected ? selectedColor : Colors.grey))
-                      ],
-                    ),
-                  ),
-                ),
+                      ]
+                    )
+                  )
+                )
               );
-            }),
-          ),
-        ),
-      ),
+            })
+          )
+        )
+      )
     );
   }
 }

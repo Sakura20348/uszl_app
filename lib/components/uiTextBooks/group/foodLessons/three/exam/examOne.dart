@@ -20,7 +20,7 @@ class _ExamFood3OneState extends State<ExamFood3One> {
   void initState() { super.initState(); _initData(); }
 
 // =======================================================================
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
@@ -57,7 +57,7 @@ class _ExamFood3OneState extends State<ExamFood3One> {
                                   color: AppPalette.bg(Colors.white).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(150), border: Border.all(width: 1, color: AppPalette.border(Colors.white)),
                                   boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.9), blurRadius: 15)],
                                 ),
-                                child: Center(child: Image.asset('web/images/exam.png', width: 130, height: 140))
+                                child: Center(child: Image.asset('web/images/exam.webp', width: 130, height: 140))
                               ),
                             ),
                             const SizedBox(height: 30,),

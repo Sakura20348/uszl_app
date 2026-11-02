@@ -4,7 +4,6 @@ import 'package:signlang/services/firebase_setup.dart';
 import 'package:signlang/services/account_service.dart';
 import 'package:signlang/services/saved_accounts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:signlang/api/api_errors.dart';
 import 'package:signlang/api/uzsl_api.dart';
@@ -49,9 +48,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
   Future<void> _initializeData() async {
     await _loadUserData();
     numberController.addListener(_onChanged);
-    if (widget.autoSocial == LoginMethod.google || widget.autoSocial == LoginMethod.apple) {
-      if (mounted) _socialLogin(apple: widget.autoSocial == LoginMethod.apple);
-    }
+    if (widget.autoSocial == LoginMethod.google || widget.autoSocial == LoginMethod.apple) { if (mounted) _socialLogin(apple: widget.autoSocial == LoginMethod.apple); }
   }
 
   void _onChanged() {if (mounted) {setState(() {});}}
@@ -70,9 +67,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
 
     if (!mounted) return;
 
-    if (savedNumber != null && savedNumber.startsWith('+998 ')) {
-      savedNumber = savedNumber.replaceFirst('+998 ', '');
-    }
+    if (savedNumber != null && savedNumber.startsWith('+998 ')) { savedNumber = savedNumber.replaceFirst('+998 ', ''); }
 
     setState(() {
       numberController.text = savedNumber ?? '';
@@ -103,8 +98,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
     if (digits.length < 9) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.translate('please_number')),
-          backgroundColor: AppPalette.bg(Color(0xFFD32F2F)), behavior: SnackBarBehavior.floating,
+          content: Text(AppLocalizations.of(context)!.translate('please_number')), backgroundColor: AppPalette.bg(Color(0xFFD32F2F)), behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         )
       );
@@ -121,18 +115,13 @@ class _PhoneLoginState extends State<PhoneLogin> {
       Navigator.push(context, MaterialPageRoute(builder: (_) => CodeNumber(phoneNumber: fullPhone, debugCode: debugCode)));
     } on ApiException catch (e) {
       if (mounted) showApiError(context, e, onRetry: _handleValidation);
-    } finally {
-      if (mounted) setState(() => _sending = false);
-    }
+    } finally { if (mounted) setState(() => _sending = false); }
   }
 
   void _handleRegister() {
     FocusScope.of(context).unfocus();
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
-    } else {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const EmailAuth()));
-    }
+    if (Navigator.canPop(context)) { Navigator.pop(context); }
+    else { Navigator.push(context, MaterialPageRoute(builder: (_) => const EmailAuth())); }
   }
 
   Future<void> _handleGoogle() => _socialLogin(apple: false);
@@ -180,8 +169,8 @@ class _PhoneLoginState extends State<PhoneLogin> {
 
   @override
   Widget build(BuildContext context) {
-    const String ImagePathPhone = 'web/icons/phone.png'; const String ImagePathGoogle = 'web/icons/google.png';
-    const String ImagePathApple = 'web/icons/apple.png';
+    const String ImagePathPhone = 'web/icons/phone.webp'; const String ImagePathGoogle = 'web/icons/google.webp';
+    const String ImagePathApple = 'web/icons/apple.webp';
     final AppLocalizations loc = AppLocalizations.of(context)!;
     final Color isColors = _selectedIndex == -1 ? AppPalette.auto(Color(0xFFBBDEFB)).withValues(alpha: 0.9) : AppPalette.auto(Color(0xFFBBDEFB)).withValues(alpha: 0.5);
     final Color isColor =_selectedIndex == -1 ? AppPalette.auto(Color(0xFF4A7FD0)).withValues(alpha: 0.5) : AppPalette.auto(Color(0xFF4A7FD0)).withValues(alpha: 0.1);
@@ -207,11 +196,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
                             if (Navigator.canPop(context)) ...[
                               GestureDetector(
                                 onTap: () => Navigator.pop(context),
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)),
-                                  child: const Icon(Icons.arrow_back_outlined),
-                                ),
+                                child: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.arrow_back_outlined))
                               ),
                               const SizedBox(height: 20),
                             ] else
@@ -252,9 +237,9 @@ class _PhoneLoginState extends State<PhoneLogin> {
                               child: ElevatedButton(
                                 onPressed: _handleValidation,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: !isValid ? AppPalette.bg(Color(0xFF4A7FD0)).withOpacity(0.1) : AppPalette.bg(Color(0xFF4A7FD0)).withOpacity(0.15),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), foregroundColor: AppPalette.fg(Colors.white),
-                                  elevation: !isValid ? 0 : 6, shadowColor: AppPalette.shadow(Color(0xFFBBDEFB)).withOpacity(0.9), side: BorderSide(width: 1, color: !isValid ? AppPalette.border(Colors.black12) : AppPalette.border(Color(0xFF1A237E)).withOpacity(0.2))
+                                  backgroundColor: !isValid ? AppPalette.bg(Color(0xFF4A7FD0)).withValues(alpha: 0.1) : AppPalette.bg(Color(0xFF4A7FD0)).withValues(alpha: 0.15), elevation: !isValid ? 0 : 6,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), foregroundColor: AppPalette.fg(Colors.white), shadowColor: AppPalette.shadow(Color(0xFFBBDEFB)).withValues(alpha: 0.9),
+                                  side: BorderSide(width: 1, color: !isValid ? AppPalette.border(Colors.black12) : AppPalette.border(Color(0xFF1A237E)).withValues(alpha: 0.2))
                                 ),
                                 child: _sending
                                   ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Colors.blue[900]!)))
@@ -282,7 +267,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
                                   child: Container(
                                     height: 72,
                                     decoration: BoxDecoration(
-                                      color: AppPalette.bg(Color(0xFFF1F5F9)).withOpacity(0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)],
+                                      color: AppPalette.bg(Color(0xFFF1F5F9)).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)],
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
@@ -291,21 +276,19 @@ class _PhoneLoginState extends State<PhoneLogin> {
                                         child: Center(
                                           child: _googleLoading
                                             ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0))))
-                                            : Image.asset(ImagePathGoogle, width: 36, height: 36),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                            : Image.asset(ImagePathGoogle, width: 36, height: 36)
+                                        )
+                                      )
+                                    )
+                                  )
                                 ),
-
                                 const SizedBox(width: 16),
-
                                 // --- 2) apple button ---
                                 Expanded(
                                   child: Container(
                                     height: 72,
                                     decoration: BoxDecoration(
-                                      color: AppPalette.bg(Color(0xFFF1F5F9)).withOpacity(0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)],
+                                      color: AppPalette.bg(Color(0xFFF1F5F9)).withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: isColor), boxShadow: [BoxShadow(color: isColors, blurRadius: 15)],
                                     ),
                                     child: Material(
                                       color: Colors.transparent,
@@ -314,13 +297,13 @@ class _PhoneLoginState extends State<PhoneLogin> {
                                         child: Center(
                                           child: _appleLoading
                                             ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.fg(Color(0xFF4A7FD0))))
-                                            : Image.asset(ImagePathApple, width: 36, height: 36),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                            : Image.asset(ImagePathApple, width: 36, height: 36)
+                                        )
+                                      )
+                                    )
+                                  )
+                                )
+                              ]
                             ),
                             const Spacer(),
                             SizedBox(
@@ -334,23 +317,23 @@ class _PhoneLoginState extends State<PhoneLogin> {
                                     onTap: _handleRegister, behavior: HitTestBehavior.opaque,
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 12), // bigger tap area than the text itself
-                                      child: Text(loc.translate('account_sub'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: AppPalette.fg(Colors.blue))),
-                                    ),
-                                  ),
-                                ],
+                                      child: Text(loc.translate('account_sub'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: AppPalette.fg(Colors.blue)))
+                                    )
+                                  )
+                                ]
                               )
                             )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                          ]
+                        )
+                      )
+                    )
+                  )
                 );
               }
             )
-          ),
-        ),
-      ),
+          )
+        )
+      )
     );
   }
 }

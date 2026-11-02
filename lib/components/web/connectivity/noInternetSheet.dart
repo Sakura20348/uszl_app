@@ -33,14 +33,11 @@ class _NoInternetSheetState extends State<NoInternetSheet> with SingleTickerProv
   }
 
   @override
-  void dispose() {
-    _animController.dispose();
-    super.dispose();
-  }
+  void dispose() { _animController.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
-    const String ImageNoInternet = 'web/icons/no_internet.png';
+    const String ImageNoInternet = 'web/icons/no_internet.webp';
     final loc = AppLocalizations.of(context)!;
 
     return Container(
@@ -56,8 +53,7 @@ class _NoInternetSheetState extends State<NoInternetSheet> with SingleTickerProv
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(width: 50, height: 5, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFF80CBC4)).withValues(alpha: 0.9), borderRadius: BorderRadius.circular(3))),
-              const SizedBox(height: 24),
+              Container(width: 50, height: 5, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFF80CBC4)).withValues(alpha: 0.9), borderRadius: BorderRadius.circular(3))), const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -77,8 +73,8 @@ class _NoInternetSheetState extends State<NoInternetSheet> with SingleTickerProv
                     backgroundColor: AppPalette.bg(Color(0xFF4A7FD0)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF1A237E)).withValues(alpha: 0.9),
                     side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF1A237E)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
-                  child: Text(loc.translate('try_again'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white))),
-                ),
+                  child: Text(loc.translate('try_again'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white)))
+                )
               ),
               const SizedBox(height: 8),
               SizedBox(
@@ -86,17 +82,16 @@ class _NoInternetSheetState extends State<NoInternetSheet> with SingleTickerProv
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppPalette.bg(Color(0xFFECEFF1)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.grey), elevation: 6,
-                    shadowColor: AppPalette.shadow(Color(0xFF263238)).withValues(alpha: 0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF263238)).withValues(alpha: 0.2)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    backgroundColor: AppPalette.bg(Color(0xFFECEFF1)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.grey), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF263238)).withValues(alpha: 0.9),
+                    side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF263238)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
-                  child: Text(loc.translate('close'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white))),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                  child: Text(loc.translate('close'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white)))
+                )
+              )
+            ]
+          )
+        )
+      )
     );
   }
 }

@@ -97,38 +97,26 @@ class AllLessonsSkeleton {
 }
 
 class NotificationSkeleton {
-  static Widget buildSkeleton(){
+  /// Same shape as NotificationModal, so the sheet doesn't change size when the content comes in:
+  /// handle · picture (fire for an achievement, icon for a message) · title · time · body lines · buttons.
+  static Widget buildSkeleton({bool achievement = false, int bodyLines = 0}){
     return SizedBox(
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _box(height: 6, width: 65), const SizedBox(height: 25), _box(height: 168, width: 142),
-
-          const SizedBox(height: 18), _box(height: 24, width: 250),
-          const SizedBox(height: 16), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 250),
-          const SizedBox(height: 12), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 250),
-          const SizedBox(height: 12), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 280),
-          const SizedBox(height: 12), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 230),
-
-          _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 280),
-          const SizedBox(height: 12), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 280),
-          const SizedBox(height: 12), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 280),
-          const SizedBox(height: 12), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 280),
-          const SizedBox(height: 12), _box(height: 12, width: double.infinity),
-          const SizedBox(height: 6), _box(height: 12, width: 280),
-          const SizedBox(height: 12),
-
-          const SizedBox(height: 30), _box(height: 50, width: double.infinity, radius: 24),
-          const SizedBox(height: 12), _box(height: 50, width: double.infinity, radius: 24)
+          _box(height: 7, width: 70, radius: 5), const SizedBox(height: 25),
+          achievement ? _box(height: 168, width: 142, radius: 24) : _box(height: 72, width: 72, radius: 18),
+          const SizedBox(height: 18),
+          if (achievement) ...[_box(height: 16, width: 180), const SizedBox(height: 10)],
+          _box(height: 26, width: 220),
+          const SizedBox(height: 8), _box(height: 14, width: 120),
+          if (bodyLines > 0) ...[
+            const SizedBox(height: 16),
+            for (int i = 0; i < bodyLines; i++) ...[if (i > 0) const SizedBox(height: 8), _box(height: 16, width: i == bodyLines - 1 && bodyLines > 1 ? 200 : double.infinity)]
+          ],
+          const SizedBox(height: 30), _box(height: 56, width: double.infinity, radius: 24),
+          if (achievement) ...[const SizedBox(height: 12), _box(height: 56, width: double.infinity, radius: 24)],
         ],
       ),
     );

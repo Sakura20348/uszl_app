@@ -39,19 +39,10 @@ class _ChooseTextExerciseState extends State<ChooseTextExercise> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LessonVideoBox(url: widget.exercise.signVideo),
-        const SizedBox(height: 20),
-        Text(widget.question, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 24)),
-        const SizedBox(height: 16),
-        for (int i = 0; i < options.length; i += 2) ...[
-          Row(children: [
-            Expanded(child: _option(options[i])),
-            const SizedBox(width: 12),
-            Expanded(child: i + 1 < options.length ? _option(options[i + 1]) : const SizedBox()),
-          ]),
-          const SizedBox(height: 12),
-        ],
-      ],
+        LessonVideoBox(url: widget.exercise.signVideo), const SizedBox(height: 20),
+        Text(widget.question, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 24)), const SizedBox(height: 16),
+        for (int i = 0; i < options.length; i += 2) ...[Row(children: [Expanded(child: _option(options[i])), const SizedBox(width: 12), Expanded(child: i + 1 < options.length ? _option(options[i + 1]) : const SizedBox())]), const SizedBox(height: 12)]
+      ]
     );
   }
 
@@ -65,16 +56,14 @@ class _ChooseTextExerciseState extends State<ChooseTextExercise> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white).withValues(alpha: 0.6), borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: highlighted ? accent : AppPalette.border(Colors.white), width: 1.5),
+          color: AppPalette.bg(Colors.white).withValues(alpha: 0.6), borderRadius: BorderRadius.circular(18), border: Border.all(color: highlighted ? accent : AppPalette.border(Colors.white), width: 1.5),
           boxShadow: [BoxShadow(color: AppPalette.shadow(const Color(0xFF42A5F5)).withValues(alpha: 0.25), blurRadius: 10)],
         ),
         child: Row(children: [
           Expanded(child: Text(o.text ?? '', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.black87)))),
-          const SizedBox(width: 6),
-          LessonRadio(color: highlighted ? accent : AppPalette.border(Colors.black26), filled: highlighted),
-        ]),
-      ),
+          const SizedBox(width: 6), LessonRadio(color: highlighted ? accent : AppPalette.border(Colors.black26), filled: highlighted)
+        ])
+      )
     );
   }
 }

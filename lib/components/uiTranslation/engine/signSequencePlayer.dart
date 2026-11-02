@@ -180,7 +180,7 @@ class SignPlayerView extends StatelessWidget {
                           child: Icon(emptyIcon, size: 54, color: Colors.white),
                         ),
                         const SizedBox(height: 14),
-                        Text(emptyText, textAlign: TextAlign.center, style: TextStyle(color: c.subText, fontSize: 15, height: 1.4)),
+                        Text(emptyText, textAlign: TextAlign.center, style: TextStyle(color: c.text, fontSize: 15, height: 1.4)),
                       ],
                     ),
                   ),
@@ -192,7 +192,7 @@ class SignPlayerView extends StatelessWidget {
                     children: [
                       Text(step.label, style: TextStyle(color: c.text, fontSize: 46, fontWeight: FontWeight.w800)),
                       const SizedBox(height: 6),
-                      Text(noSignText, style: TextStyle(color: c.subText, fontSize: 14)),
+                      Text(noSignText, style: TextStyle(color: c.text, fontSize: 14)),
                     ],
                   ),
                 )

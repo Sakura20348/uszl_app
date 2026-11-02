@@ -384,14 +384,14 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
     double size = _fontSize, speed = _player.speed; int weight = _weight, seconds = _seconds;
     final loc = AppLocalizations.of(context)!;
     final bool? apply = await showModalBottomSheet<bool>(
-      context: context, isScrollControlled: true, useSafeArea: true, backgroundColor: Colors.transparent,
+      context: context, isScrollControlled: true, useSafeArea: true, backgroundColor: Colors.transparent, barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (sheetContext) => StatefulBuilder(
         builder: (sheetContext, setSheet) {
           final c = AppColors.of(sheetContext);
           return Container(
             margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             padding: EdgeInsets.fromLTRB(18, 10, 18, 16 + MediaQuery.of(sheetContext).viewPadding.bottom * 0.5),
-            decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(26)),
+            decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: c.bgGradient), borderRadius: BorderRadius.circular(26), border: Border.all(color: c.cardBorder)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,7 +506,9 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
           bottom: false,
           child: !_unlocked
             ? _lockedView(loc, c, navBar)
-            : Column(
+            : RefreshIndicator(
+              onRefresh: () async { if (_input == TransMode.sign) await _initCamera(); }, notificationPredicate: (ScrollNotification notification) {return notification.depth == 0;},
+              child: Column(
                 children: [
                   // ===== 1) input / swap / output =====
                   Padding(
@@ -538,6 +540,7 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
                   // ===== 3) input + output =====
                   Expanded(
                     child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: [
@@ -563,7 +566,7 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
                     ),
                   ),
                 ],
-              ),
+              )),
         ),
       ),
     );
@@ -601,7 +604,7 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
   }
 
   BoxDecoration _pillDecoration(AppColors c) => BoxDecoration(
-    color: c.isDark ? c.card : Colors.white.withValues(alpha: 0.6), borderRadius: BorderRadius.circular(15), border: Border.all(color: c.cardBorder),
+    color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(15), border: Border.all(color: c.cardBorder),
   );
 
   Widget _modeDropdown(AppLocalizations loc, TransMode value, ValueChanged<TransMode> onPick, AppColors c) {
@@ -660,11 +663,11 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
   }
 
   BoxDecoration _cardDecoration(AppColors c) => BoxDecoration(
-    color: c.isDark ? c.card : Colors.white.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(22),
-    border: Border.all(color: c.cardBorder), boxShadow: [BoxShadow(color: AppPalette.shadow(_blue).withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4))],
+    color: c.isDark ? c.card : Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20),
+    border: Border.all(color: c.cardBorder), boxShadow: [BoxShadow(color: c.glow.withValues(alpha: c.isDark? 0.3 : 0.9), blurRadius: 15, offset: const Offset(0, 4))],
   );
 
-  Widget _label(String text) => Text(text, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppPalette.fg(_blue)));
+  Widget _label(String text) => Text(text, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppPalette.fg(Colors.white)));
 
   Widget _smallChip(String text, {VoidCallback? onTap, IconData? icon, bool arrow = false}) => GestureDetector(
     onTap: onTap,
@@ -747,14 +750,14 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
           Align(
             alignment: Alignment.centerLeft,
             child: transcript.isEmpty
-              ? Text(loc.translate('tg_listening'), style: TextStyle(fontSize: 15, color: c.subText))
+              ? Text(loc.translate('tg_listening'), style: TextStyle(fontSize: 15, color: c.text))
               : Text.rich(TextSpan(children: [
-                  _highlighted(_sourceText, TextStyle(fontSize: _fontSize, fontWeight: _weights[_weight], color: c.subText), c.text),
-                  if (_partial.isNotEmpty) TextSpan(text: '${_sourceText.isEmpty ? '' : ' '}$_partial', style: TextStyle(fontSize: _fontSize, color: c.subText.withValues(alpha: 0.6))),
+                  _highlighted(_sourceText, TextStyle(fontSize: _fontSize, fontWeight: _weights[_weight], color: c.text), c.text),
+                  if (_partial.isNotEmpty) TextSpan(text: '${_sourceText.isEmpty ? '' : ' '}$_partial', style: TextStyle(fontSize: _fontSize, color: c.text)),
                 ])),
           ),
         ] else
-          Text(loc.translate('tr_voice_hint').replaceAll('{button}', loc.translate('tr_show')), textAlign: TextAlign.center, style: TextStyle(fontSize: 13, height: 1.4, color: c.subText)),
+          Text(loc.translate('tr_voice_hint').replaceAll('{button}', loc.translate('tr_show')), textAlign: TextAlign.center, style: TextStyle(fontSize: 13, height: 1.4, color: c.text)),
       ],
     );
   }
@@ -763,15 +766,15 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
     final TextStyle style = TextStyle(fontSize: _fontSize, fontWeight: _weights[_weight], height: 1.3, color: c.text);
     if (_delivered && _sourceText.isNotEmpty && (_player.playing || _speaking)) {
       // while it is being signed / spoken: the current word in bold
-      return Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Text.rich(_highlighted(_sourceText, style.copyWith(color: c.subText), c.text)));
+      return Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Text.rich(_highlighted(_sourceText, style, c.text)));
     }
     return TextField(
       controller: _textInput, minLines: 3, maxLines: 6, maxLength: 200,
       textInputAction: TextInputAction.done, onSubmitted: (v) => _deliver(v),
       style: style,
       decoration: InputDecoration(
-        border: InputBorder.none, isDense: true, counterStyle: TextStyle(fontSize: 11, color: c.subText),
-        hintText: loc.translate('tg_input_hint'), hintStyle: style.copyWith(color: AppPalette.fg(const Color(0xFFB6C0CC)), fontWeight: FontWeight.w500),
+        border: InputBorder.none, isDense: true, counterStyle: TextStyle(fontSize: 11, color: c.text),
+        hintText: loc.translate('tg_input_hint'), hintStyle: style.copyWith(color: c.text, fontWeight: FontWeight.w500),
       ),
     );
   }
@@ -924,7 +927,7 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
           ),
         ),
         const SizedBox(height: 10),
-        Text.rich(_highlighted(_sourceText, TextStyle(fontSize: 15, color: c.subText), c.text)),
+        Text.rich(_highlighted(_sourceText, TextStyle(fontSize: 16, color: c.text), c.text)),
         const SizedBox(height: 10),
         Row(
           children: [
@@ -944,7 +947,7 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
       children: [
         Icon(icon, size: 44, color: AppPalette.fg(_blue).withValues(alpha: 0.6)),
         const SizedBox(height: 10),
-        Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, height: 1.4, color: c.subText)),
+        Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, height: 1.4, color: c.text)),
       ],
     ),
   );
@@ -953,7 +956,10 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
     onTap: onTap,
     child: Container(
       width: 52, height: 52,
-      decoration: BoxDecoration(color: c.isDark ? c.card : Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 3))]),
+      decoration: BoxDecoration(
+        color: c.chip, borderRadius: BorderRadius.circular(16), border: Border.all(width: 1, color: c.cardBorder),
+        boxShadow: [BoxShadow(color: c.isDark ? Colors.transparent : AppPalette.shadow(Color(0xFF42A5F5)).withValues(alpha: 0.6), blurRadius: 10, offset: const Offset(0, 3))]
+      ),
       child: Icon(icon, color: AppPalette.fg(const Color(0xFF475569))),
     ),
   );
@@ -966,10 +972,10 @@ class _TranslatorState extends State<Translator> with WidgetsBindingObserver, Si
       child: ElevatedButton(
         onPressed: busy || canStart ? _onMainButton : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: busy ? AppPalette.bg(const Color(0xFFD6E4FA)) : AppPalette.bg(_blue),
-          foregroundColor: busy ? AppPalette.fg(_blue) : Colors.white,
+          backgroundColor: busy ? AppPalette.bg(const Color(0xFFD6E4FA)).withValues(alpha: 0.6) : AppPalette.bg(_blue).withValues(alpha: 0.1),
+          foregroundColor: busy ? AppPalette.fg(_blue) : Colors.white, shadowColor: AppPalette.bg(_blue).withValues(alpha: 0.9),
           disabledBackgroundColor: AppPalette.bg(_blue).withValues(alpha: 0.45), disabledForegroundColor: Colors.white,
-          elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          elevation: 6, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         ),
         child: Text(loc.translate(busy ? 'tr_stop' : 'tr_show'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       ),

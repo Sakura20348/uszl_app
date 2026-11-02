@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:signlang/components/uiTextBooks/nameTextbooks/buildLessonsTextbooks.dart';
+import 'package:signlang/components/uiTranslation/skeleton/skeleton.dart';
 import 'package:signlang/l10n/app_localizations.dart';
 import 'package:signlang/services/theme_service.dart';
 
 import '../components/profile/nameProfile/nameProfileSheet.dart';
-import '../components/uiTextBooks/skeleton/skeleton.dart';
 import '../components/uiTranslation/group/gestureToText.dart';
 import '../components/uiTranslation/group/speechToText.dart';
 import '../components/uiTranslation/group/textToGesture.dart';
@@ -43,17 +43,11 @@ class _TranslationState extends State<Translation>{
   }
 
   @override
-  void initState(){
-    super.initState(); _initData();
-  }
+  void initState(){ super.initState(); _initData(); }
 
-  Future<void> _initializeData() async {
-    await Future.wait([achievementsData.init(), AppLoading.ready()]);
-    if (!mounted) return;
-    setState(() { _isLoading = false; });
-  }
+  Future<void> _initializeData() async { await Future.wait([achievementsData.init(), AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
 
   List<Map<String, dynamic>> get itemsData => TransData(context: context).itemsData;
 
@@ -103,7 +97,7 @@ class _TranslationState extends State<Translation>{
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
               slivers: [
                 if(_isLoading)
-                  SliverToBoxAdapter(child: Shimmer.fromColors(baseColor: c.isDark ? Colors.white12 : Colors.grey[200]!, highlightColor: Color(0xFF42A5F5).withValues(alpha: 0.2), child: TextBooksSkeleton.buildSkeleton()))
+                  SliverToBoxAdapter(child: Shimmer.fromColors(baseColor: c.isDark ? Colors.white12 : Colors.grey[200]!, highlightColor: Color(0xFF42A5F5).withValues(alpha: 0.2), child: TranslationSkeleton.buildSkeleton()))
                 else
                   SliverToBoxAdapter(
                     child: Padding(
@@ -123,13 +117,7 @@ class _TranslationState extends State<Translation>{
                               final id = lesson['id'];
                               if (_learnedOverrides.containsKey(id)) { lesson['learned'] = _learnedOverrides[id]; }
                               lesson['status'] = _statusFor(i);
-                              return GestureDetector(
-                                onTap: () => _openTrans(i),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: BuildTranslation.buildTrans(context, lesson)
-                                )
-                              );
+                              return GestureDetector(onTap: () => _openTrans(i), child: Padding(padding: const EdgeInsets.only(bottom: 16), child: BuildTranslation.buildTrans(context, lesson)));
                             })
                           )
                         ]

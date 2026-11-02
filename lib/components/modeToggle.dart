@@ -14,18 +14,13 @@ class ModeToggle extends StatefulWidget {
 }
 
 class _ModeToggleState extends State<ModeToggle> with TickerProviderStateMixin {
-  late final AnimationController _morph = AnimationController(
-    vsync: this, duration: const Duration(milliseconds: 550), value: ThemeService.instance.isDark ? 1 : 0,
-  );
+  late final AnimationController _morph = AnimationController(vsync: this, duration: const Duration(milliseconds: 550), value: ThemeService.instance.isDark ? 1 : 0);
   late final AnimationController _loop = AnimationController(vsync: this, duration: const Duration(seconds: 12))..repeat();
   late final Animation<double> _t = CurvedAnimation(parent: _morph, curve: Curves.easeInOutCubic);
   bool _pressed = false;
 
   @override
-  void initState() {
-    super.initState();
-    ThemeService.instance.mode.addListener(_sync);
-  }
+  void initState() { super.initState(); ThemeService.instance.mode.addListener(_sync); }
 
   @override
   void dispose() {
@@ -52,27 +47,19 @@ class _ModeToggleState extends State<ModeToggle> with TickerProviderStateMixin {
         onTapUp: (_) => setState(() => _pressed = false),
         onTapCancel: () => setState(() => _pressed = false),
         child: AnimatedScale(
-            scale: _pressed ? 0.95 : 1,
-            duration: const Duration(milliseconds: 150),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              width: s, height: s,
-              decoration: BoxDecoration(color: c.chip, shape: BoxShape.circle, border: Border.all(width: 1, color: c.cardBorder)),
-              child: Center(
-                child: AnimatedRotation(
-                  turns: _pressed ? 20 / 360 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: RepaintBoundary(
-                    child: CustomPaint(
-                      size: Size.square(s / 2),
-                      painter: _SunMoonPainter(t: _t, loop: _loop, sunColor: c.accent, moonColor: const Color(0xFFFFD54F)),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ),
+          scale: _pressed ? 0.95 : 1,
+          duration: const Duration(milliseconds: 150),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150), width: s, height: s, decoration: BoxDecoration(color: c.chip, shape: BoxShape.circle, border: Border.all(width: 1, color: c.cardBorder)),
+            child: Center(
+              child: AnimatedRotation(
+                turns: _pressed ? 20 / 360 : 0, duration: const Duration(milliseconds: 200),
+                child: RepaintBoundary(child: CustomPaint(size: Size.square(s / 2), painter: _SunMoonPainter(t: _t, loop: _loop, sunColor: c.accent, moonColor: const Color(0xFFFFD54F))))
+              )
+            )
+          )
+        )
+      )
     );
   }
 }

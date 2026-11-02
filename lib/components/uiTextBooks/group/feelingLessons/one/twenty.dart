@@ -2,7 +2,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:signlang/services/app_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:signlang/components/uiTextBooks/group/feelingLessons/one/exam/examOne.dart';
-import 'package:signlang/components/uiTextBooks/group/numberLessons/one/exam/examOne.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../../l10n/app_localizations.dart';
@@ -63,7 +62,7 @@ class _TwentyFeelingsState extends State<TwentyFeelings> {
   }
 
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
-  Future<void> _handleRefresh() async { setState(() { _isLoading = true; }); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
   // =======================================================================

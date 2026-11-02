@@ -13,12 +13,8 @@ Future<void> showApiError(BuildContext context, ApiException error, {VoidCallbac
     // Otherwise the server is down or the app points to the wrong address (API_URL).
     final results = await Connectivity().checkConnectivity();
     final offline = results.isEmpty || results.every((r) => r == ConnectivityResult.none);
-    if (offline) {
-      AppSheets.showNoInternet(onRetry: () { AppSheets.hideNoInternet(); onRetry?.call(); });
-    } else {
-      debugPrint('Server not reachable at ${UzslApi.baseUrl}');
-      AppSheets.showServerError(onRetry: onRetry);
-    }
+    if (offline) { AppSheets.showNoInternet(onRetry: () { AppSheets.hideNoInternet(); onRetry?.call(); }); }
+    else { debugPrint('Server not reachable at ${UzslApi.baseUrl}'); AppSheets.showServerError(onRetry: onRetry); }
     return;
   }
   if (error.status == 503 && error.message.contains('SMS')) {
@@ -26,10 +22,7 @@ Future<void> showApiError(BuildContext context, ApiException error, {VoidCallbac
     showRedSnackBar(context, AppLocalizations.of(context)!.translate('sms_unavailable'));
     return;
   }
-  if (error.status >= 500) {
-    AppSheets.showServerError(onRetry: onRetry);
-    return;
-  }
+  if (error.status >= 500) { AppSheets.showServerError(onRetry: onRetry); return; }
   if (!context.mounted) return;
   final loc = AppLocalizations.of(context)!;
   final message = switch (error.status) {
@@ -41,11 +34,23 @@ Future<void> showApiError(BuildContext context, ApiException error, {VoidCallbac
   showRedSnackBar(context, message);
 }
 
+/// A grey note with white text and a soft shadow, e.g. "This lesson needs the internet".
+void showGreySnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      behavior: SnackBarBehavior.floating, backgroundColor: Colors.transparent, elevation: 0, padding: EdgeInsets.zero,
+      content: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(color: AppPalette.bg(const Color(0xFF616161)), borderRadius: BorderRadius.circular(12), boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.black).withValues(alpha: 0.25), blurRadius: 14, offset: const Offset(0, 4))]),
+        child: Text(message, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
+      ),
+    ),
+  );
+}
+
 /// A plain (not red) message, e.g. "We sent you an email".
 void showSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(message), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-  );
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))));
 }
 
 void showRedSnackBar(BuildContext context, String message) {

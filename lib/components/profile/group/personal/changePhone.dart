@@ -37,13 +37,13 @@ class _ChangePhoneState extends State<ChangePhone> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    const String ImagePhone = 'web/icons/phone.png';
+    const String ImagePhone = 'web/icons/phone.webp';
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       decoration: BoxDecoration(
-        color: AppPalette.bg(Color(0xFFF5F5F5)).withOpacity(0.1), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFECEFF1)).withOpacity(0.2)),
-        borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFFF5F5F5)).withOpacity(0.9), blurRadius: 15, offset: const Offset(0, -6))],
+        color: AppPalette.bg(Color(0xFF81D4FA)).withValues(alpha: 0.1), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFB3E5FC)).withValues(alpha: 0.2)),
+        borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF81D4FA)).withValues(alpha: 0.9), blurRadius: 15, offset: const Offset(0, -6))],
       ),
       child: FadeTransition(
         opacity: _fadeIn,
@@ -52,46 +52,36 @@ class _ChangePhoneState extends State<ChangePhone> with SingleTickerProviderStat
           child: Column(
             mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.9), borderRadius: BorderRadius.circular(2)))),
+              Center(child: Container(width: 70, height: 7, decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: AppPalette.bg(Color(0xFF00B8D4)).withValues(alpha: 0.9), border: Border.all(width: 0.5, color: AppPalette.border(Colors.white))))),
               const SizedBox(height: 20),
               Center(
                 child: Container(
                   padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(color: AppPalette.bg(Colors.black).withOpacity(0.1), border: Border.all(width: 2, color: AppPalette.border(Colors.white).withOpacity(0.9)), borderRadius: BorderRadius.circular(20)),
+                  decoration: BoxDecoration(color: AppPalette.bg(Colors.black).withValues(alpha: 0.1), border: Border.all(width: 2, color: AppPalette.border(Colors.white).withValues(alpha: 0.9)), borderRadius: BorderRadius.circular(20)),
                   child: Image.asset(ImagePhone, width: 32, height: 32),
                 ),
               ),
-              const SizedBox(height: 16),
-              Center(child: Text(loc.translate('edit_phone'), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A))))),
-              const SizedBox(height: 8),
-              Center(
-                child: Text(loc.translate('edit_phone_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: AppPalette.fg(Color(0xFF0F172A)).withOpacity(0.9), fontWeight: FontWeight.w400)),
-              ),
-              const SizedBox(height: 32),
-              Text(loc.translate('phone_number_label'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF1E293B)))),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16), Center(child: Text(loc.translate('edit_phone'), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF0F172A))))), const SizedBox(height: 8),
+              Center(child: Text(loc.translate('edit_phone_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: AppPalette.fg(Color(0xFF0F172A)).withValues(alpha: 0.9), fontWeight: FontWeight.w400))),
+              const SizedBox(height: 32), Text(loc.translate('phone_number_label'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppPalette.fg(Color(0xFF1E293B)))), const SizedBox(height: 8),
               TextField(
                 controller: _controller,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
-                  filled: true, fillColor: AppPalette.bg(Colors.white).withOpacity(0.5),
+                  filled: true, fillColor: AppPalette.bg(Colors.white).withValues(alpha: 0.5),
                   prefixText: '+998 | ', prefixStyle: TextStyle(color: AppPalette.fg(Colors.black), fontSize: 16, fontWeight: FontWeight.w400),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16)
+                )
               ),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity, height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final phone = _controller.text.trim();
-                    Navigator.pop(context, '+998 $phone');
-                  },
+                  onPressed: () { final phone = _controller.text.trim(); Navigator.pop(context, '+998 $phone'); },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-                    shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withOpacity(0.2)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    backgroundColor: AppPalette.bg(Color(0xFFBBDEFB)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF0D47A1)).withValues(alpha: 0.9),
+                    side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF0D47A1)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
                   child: Text(loc.translate('save'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 ),
@@ -102,18 +92,16 @@ class _ChangePhoneState extends State<ChangePhone> with SingleTickerProviderStat
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withOpacity(0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6,
-                    shadowColor: AppPalette.shadow(Color(0xFF212121)).withOpacity(0.9), side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withOpacity(0.2)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    backgroundColor: AppPalette.bg(Color(0xFFEEEEEE)).withValues(alpha: 0.2), foregroundColor: AppPalette.fg(Colors.white), elevation: 6, shadowColor: AppPalette.shadow(Color(0xFF212121)).withValues(alpha: 0.9),
+                    side: BorderSide(width: 1, color: AppPalette.border(Color(0xFF212121)).withValues(alpha: 0.2)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
-                  child: Text(loc.translate('cancel'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                ),
-              ),
-              const SizedBox(height: 40)
-            ],
-          ),
-        ),
-      ),
+                  child: Text(loc.translate('cancel'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600))
+                )
+              )
+            ]
+          )
+        )
+      )
     );
   }
 }

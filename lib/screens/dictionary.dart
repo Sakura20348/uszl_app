@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signlang/api/uzsl_api.dart';
 import 'package:signlang/components/uiDictionary/server/apiSignList.dart';
 import 'package:signlang/components/uiDictionary/server/category_icon.dart';
@@ -9,22 +11,6 @@ import 'package:signlang/services/app_loading.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:signlang/components/uiDictionary/group/all/allPhrases.dart';
 import 'package:signlang/components/web/emergency/emergencyPhrases.dart';
-import 'package:signlang/components/uiDictionary/group/name/birthOrderMultiples.dart';
-import 'package:signlang/components/uiDictionary/group/name/cereal.dart';
-import 'package:signlang/components/uiDictionary/group/name/dairy.dart';
-import 'package:signlang/components/uiDictionary/group/name/extended_family.dart';
-import 'package:signlang/components/uiDictionary/group/name/food.dart';
-import 'package:signlang/components/uiDictionary/group/name/fruits.dart';
-import 'package:signlang/components/uiDictionary/group/name/householdLineageTerms.dart';
-import 'package:signlang/components/uiDictionary/group/name/immediateFamily.dart';
-import 'package:signlang/components/uiDictionary/group/name/numberFive.dart';
-import 'package:signlang/components/uiDictionary/group/name/numberFour.dart';
-import 'package:signlang/components/uiDictionary/group/name/numberOne.dart';
-import 'package:signlang/components/uiDictionary/group/name/numberThree.dart';
-import 'package:signlang/components/uiDictionary/group/name/numberTwo.dart';
-import 'package:signlang/components/uiDictionary/group/name/partners_exes.dart';
-import 'package:signlang/components/uiDictionary/group/name/vegetables.dart';
-import 'package:signlang/components/uiDictionary/nameDictionary/nameDictionary.dart';
 import 'package:signlang/components/uiDictionary/skeleton/skeleton.dart';
 import 'package:signlang/components/web/download/download.dart';
 import 'package:signlang/components/web/saved/saved.dart';
@@ -51,23 +37,23 @@ class _DictionaryState extends State<Dictionary>{
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
 
-  final List<Map<String, dynamic>> _allWords = [];
-  final Set<String> _savedWordSet = {};
 
 // =======================================================================
 // name things
 // =======================================================================
-  late final dictionaryCardsData = DictionaryCardsData(context: context);
-  late final dictionaryCardsItems = dictionaryCardsData.dictionaryCardsList;
-  late final storesDictionaryCardsData = StoresDictionaryCardsData(context: context);
-  late var lastSeen = LastSeenData(context: context).lastSeenItems;
-  late var results = ResultsData(context: context).resultsItems;
+  /// Dashboard signs watched last (empty until loaded)
+  List<Map<String, dynamic>> lastSeen = [];
 
 // =======================================================================
   // signs from the server dictionary (added in the dashboard)
   List<ApiSign> _serverResults = [];
-  /// Dictionary categories from the dashboard (null until loaded / when offline: the app's own list is shown)
+  /// Dictionary categories from the dashboard: the app shows exactly these (null until loaded)
   List<ApiCategory>? _serverCategories;
+  static const String _categoriesPrefsKey = 'dictionary_categories';
+  /// The categories couldn't be loaded and none were saved before (offline on the first start)
+  bool _categoriesFailed = false;
+  /// How many categories "Celebrities" shows; "All phrases" shows every one
+  static const int _featuredCount = 4;
 
   /// Signs of a dashboard category (by slug); null while loading
   final Map<String, List<ApiSign>?> _categorySigns = {};
@@ -91,13 +77,26 @@ class _DictionaryState extends State<Dictionary>{
   }
 
   Timer? _serverSearch;
+  /// A search is waiting for the server
+  bool _searchBusy = false;
+  /// The last search couldn't reach the server
+  bool _searchFailed = false;
 
+  /// The categories saved last time (for offline starts), then fresh ones from the server
   Future<void> _loadServerCategories() async {
+    if (_serverCategories == null) {
+      try {
+        final saved = (await SharedPreferences.getInstance()).getString(_categoriesPrefsKey);
+        if (saved != null && mounted && _serverCategories == null) { setState(() => _serverCategories = (jsonDecode(saved) as List).map((e) => ApiCategory.fromJson(e as Map<String, dynamic>)).toList()); }
+      } catch (_) {}
+    }
     try {
       final cats = await UzslApi.categories();
-      if (mounted) setState(() => _serverCategories = cats);
+      if (mounted) setState(() { _serverCategories = cats; _categoriesFailed = false; });
+      (await SharedPreferences.getInstance()).setString(_categoriesPrefsKey, jsonEncode([for (final c in cats) c.toJson()]));
     } catch (e) {
       debugPrint('Dictionary categories not loaded: $e');
+      if (mounted && _serverCategories == null) setState(() => _categoriesFailed = true);
     }
   }
 
@@ -120,23 +119,25 @@ class _DictionaryState extends State<Dictionary>{
   }
 
   @override
-  void didChangeDependencies() { super.didChangeDependencies(); _loadLastSeen(); _loadSaved(); if (_allWords.isEmpty) { _allWords.addAll(ResultsData(context: context).resultsItems); } }
+  void didChangeDependencies() { super.didChangeDependencies(); _loadLastSeen(); }
 
 // =======================================================================
   Future<void> _initializeData() async { await Future.wait([ AppLoading.ready(), ]); if (!mounted) return; setState(() { _isLoading = false; }); }
   Future<void> _handleRefresh() async {
-    setState(() { _isLoading = true; });
     await Future.wait([_initializeData(), _loadServerCategories()]);
     final picked = _pickedServerCategory;
     if (picked != null) await _loadCategorySigns(picked.slug); // new signs from the dashboard
   }
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) { setState(() { _isLoading = false; }); } }
   Future<void> _loadLastSeen() async { final items = await LastSeenStore.instance.load(); if (mounted) setState(() => lastSeen = items); }
-  Future<void> _loadSaved() async { final items = await SavedStore.instance.load(); if (mounted) { setState(() { _savedWordSet.clear(); for (var it in items) { if (it['word'] != null) _savedWordSet.add(it['word']); } }); } }
 
 // ================================ Button ==================================
   void _handleEmergency() { Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyPhrases())); }
-  void _handleAllPhrases() async { await Navigator.push(context, MaterialPageRoute(builder: (_) => const AllPhrases())); }
+  /// Every dashboard category; picking one there opens its signs here
+  void _handleAllPhrases() async {
+    final picked = await Navigator.push<int>(context, MaterialPageRoute(builder: (_) => AllPhrases(categories: _serverCategories ?? const [])));
+    if (picked != null && mounted) onDictionaryCardsTap(picked + 1);
+  }
   void _handleVoiceSearch() async {
     final available = await _speech.initialize();
     _searchFocus.requestFocus(); if (available) { _speech.listen(onResult: (result) { setState(() { _searchController.text = result.recognizedWords; _onSearchChanged(); }); }); }
@@ -144,18 +145,19 @@ class _DictionaryState extends State<Dictionary>{
   void _exitSearch() { _searchController.clear(); _searchFocus.unfocus(); setState(() => _searching = false); }
   void _onSearchChanged() {
     final q = _searchController.text.trim().toLowerCase();
-    setState(() { _searching = _searchFocus.hasFocus || q.isNotEmpty; results = q.isEmpty ? [] : _allWords.where((w) => (w['word']).toLowerCase().contains(q)).toList(); });
-    // the server dictionary too (debounced); words the app already has are not shown twice
+    setState(() => _searching = _searchFocus.hasFocus || q.isNotEmpty);
+    // search the dashboard's dictionary (debounced)
     _serverSearch?.cancel();
-    if (q.isEmpty) { setState(() => _serverResults = []); return; }
+    if (q.isEmpty) { setState(() { _serverResults = []; _searchBusy = false; _searchFailed = false; }); return; }
+    setState(() => _searchBusy = true);
     _serverSearch = Timer(const Duration(milliseconds: 350), () async {
       try {
         final page = await UzslApi.signs(query: q, limit: 30);
         if (!mounted || _searchController.text.trim().toLowerCase() != q) return;
-        final local = results.map((w) => '${w['word']}'.toLowerCase()).toSet();
-        setState(() => _serverResults = page.items.where((s) => !local.contains(s.word.toLowerCase())).toList());
+        setState(() { _serverResults = page.items; _searchBusy = false; _searchFailed = false; });
       } catch (e) {
         debugPrint('Dictionary search on the server failed: $e');
+        if (mounted) setState(() { _serverResults = []; _searchBusy = false; _searchFailed = true; });
       }
     });
   }
@@ -164,42 +166,13 @@ class _DictionaryState extends State<Dictionary>{
     final cat = _pickedServerCategory;
     if (cat != null) _loadCategorySigns(cat.slug);
   }
-  // category page (LastSeenStore "source") -> its word pages
-  static const Map<String, Widget? Function(String id)> _wordPages = {
-    'BirthOrderMultiples': BirthOrderMultiples.pageFor,
-    'SomeCereals': SomeCereals.pageFor,
-    'SomeDairy': SomeDairy.pageFor,
-    'ExtendedFamily': ExtendedFamily.pageFor,
-    'SomeFood': SomeFood.pageFor,
-    'SomeFruits': SomeFruits.pageFor,
-    'HouseholdLineageTerms': HouseholdLineageTerms.pageFor,
-    'ImmediateFamily': ImmediateFamily.pageFor,
-    'SomeNumbersFive': SomeNumbersFive.pageFor,
-    'SomeNumbersFour': SomeNumbersFour.pageFor,
-    'SomeNumbersOne': SomeNumbersOne.pageFor,
-    'SomeNumbersThree': SomeNumbersThree.pageFor,
-    'SomeNumbersTwo': SomeNumbersTwo.pageFor,
-    'PartnersExes': PartnersExes.pageFor,
-    'SomeVegetables': SomeVegetables.pageFor,
-  };
-
   /// Opens a "Last seen" word's video page again; watching it moves it back to the front.
   Future<void> _playSign(Map<String, dynamic> item) async {
-    if (item['source'] == 'api') {
-      // a sign from the server dictionary
-      final id = int.tryParse('${item['id']}');
-      if (id == null) return;
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => ApiSignPage(signId: id)));
-      _loadLastSeen();
-      return;
-    }
-    final page = _wordPages[item['source']]?.call(item['id'] ?? '');
-    if (page == null) return; // saved before words remembered their page
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-    await LastSeenStore.instance.add(item['word'], item['image'] ?? '', source: item['source'], id: item['id']);
+    final id = int.tryParse('${item['id']}');
+    if (id == null) return;
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => ApiSignPage(signId: id)));
     _loadLastSeen();
   }
-  void _toggleSave(Map<String, dynamic> word) async { await SavedStore.instance.toggle(word); _loadSaved(); }
 
 // =======================================================================
   @override
@@ -221,15 +194,12 @@ class _DictionaryState extends State<Dictionary>{
                   // ======= 2 =======
                   SliverToBoxAdapter(child: _header(context)),
                   if(_searching)
-                    results.isEmpty && _serverResults.isEmpty
+                    _searchBusy && _serverResults.isEmpty
+                      ? const SliverToBoxAdapter(child: Padding(padding: EdgeInsets.all(40), child: Center(child: CircularProgressIndicator()))) : _searchFailed
+                      ? SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.fromLTRB(16, 20, 16, 0), child: _offlineNotice(_onSearchChanged))) : _serverResults.isEmpty
                       ? SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.fromLTRB(16, 20, 16, 0), child: Center(child: Text(AppLocalizations.of(context)!.translate('dict_no_results')))))
-                      : SliverList(delegate: SliverChildBuilderDelegate(
-                        (_, i) => i < results.length
-                          ? _wordCard(results[i])
-                          : Padding(padding: const EdgeInsets.fromLTRB(16, 20, 16, 0), child: ApiSignTile(sign: _serverResults[i - results.length])),
-                        childCount: results.length + _serverResults.length,
-                      ))
-                  else ...[ SliverToBoxAdapter(child: _cardsView()), SliverToBoxAdapter(child: _browseView()) ]
+                      : SliverList(delegate: SliverChildBuilderDelegate((_, i) => Padding(padding: const EdgeInsets.fromLTRB(16, 20, 16, 0), child: ApiSignTile(sign: _serverResults[i])), childCount: _serverResults.length))
+                  else ...[ SliverToBoxAdapter(child: _cardsView()), SliverToBoxAdapter(child: _browseView()), SliverFillRemaining(hasScrollBody: false, child: ColoredBox(color: c.surface)) ]
                 ]
               ]
             )
@@ -264,7 +234,7 @@ class _DictionaryState extends State<Dictionary>{
                     ),
                     const SizedBox(width: 12),
                     GestureDetector(
-                      onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => const Saved())); _loadSaved(); },
+                      onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => const Saved())); },
                       child: Container(width: 46, height: 46, decoration: BoxDecoration(color: c.isDark ? c.chip : Colors.white, borderRadius: BorderRadius.circular(15)), child: Icon(Icons.bookmark, color: c.text))
                     )
                   ]
@@ -277,7 +247,7 @@ class _DictionaryState extends State<Dictionary>{
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.translate('search_word'), hintStyle: const TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.w400, fontSize: 16),
               prefixIcon: const Icon(Icons.search, color: Color(0xFF94A3B8)),
-              suffixIcon: GestureDetector(onTap: _handleVoiceSearch, child: Padding(padding: const EdgeInsets.all(12), child: Image.asset('web/icons/voice.png', width: 26, height: 26))),
+              suffixIcon: GestureDetector(onTap: _handleVoiceSearch, child: Padding(padding: const EdgeInsets.all(12), child: Image.asset('web/icons/voice.webp', width: 26, height: 26))),
               suffixIconConstraints: const BoxConstraints(minWidth: 48, minHeight: 48),
               filled: true, fillColor: c.isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFEDF2F7), border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none)
             )
@@ -286,62 +256,15 @@ class _DictionaryState extends State<Dictionary>{
       )
     );
   }
-
-// =======================================================================
-// Search
-// =======================================================================
-  Widget _wordCard(Map<String, dynamic> w) {
-    final isSaved = _savedWordSet.contains(w['word']);
-    final Color isColor = isSaved ? (c.isDark ? Colors.white24 : Colors.white) : c.chip;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: c.isDark ? c.card : Color(0xFFE3F2FD).withValues(alpha: 0.5), border: Border.all(color: c.cardBorder, width: 1),
-          borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: c.isDark ? c.glow : Color(0xFF1E88E5).withValues(alpha: 0.9), blurRadius: 15)]
-        ),
-        child: Row(
-          children: [
-            Container(
-              height: 64, width: 64, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
-              child: Center(child: Image.asset(w['image'], errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 35, color: Colors.blue)))
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(w['word'] ?? '', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: c.text)),
-                  Text(w['phonetic'] ?? '', style: TextStyle(fontSize: 17, color: c.isDark ? c.subText : Colors.grey[800]))
-                ]
-              )
-            ),
-            GestureDetector(
-              onTap: () => _toggleSave(w),
-              child: Container(
-                padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: isColor, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(14)),
-                child: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border, color: isSaved ? const Color(0xFF4A7FD0) : Colors.blue)
-              )
-            )
-          ]
-        )
-      )
-    );
-  }
-
 // =======================================================================
 // Cards View
 // =======================================================================
   Widget _cardsView() {
     final lang = Localizations.localeOf(context).languageCode;
-    final cats = _serverCategories;
-    final List<Map<String, dynamic>> chips = cats == null
-      ? dictionaryCardsItems
-      : [
-          {'icon': CategoryIcon.all, 'title': AppLocalizations.of(context)!.translate('all')},
-          for (final cat in cats) {'icon': cat.icon ?? CategoryIcon.bySlug[cat.slug] ?? CategoryIcon.fallback, 'title': cat.nameFor(lang)},
-        ];
+    final List<Map<String, dynamic>> chips = [
+      {'icon': CategoryIcon.all, 'title': AppLocalizations.of(context)!.translate('all')},
+      for (final cat in _serverCategories ?? const <ApiCategory>[]) {'icon': cat.icon ?? CategoryIcon.bySlug[cat.slug] ?? CategoryIcon.fallback, 'title': cat.nameFor(lang)},
+    ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
       child: SingleChildScrollView(
@@ -363,11 +286,8 @@ class _DictionaryState extends State<Dictionary>{
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      item['icon'] != null
-                          ? CategoryIcon(item['icon'], size: 20, color: isActive ? (c.isDark ? c.accent : Colors.blue[900]!) : c.text)
-                          : Image.asset(item['image'], width: 20, height: 20, color: isActive ? (c.isDark ? c.accent : Colors.blue[900]) : c.text),
-                      const SizedBox(width: 8),
-                      Text(item['title'], style: TextStyle(color: isActive ? (c.isDark ? c.accent : Colors.blue[900]) : c.text, fontSize: 16, fontWeight: FontWeight.w600))
+                      CategoryIcon(item['icon'], size: 20, color: isActive ? (c.isDark ? c.accent : AppPalette.season(Colors.blue[900]!)) : c.text), const SizedBox(width: 8),
+                      Text(item['title'], style: TextStyle(color: isActive ? (c.isDark ? c.accent : AppPalette.season(Colors.blue[900]!)) : c.text, fontSize: 16, fontWeight: FontWeight.w600))
                     ]
                   )
                 )
@@ -382,25 +302,20 @@ class _DictionaryState extends State<Dictionary>{
   Widget _browseView() {
     final picked = _pickedServerCategory;
     if (picked != null) return _serverCategorySigns(picked);
-    final categoryId = selectedDictionaryCards >= 0 ? selectedDictionaryCards.toString() : '0';
-    final isAll = categoryId == '0';
-    final storesDic = storesDictionaryCardsData.storesDictionaryCardsByCategory[categoryId] ?? [];
-
-    // category '0' → only 4 rows; others → all rows
-    final stores = isAll ? storesDic.take(4).toList() : storesDic;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20), decoration: BoxDecoration(color: c.surface, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (isAll) ...[ _emergencyBanner(), const SizedBox(height: 18), _lastSeenSection(), const SizedBox(height: 18) ],
-          // "All": the categories made in the dashboard (titles, counts and order from there);
-          // offline, the app's own list as before
-          if (isAll && _serverCategories != null)
-            for (final cat in _serverCategories!) _serverCategoryRow(cat, categoryId)
+          _emergencyBanner(), const SizedBox(height: 18), _lastSeenSection(), const SizedBox(height: 18),
+          // "Celebrities": the first categories made in the dashboard (names, counts and order from there)
+          if (_serverCategories != null)
+            for (final cat in _serverCategories!.take(_featuredCount)) _serverCategoryRow(cat)
+          else if (_categoriesFailed)
+            _offlineNotice(_loadServerCategories)
           else
-            ...List.generate(stores.length, (index) => _categoryRow(stores[index], categoryId)),
+            const Padding(padding: EdgeInsets.all(30), child: Center(child: CircularProgressIndicator())),
         ]
       )
     );
@@ -410,7 +325,7 @@ class _DictionaryState extends State<Dictionary>{
 // That isAll group
 // =======================================================================
   Widget _emergencyBanner(){
-    const String imageEmergency = 'web/icons/emergency.png';
+    const String imageEmergency = 'web/icons/emergency.webp';
     final AppLocalizations loc = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -419,37 +334,34 @@ class _DictionaryState extends State<Dictionary>{
         GestureDetector(
           onTap: _handleEmergency,
           child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.red.withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: Colors.red),
-            boxShadow: [BoxShadow(color: const Color(0xFFE53935).withValues(alpha: 0.9), blurRadius: 15)]
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: const Color(0xFFFFEBEE).withValues(alpha: 0.6), borderRadius: BorderRadius.circular(14), border: Border.all(width: 1, color: const Color(0xFFFFEBEE))),
-                  child: Image.asset(imageEmergency, width: 25, height: 25),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(loc.translate('emergency_phrases'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white)),
-                      Text(loc.translate('emergency_phrases_sub'), style: TextStyle(fontSize: 13, color: Colors.grey[300])),
-                    ],
+            width: double.infinity,
+            decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.4), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: Colors.red), boxShadow: [BoxShadow(color: const Color(0xFFE53935).withValues(alpha: 0.9), blurRadius: 15)]),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: const Color(0xFFFFEBEE).withValues(alpha: 0.6), borderRadius: BorderRadius.circular(14), border: Border.all(width: 1, color: const Color(0xFFFFEBEE))),
+                    child: Image.asset(imageEmergency, width: 25, height: 25),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: const Color(0xFFFFEBEE).withValues(alpha: 0.6), border: Border.all(width: 1, color: const Color(0xFFFFEBEE)), shape: BoxShape.circle),
-                  child: const Icon(Icons.chevron_right, size: 20)
-                )
-              ]
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(loc.translate('emergency_phrases'), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white)),
+                        Text(loc.translate('emergency_phrases_sub'), style: TextStyle(fontSize: 13, color: Colors.grey[300])),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: const Color(0xFFFFEBEE).withValues(alpha: 0.6), border: Border.all(width: 1, color: const Color(0xFFFFEBEE)), shape: BoxShape.circle),
+                    child: const Icon(Icons.chevron_right, size: 20)
+                  )
+                ]
+              )
             )
-          )
           )
         )
       ]
@@ -466,10 +378,7 @@ class _DictionaryState extends State<Dictionary>{
             width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 30), decoration: BoxDecoration(color: c.isDark ? c.chip : const Color(0xFFEDF2F7), borderRadius: BorderRadius.circular(20)),
             child: Column(children: [Icon(Icons.history, size: 40, color: Colors.grey[400]), const SizedBox(height: 8), Text(loc.translate('no_recent'), style: TextStyle(fontSize: 15, color: Colors.grey[600]))])
           )
-          : SizedBox(
-            height: 150,
-            child: ListView.builder(scrollDirection: Axis.horizontal, physics: const BouncingScrollPhysics(), itemCount: lastSeen.length, itemBuilder: (_, index) => _lastSeenCard(lastSeen[index]))
-          ),
+          : SizedBox(height: 150, child: ListView.builder(scrollDirection: Axis.horizontal, physics: const BouncingScrollPhysics(), itemCount: lastSeen.length, itemBuilder: (_, index) => _lastSeenCard(lastSeen[index]))),
         const SizedBox(height: 18),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -479,10 +388,7 @@ class _DictionaryState extends State<Dictionary>{
               onTap: _handleAllPhrases,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(8, 4, 4, 4),
-                decoration: BoxDecoration(
-                  color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder),
-                  boxShadow: [BoxShadow(color: c.glow, blurRadius: 15, offset: const Offset(0, 6))]
-                ),
+                decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder), boxShadow: [BoxShadow(color: c.glow, blurRadius: 15, offset: const Offset(0, 6))]),
                 child: Row(children: [Text(loc.translate('all_phrases'), style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11, color: c.text)), const SizedBox(width: 2), Icon(Icons.keyboard_arrow_right_outlined, size: 19, color: c.text)])
               )
             )
@@ -494,22 +400,26 @@ class _DictionaryState extends State<Dictionary>{
   }
 
   Widget _lastSeenCard(Map<String, dynamic> item) {
-    final String image = item['image'] ?? '', label = item['word'] ?? '';
+    final String image = item['image'] ?? '', label = storedWordFor(item, Localizations.localeOf(context).languageCode);
     return GestureDetector(
       onTap: () => _playSign(item),
       child: Container(
-        width: 150, margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(20)),
+        width: 150, margin: const EdgeInsets.only(right: 12), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), borderRadius: BorderRadius.circular(20)),
         child: Stack(
           children: [
             // character image
-            Positioned.fill(top: 15, child: ClipRRect(child: image.startsWith('http') ? Image.network(image, errorBuilder: (_, _, _) => const Icon(Icons.person, size: 60, color: Colors.blue)) : Image.asset(image, errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 60, color: Colors.blue)))),
+            Positioned.fill(
+              top: 15,
+              child: ClipRRect(
+                child: image.startsWith('http') ? Image.network(image, errorBuilder: (_, _, _) => const Icon(Icons.person, size: 60, color: Colors.blue)) : Image.asset(image, errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 60, color: Colors.blue))
+              )
+            ),
             // play button top-right
             Positioned(
               top: 10, right: 10,
               child: Container(
-                height: 35, width: 35, decoration: BoxDecoration(color: const Color(0xFF4A7FD0).withValues(alpha: 0.3), shape: BoxShape.circle),
-                child: Center(child: Container(height: 20, width: 20, decoration: const BoxDecoration(color: Color(0xFF4A7FD0), shape: BoxShape.circle), child: const Icon(Icons.play_arrow, color: Colors.white, size: 18)))
+                height: 35, width: 35, decoration: BoxDecoration(color: AppPalette.season(const Color(0xFF4A7FD0)).withValues(alpha: 0.3), shape: BoxShape.circle),
+                child: Center(child: Container(height: 20, width: 20, decoration: BoxDecoration(color: AppPalette.season(const Color(0xFF4A7FD0)), shape: BoxShape.circle), child: const Icon(Icons.play_arrow, color: Colors.white, size: 18)))
               )
             ),
             // word label bottom
@@ -531,107 +441,69 @@ class _DictionaryState extends State<Dictionary>{
   /// The signs of a dashboard category, as the dashboard shows them.
   Widget _serverCategorySigns(ApiCategory cat) {
     final loc = AppLocalizations.of(context)!;
-    final lang = Localizations.localeOf(context).languageCode;
     final signs = _categorySigns[cat.slug];
-    List<ApiSign> ofKind(String kind) =>
-        (signs ?? const <ApiSign>[]).where((s) => s.kind == kind).toList()..sort((a, b) => a.wordFor(lang).toLowerCase().compareTo(b.wordFor(lang).toLowerCase()));
+    List<ApiSign> ofKind(String kind) => (signs ?? const <ApiSign>[]).where((s) => s.kind == kind).toList()..sort(ApiSign.compare);
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20), decoration: BoxDecoration(color: c.surface, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+      width: double.infinity, padding: const EdgeInsets.fromLTRB(16, 20, 16, 20), decoration: BoxDecoration(color: c.surface, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
       child: signs == null
-          ? const Padding(padding: EdgeInsets.all(40), child: Center(child: CircularProgressIndicator()))
-          : signs.isEmpty
-              ? Padding(padding: const EdgeInsets.all(40), child: Center(child: Text(loc.translate('dict_no_results'), style: TextStyle(fontSize: 15, color: c.subText))))
-              : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  // words first, then phrases (letters, numbers), each under its own heading
-                  for (final kind in const ['word', 'phrase', 'letter', 'number'])
-                    if (signs.any((s) => s.kind == kind)) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4, bottom: 12),
-                        child: Text('${loc.translate('dict_group_$kind')} · ${signs.where((s) => s.kind == kind).length}',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: c.text)),
-                      ),
-                      for (final sign in ofKind(kind)) ApiSignTile(sign: sign),
-                    ],
-                ]),
+        ? const Padding(padding: EdgeInsets.all(40), child: Center(child: CircularProgressIndicator())) : signs.isEmpty
+          ? Padding(padding: const EdgeInsets.all(40), child: Center(child: Text(loc.translate('dict_no_results'), style: TextStyle(fontSize: 15, color: c.subText))))
+          : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            // words first, then phrases (letters, numbers)
+            for (final kind in const ['word', 'phrase', 'letter', 'number'])
+              for (final sign in ofKind(kind)) ApiSignTile(sign: sign)
+          ])
+    );
+  }
+
+  /// The server can't be reached: a message and a retry button
+  Widget _offlineNotice(VoidCallback onRetry) {
+    final loc = AppLocalizations.of(context)!;
+    return Container(
+      width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      decoration: BoxDecoration(color: c.isDark ? c.chip : const Color(0xFFEDF2F7), borderRadius: BorderRadius.circular(20)),
+      child: Column(children: [
+        Icon(Icons.wifi_off, size: 36, color: Colors.grey[500]), const SizedBox(height: 8),
+        Text(loc.translate('no_internet'), textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: c.subText)),
+        TextButton(onPressed: onRetry, child: Text(loc.translate('try_again'))),
+      ]),
     );
   }
 
   /// A dashboard category as a row: its name in the app's language and how many signs it has.
-  Widget _serverCategoryRow(ApiCategory cat, String categoryId) {
+  Widget _serverCategoryRow(ApiCategory cat) {
     final loc = AppLocalizations.of(context)!;
     final lang = Localizations.localeOf(context).languageCode;
     final unit = lang == 'uz' && (cat.unitLabel?.isNotEmpty ?? false) ? cat.unitLabel! : loc.translate('dict_signs_count');
-    return _categoryRow(
-      {'icon': cat.icon ?? CategoryIcon.bySlug[cat.slug] ?? CategoryIcon.fallback, 'title': cat.nameFor(lang), 'title_sub': '${cat.signCount} $unit'},
-      categoryId,
-      onTap: () => onDictionaryCardsTap((_serverCategories?.indexOf(cat) ?? -1) + 1),
-    );
+    return _categoryRow({'icon': cat.icon ?? CategoryIcon.bySlug[cat.slug] ?? CategoryIcon.fallback, 'title': cat.nameFor(lang), 'title_sub': '${cat.signCount} $unit'}, onTap: () => onDictionaryCardsTap((_serverCategories?.indexOf(cat) ?? -1) + 1));
   }
 
 // =======================================================================
 // that not isAll group if other cards all group subject
 // =======================================================================
-  Widget _categoryRow(Map<String, dynamic> item, String categoryId, {VoidCallback? onTap}) {
+  Widget _categoryRow(Map<String, dynamic> item, {required VoidCallback onTap}) {
     return GestureDetector(
-      onTap: onTap ?? () => _openLessonsAll(categoryId, item),
+      onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 18), padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder),
-          boxShadow: [BoxShadow(color: c.glow, blurRadius: 15)]
-        ),
+        margin: const EdgeInsets.only(bottom: 18), padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: c.cardBorder), boxShadow: [BoxShadow(color: c.glow, blurRadius: 15)]),
         child: Row(
           children: [
-            Container(
-              height: 56, width: 56, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-              child: Center(child: item['icon'] != null
-                  ? CategoryIcon(item['icon'], size: 28, color: Colors.blue[700]!)
-                  : Image.asset(item['image'], width: 28, height: 28, errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 35, color: Colors.blue))),
-            ),
+            Container(height: 56, width: 56, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)), child: Center(child: CategoryIcon(item['icon'], size: 28, color: AppPalette.season(Colors.blue[700]!)))),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(item['title'], style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: c.text)),
-                  Text(item['title_sub'] ?? '', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: c.isDark ? c.subText : Colors.grey[700])),
-                ],
-              ),
+                  Text(item['title_sub'] ?? '', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w400, color: c.isDark ? c.subText : Colors.grey[700]))
+                ]
+              )
             ),
-            Container(
-              padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), shape: BoxShape.circle),
-              child: const Icon(Icons.chevron_right)
-            )
+            Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: c.chip, border: Border.all(width: 1, color: c.cardBorder), shape: BoxShape.circle), child: const Icon(Icons.chevron_right))
           ]
         )
       )
     );
   }
 
-// =======================================================================
-  Future<void> _openLessonsAll(String categoryId, Map<String, dynamic> item) async {
-    final id = item['id'];
-    Widget? page;
-
-    if (categoryId == '0') {
-      page = switch (id) {
-        // '0' => const AlphabetResult(),
-        // '1' => const FamilyResult(),
-        // '2' => const AlphabetResult(),
-        // '3' => const AlphabetResult(),
-        _ => null,
-      };
-    } else if (categoryId == '1') {
-      page = switch (id) { '0' => const ImmediateFamily(), '1' => const ExtendedFamily(), '2' => const PartnersExes(), '3' => const HouseholdLineageTerms(), '4' => const BirthOrderMultiples(), _ => null };
-    } else if (categoryId == '2') {
-      page = switch (id) { '0' => const SomeFood(), '1' => const SomeFruits(), '2' => const SomeVegetables(), '3' => const SomeCereals(), '4' => const SomeDairy(), _ => null };
-    } else if (categoryId == '3') {
-      page = switch (id) { '0' => const SomeNumbersOne(), '1' => const SomeNumbersTwo(), '2' => const SomeNumbersThree(), '3' => const SomeNumbersFour(), '4' => const SomeNumbersFive(), _ => null };
-    }
-
-    if (page == null) return;
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => page!));
-    _loadLastSeen(); // words watched inside the category now show in "Last seen"
-  }
 }

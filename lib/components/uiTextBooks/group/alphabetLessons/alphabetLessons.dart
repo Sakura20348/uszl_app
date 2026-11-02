@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:signlang/api/api_errors.dart';
 import 'package:signlang/components/uiTextBooks/apiTextbooks/api_textbooks.dart';
 import 'package:signlang/services/app_loading.dart';
 import 'package:shimmer/shimmer.dart';
@@ -51,7 +52,7 @@ class _AlphabetLessonsState extends State<AlphabetLessons> {
 
 // =======================================================================
   Future<void> _initData() async { await AppLoading.ready(); if (mounted) {setState(() {_isLoading = false;});} }
-  Future<void> _handleRefresh() async { setState(() {_isLoading = true;}); await _initializeData(); }
+  Future<void> _handleRefresh() async { await _initializeData(); }
   Future<void> _initializeData() async { final results = await Future.wait([AppLoading.ready()]); if (!mounted) return; setState(() { _isLoading = false; }); }
 
 // =======================================================================
@@ -61,15 +62,9 @@ class _AlphabetLessonsState extends State<AlphabetLessons> {
     if (_statusFor(i) == LessonStatus.locked) return;
     final items = AlphabetLessonsData(context: context).alphabetLessonsItem;
     final id = items[i]['id'];
-    // Exercises made in the dashboard are played from the server
-    if (await BuiltinLessonPlayer.play(context, id)) {
-      if (mounted) setState(() => _recomputeLearned());
-      return;
-    }
-    // The alphabet lessons only exist in the dashboard now (their old screens were removed):
-    // they need the internet and a logged-in account
+    if (await BuiltinLessonPlayer.play(context, id)) { if (mounted) setState(() => _recomputeLearned()); return; }
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.translate('lesson_needs_online')), behavior: SnackBarBehavior.floating));
+    showGreySnackBar(context, AppLocalizations.of(context)!.translate('lesson_needs_online'));
   }
 
   void _recomputeLearned() {

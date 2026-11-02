@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signlang/api/uzsl_api.dart';
-import 'dart:convert';
 import '../models/statistics.dart';
 
 class StatisticsService {
@@ -50,9 +49,7 @@ class StatisticsService {
     // Use StreakManager's keys
     final weeklyStreak = _prefs.getInt('streak_count') ?? 0;
     final streakRecord = _prefs.getInt('stat_streak_record') ?? weeklyStreak;
-    if (weeklyStreak > streakRecord) {
-      _prefs.setInt('stat_streak_record', weeklyStreak);
-    }
+    if (weeklyStreak > streakRecord) { _prefs.setInt('stat_streak_record', weeklyStreak); }
     
     final collectedPoints = _prefs.getInt('stat_points_total') ?? 0;
     final pointsIncrement = _prefs.getInt('stat_points_today') ?? 0;
@@ -69,9 +66,7 @@ class StatisticsService {
     for (final s in completedDaysList) {
       try {
         final d = DateTime.parse(s);
-        if (!d.isBefore(monday) && !d.isAfter(monday.add(const Duration(days: 6)))) {
-          weeklyStudyStatus[d.weekday - 1] = true;
-        }
+        if (!d.isBefore(monday) && !d.isAfter(monday.add(const Duration(days: 6)))) { weeklyStudyStatus[d.weekday - 1] = true; }
       } catch (_) {}
     }
     
@@ -146,8 +141,8 @@ class StatisticsService {
     final now = DateTime.now();
     final yearAgo = now.subtract(const Duration(days: 366));
     final log = (_prefs.getStringList(_sessionsKey) ?? [])
-        .where((e) => DateTime.tryParse(e.split('|').first)?.isAfter(yearAgo) ?? false)
-        .toList()
+      .where((e) => DateTime.tryParse(e.split('|').first)?.isAfter(yearAgo) ?? false)
+      .toList()
       ..add('${now.toIso8601String()}|$minutes');
     await _prefs.setStringList(_sessionsKey, log);
   }
@@ -190,9 +185,7 @@ class StatisticsService {
     try {
       await UzslApi.setDailyGoal(goal);
       await _prefs.setBool(_goalSyncedKey, true);
-    } on ApiException catch (e) {
-      debugPrint('Daily goal not saved on the server: $e');
-    }
+    } on ApiException catch (e) { debugPrint('Daily goal not saved on the server: $e'); }
   }
 
   // More methods could be added to update accuracy, streak etc.

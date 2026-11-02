@@ -84,10 +84,7 @@ class _MatchingState extends State<Matching>{
   }
 
   @override
-  void dispose() {
-    if (_isVideoInitialized) _videoController.dispose();
-    super.dispose();
-  }
+  void dispose() { if (_isVideoInitialized) _videoController.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +238,7 @@ class _MatchingState extends State<Matching>{
       child: Container(
         decoration: BoxDecoration(
           color: AppPalette.bg(Colors.white), borderRadius: BorderRadius.circular(18), border: Border.all(color: borderColor, width: 2),
-          boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.grey).withOpacity(0.15), blurRadius: 8, offset: const Offset(0, 3))],
+          boxShadow: [BoxShadow(color: AppPalette.shadow(Colors.grey).withValues(alpha: 0.15), blurRadius: 8, offset: const Offset(0, 3))],
         ),
         child: Center(child: Icon(Icons.play_arrow, size: 26, color: isMatched ? AppPalette.fg(Color(0xFF22C55E)) : AppPalette.fg(Color(0xFF4A7FD0)))),
       ),

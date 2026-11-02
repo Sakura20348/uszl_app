@@ -25,9 +25,8 @@ class _DownloadButtonState extends State<DownloadButton> with SingleTickerProvid
   @override
   void didUpdateWidget(covariant DownloadButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.status == 'downloading' && !_controller.isAnimating) {
-      _controller.repeat();
-    } else if (widget.status != 'downloading' && _controller.isAnimating) { _controller.stop(); _controller.reset(); }
+    if (widget.status == 'downloading' && !_controller.isAnimating) { _controller.repeat(); }
+    else if (widget.status != 'downloading' && _controller.isAnimating) { _controller.stop(); _controller.reset(); }
   }
 
   @override
@@ -42,14 +41,14 @@ class _DownloadButtonState extends State<DownloadButton> with SingleTickerProvid
       return Container(
         width: 44, height: 44,
         decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white).withOpacity(0.8), borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: AppPalette.border(Color(0xFF10B981)), width: 2), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF10B981)).withOpacity(0.9), blurRadius: 15)]
+          color: AppPalette.bg(Colors.white).withValues(alpha: 0.8), borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: AppPalette.border(Color(0xFF10B981)), width: 2), boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF10B981)).withValues(alpha: 0.9), blurRadius: 15)]
         ),
         child: Icon(Icons.check_circle, color: AppPalette.fg(Color(0xFF10B981)), size: 24),
       );
     }
 
-    final Color boxColor = isDownloading ? AppPalette.auto(Color(0xFF4A7FD0)).withOpacity(0.8) : AppPalette.auto(Colors.white).withOpacity(0.7);
+    final Color boxColor = isDownloading ? AppPalette.auto(Color(0xFF4A7FD0)).withValues(alpha: 0.8) : AppPalette.auto(Colors.white).withValues(alpha: 0.7);
     final Color iconColor = isDownloading ? AppPalette.auto(Colors.white) : AppPalette.auto(Color(0xFF464646));
 
     return GestureDetector(
@@ -58,9 +57,7 @@ class _DownloadButtonState extends State<DownloadButton> with SingleTickerProvid
         width: 44, height: 44,
         decoration: BoxDecoration(
           color: boxColor, borderRadius: BorderRadius.circular(15), border: Border.all(color: AppPalette.border(Colors.white), width: 1),
-          boxShadow: [
-            BoxShadow(color: isDownloading ? AppPalette.shadow(Colors.black).withOpacity(0.3) : Colors.transparent, blurRadius: 10, offset: Offset(0, isDownloading ? 6: 0)),
-          ],
+          boxShadow: [BoxShadow(color: isDownloading ? AppPalette.shadow(Colors.black).withValues(alpha: 0.3) : Colors.transparent, blurRadius: 10, offset: Offset(0, isDownloading ? 6: 0))],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -82,17 +79,10 @@ class _DownloadButtonState extends State<DownloadButton> with SingleTickerProvid
             ),
             const SizedBox(height: 2),
             // the little "tray" (icon2): bottom + left + right borders
-            Container(
-              width: 18, height: 5,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: iconColor, width: 2), left: BorderSide(color: iconColor, width: 2), right: BorderSide(color: iconColor, width: 2),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+            Container(width: 18, height: 5, decoration: BoxDecoration(border: Border(bottom: BorderSide(color: iconColor, width: 2), left: BorderSide(color: iconColor, width: 2), right: BorderSide(color: iconColor, width: 2))))
+          ]
+        )
+      )
     );
   }
 }

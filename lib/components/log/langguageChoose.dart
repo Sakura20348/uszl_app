@@ -33,9 +33,9 @@ class _LanguageChooseState extends State<LanguageChoose> {
 
   @override
   Widget build(BuildContext context){
-    const String uzbekFlagPath = 'web/images/uzbek_flag.png';
-    const String rusFlagPath = 'web/images/rus_flag.png';
-    const String engFlagPath = 'web/images/eng_flag.png';
+    const String uzbekFlagPath = 'web/images/uzbek_flag.webp';
+    const String rusFlagPath = 'web/images/rus_flag.webp';
+    const String engFlagPath = 'web/images/eng_flag.webp';
     final AppLocalizations loc = AppLocalizations.of(context)!;
 
     return Scaffold(

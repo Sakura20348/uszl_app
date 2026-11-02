@@ -9,40 +9,40 @@ class FoodLessonsData {
   final BuildContext context; FoodLessonsData({required this.context}); AppLocalizations get loc => AppLocalizations.of(context)!;
   List<Map<String, dynamic>> get item => [
     {
-      'id': 'eat_0', 'count': 5, 'image': '', // food
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('food')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_0', 'count': 1, 'image': '', // food
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('food')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_1', 'count': 10, 'image': '', // steamed_dumplings and tea
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('steamed_dumplings')} - ${loc.translate('tea')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_1', 'count': 1, 'image': '', // steamed_dumplings and tea
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('steamed_dumplings')} - ${loc.translate('tea')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_2', 'count': 10, 'image': '', // sweet_tea and tender_food
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('sweet_tea')} - ${loc.translate('tender_food')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_2', 'count': 1, 'image': '', // sweet_tea and tender_food
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('sweet_tea')} - ${loc.translate('tender_food')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_3', 'count': 10, 'image': '', // fruit and pomegranate
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('fruit')} - ${loc.translate('pomegranate')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_3', 'count': 1, 'image': '', // fruit and pomegranate
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('fruit')} - ${loc.translate('pomegranate')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_4', 'count': 10, 'image': '', // fig and vegetables
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('fig')} - ${loc.translate('vegetables')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_4', 'count': 1, 'image': '', // fig and vegetables
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('fig')} - ${loc.translate('vegetables')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_5', 'count': 10, 'image': '', // onion and cabbage
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('onion')} - ${loc.translate('cabbage')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_5', 'count': 1, 'image': '', // onion and cabbage
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('onion')} - ${loc.translate('cabbage')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_6', 'count': 10, 'image': '', // beetroot and bread
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('beetroot')} - ${loc.translate('bread')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_6', 'count': 1, 'image': '', // beetroot and bread
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('beetroot')} - ${loc.translate('bread')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_7', 'count': 10, 'image': '', // salt and yoghurt
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('salt')} - ${loc.translate('yoghurt')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_7', 'count': 1, 'image': '', // salt and yoghurt
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('salt')} - ${loc.translate('yoghurt')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
-      'id': 'eat_8', 'count': 10, 'image': '', // kefir and pancakes
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('kefir')} - ${loc.translate('pancakes')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'id': 'eat_8', 'count': 1, 'image': '', // kefir and pancakes
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('kefir')} - ${loc.translate('pancakes')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     }
   ];
   Map<String, List<Map<String, dynamic>>> get storesByFoodLessons => { '0': item };
@@ -762,31 +762,31 @@ class FeelingsLessonsData {
   List<Map<String, dynamic>> get item => [
     {
       'id': 'feel_0', 'count': 10, 'image': '', // feelings and coarse
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('feelings')} - ${loc.translate('coarse')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('feelings')} - ${loc.translate('coarse')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
       'id': 'feel_1', 'count': 10, 'image': '', // sad and arrogant
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('sad')} - ${loc.translate('arrogant')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('sad')} - ${loc.translate('arrogant')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
       'id': 'feel_2', 'count': 10, 'image': '', // wicked and like
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('wicked')} - ${loc.translate('like')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('wicked')} - ${loc.translate('like')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
       'id': 'feel_3', 'count': 10, 'image': '', // love and scare
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('love')} - ${loc.translate('scare')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('love')} - ${loc.translate('scare')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
       'id': 'feel_4', 'count': 10, 'image': '', // be_scared and laugh
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('be_scared')} - ${loc.translate('laugh')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('be_scared')} - ${loc.translate('laugh')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
       'id': 'feel_5', 'count': 10, 'image': '', // assiduous and smile
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('assiduous')} - ${loc.translate('smile')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('assiduous')} - ${loc.translate('smile')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     },
     {
       'id': 'feel_6', 'count': 11, 'image': '', // tired and emotions
-      'imageTime': 'web/icons/time.png', 'imageHand': 'web/icons/hand.png', 'titleKey': '${loc.translate('tired')} - ${loc.translate('emotions')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
+      'imageTime': 'web/icons/time.webp', 'imageHand': 'web/icons/hand.webp', 'titleKey': '${loc.translate('tired')} - ${loc.translate('emotions')} ${loc.translate('words')}', 'time': '5 ${loc.translate('time_min')}', 'click': '10 ${loc.translate('hints')}'
     }
   ];
   Map<String, List<Map<String, dynamic>>> get storesByFeelingsLessons => { '0': item };

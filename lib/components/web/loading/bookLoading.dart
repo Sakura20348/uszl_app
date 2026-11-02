@@ -16,16 +16,10 @@ class _BookLoaderState extends State<BookLoader> with SingleTickerProviderStateM
   static const Duration _duration = Duration(seconds: 3);
 
   @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: _duration)..repeat();
-  }
+  void initState() { super.initState(); _controller = AnimationController(vsync: this, duration: _duration)..repeat(); }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  void dispose() { _controller.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -33,44 +27,26 @@ class _BookLoaderState extends State<BookLoader> with SingleTickerProviderStateM
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 300,
-          height: 140,
+          width: 300, height: 140,
           child: Stack(
             alignment: Alignment.center,
             children: [
               // book body (gradient background)
               Container(
-                width: 190,
-                height: 120,
+                width: 190, height: 120,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(13),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppPalette.bg(Color(0xFF23C4F8)), AppPalette.bg(Color(0xFF275EFE))],
-                  ),
-                  boxShadow: [
-                    BoxShadow(color: AppPalette.shadow(Color(0xFF275EFE)).withOpacity(0.28), blurRadius: 6, offset: const Offset(0, 4)),
-                  ],
+                  borderRadius: BorderRadius.circular(13), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppPalette.bg(Color(0xFF23C4F8)), AppPalette.bg(Color(0xFF275EFE))]),
+                  boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF275EFE)).withValues(alpha: 0.28), blurRadius: 6, offset: const Offset(0, 4))],
                 ),
               ),
               // flipping pages
-              Positioned(
-                left: null,
-                child: Transform.translate(
-                  offset: const Offset(-46, 0),
-                  child: Stack(
-                    alignment: Alignment.centerLeft,
-                    children: List.generate(_pageCount, (i) => _buildPage(i)),
-                  ),
-                ),
-              ),
-            ],
-          ),
+              Positioned(left: null, child: Transform.translate(offset: const Offset(-46, 0), child: Stack(alignment: Alignment.centerLeft, children: List.generate(_pageCount, (i) => _buildPage(i)))))
+            ]
+          )
         ),
         const SizedBox(height: 20),
-        Text(widget.label, style: TextStyle(color: AppPalette.fg(Color(0xFF6C7486)), fontSize: 15)),
-      ],
+        Text(widget.label, style: TextStyle(color: AppPalette.fg(Color(0xFF6C7486)), fontSize: 15))
+      ]
     );
   }
 
@@ -96,14 +72,8 @@ class _BookLoaderState extends State<BookLoader> with SingleTickerProviderStateM
             opacity = p / 0.15;
           } else if (p > 0.85) {
             opacity = (1 - p) / 0.15;
-          } else {
-            opacity = 1;
-          }
-        } else {
-          angle = 0;
-          opacity = 0;                                 // hidden when not flipping
-        }
-
+          } else { opacity = 1; }
+        } else { angle = 0; opacity = 0; } // hidden when not flipping
 
         return Opacity(
           opacity: opacity.clamp(0.0, 1.0),
@@ -117,30 +87,17 @@ class _BookLoaderState extends State<BookLoader> with SingleTickerProviderStateM
         );
       },
       child: Container(
-        width: 90,
-        height: 120,
-        decoration: BoxDecoration(
-          color: AppPalette.bg(Colors.white).withOpacity(0.55),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(8),
-            bottomLeft: Radius.circular(8),
-          ),
-        ),
+        width: 90, height: 120,
+        decoration: BoxDecoration(color: AppPalette.bg(Colors.white).withValues(alpha: 0.55), borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), bottomLeft: Radius.circular(8))),
         // the three lines on each page (like the SVG content)
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(3, (_) => Container(
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppPalette.bg(Colors.white).withOpacity(0.7),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            )),
-          ),
-        ),
-      ),
+            children: List.generate(3, (_) => Container(height: 4, decoration: BoxDecoration(color: AppPalette.bg(Colors.white).withValues(alpha: 0.7), borderRadius: BorderRadius.circular(2))))
+          )
+        )
+      )
     );
   }
 }

@@ -26,6 +26,8 @@ class CourseBase(Schema):
     description_en: str | None = Field(default=None, max_length=255)
     icon: str | None = Field(default=None, max_length=100)
     unit_label: str = Field(default="so'z", max_length=30)
+    # Number shown on the app's card; null = the number of lessons
+    total: int | None = Field(default=None, ge=1, le=10000)
     order: int = 0
     is_published: bool = True
 

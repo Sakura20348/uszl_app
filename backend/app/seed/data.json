@@ -454,13 +454,8 @@
    "translation_en": "Grandfather",
    "meaning": "Qoʻlingizni pastga tushiring, barmoqlaringiz bilan \"soqol\" hosil qiling.",
    "example_sentence": null,
-   "categories": [
-    "family"
-   ],
-   "related": [
-    6,
-    1
-   ]
+   "categories": ["family"],
+   "related": [6, 1]
   },
   {
    "key": 6,
@@ -470,13 +465,8 @@
    "translation_en": "Grandmother",
    "meaning": "“a” konfiguratsiyasidagi qoʻl yonoqdan koʻtarilmasdan aylana tomon harakatlanadi.",
    "example_sentence": null,
-   "categories": [
-    "family"
-   ],
-   "related": [
-    5,
-    2
-   ]
+   "categories": ["family"],
+   "related": [5, 2]
   },
   {
    "key": 7,

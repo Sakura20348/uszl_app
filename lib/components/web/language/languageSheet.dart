@@ -39,14 +39,14 @@ class _LanguageSheetState extends State<LanguageSheet> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context){
-    const String ImageTranslate = 'web/icons/translate.png';
+    const String ImageTranslate = 'web/icons/translate.webp';
     final AppLocalizations loc = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 12, 10, 40),
       decoration: BoxDecoration(
-        color: AppPalette.bg(Color(0xFF81D4FA)).withOpacity(0.1), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFB3E5FC)).withOpacity(0.2)),
-        boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF81D4FA)).withOpacity(0.9), blurRadius: 15, offset: Offset(0, -6))]
+        color: AppPalette.bg(Color(0xFF81D4FA)).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(24), border: Border.all(width: 1, color: AppPalette.border(Color(0xFFB3E5FC)).withValues(alpha: 0.2)),
+        boxShadow: [BoxShadow(color: AppPalette.shadow(Color(0xFF81D4FA)).withValues(alpha: 0.9), blurRadius: 15, offset: Offset(0, -6))]
       ),
       child: FadeTransition(
         opacity: _fadeIn,
@@ -55,53 +55,44 @@ class _LanguageSheetState extends State<LanguageSheet> with SingleTickerProvider
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(width: 40, height: 5, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFF81D4FA)).withOpacity(0.9), borderRadius: BorderRadius.circular(3))),
-              const SizedBox(height: 18),
+              Container(width: 40, height: 5, decoration: BoxDecoration(color: AppPalette.bg(Color(0xFF81D4FA)).withValues(alpha: 0.9), borderRadius: BorderRadius.circular(3))), const SizedBox(height: 18),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withOpacity(0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
+                    decoration: BoxDecoration(color: AppPalette.bg(Color(0xFFE3F2FD)).withValues(alpha: 0.6), border: Border.all(width: 1, color: AppPalette.border(Colors.white)), borderRadius: BorderRadius.circular(18)),
                     child: Image.asset(ImageTranslate, width: 32, height: 32),
                   ),
-                  const SizedBox(height: 12),
-                  Text(loc.translate('change_language'), textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24)),
-                  const SizedBox(height: 8),
-                  Text(loc.translate('change_language_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400))
+                  const SizedBox(height: 12), Text(loc.translate('change_language'), textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24)),
+                  const SizedBox(height: 8), Text(loc.translate('change_language_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400))
                 ],
               ),
-              const SizedBox(height: 16),
-              _langTile('web/images/uzbek_flag.png', index: 0, 'Uzbek', const Locale('uz')),
-              const SizedBox(height: 12,),
-              _langTile('web/images/eng_flag.png', index: 1, 'English', const Locale('en')),
-              const SizedBox(height: 12,),
-              _langTile('web/images/rus_flag.png', index: 2, 'Русский', const Locale('ru')),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
+              const SizedBox(height: 16), _langTile('web/images/uzbek_flag.webp', index: 0, 'Uzbek', const Locale('uz')),
+              const SizedBox(height: 12,), _langTile('web/images/eng_flag.webp', index: 1, 'English', const Locale('en')),
+              const SizedBox(height: 12,), _langTile('web/images/rus_flag.webp', index: 2, 'Русский', const Locale('ru')),
+              const SizedBox(height: 20)
+            ]
+          )
+        )
+      )
     );
   }
   Widget _langTile(String image, String name, Locale locale, {required int index}) {
     final bool isActive = tabIndex == index;
     return Container(
       decoration: BoxDecoration(
-        color: isActive ? AppPalette.bg(Color(0xFF1565C0)).withOpacity(0.1) : Colors.transparent, borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: isActive ? AppPalette.shadow(Color(0xFF1565C0)).withOpacity(0.30) : Colors.transparent, blurRadius: 20)]
+        color: isActive ? AppPalette.bg(Color(0xFF1565C0)).withValues(alpha: 0.1) : Colors.transparent, borderRadius: BorderRadius.circular(12),
+        boxShadow: [BoxShadow(color: isActive ? AppPalette.shadow(Color(0xFF1565C0)).withValues(alpha: 0.30) : Colors.transparent, blurRadius: 20)]
       ),
       child: ListTile(
-        leading: Image.asset(image, width: 34, height: 34),
-        title: Text(name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+        leading: Image.asset(image, width: 34, height: 34), title: Text(name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
         onTap: () async {
           setState(() { tabIndex = index; });
           await LanguageStorage.save(index);
-          if (!mounted) return;
-          _changeLanguage(locale);
-          Navigator.pop(context, index);
-        },
-      ),
+          if (!mounted) return; _changeLanguage(locale); Navigator.pop(context, index);
+        }
+      )
     );
   }
 }
